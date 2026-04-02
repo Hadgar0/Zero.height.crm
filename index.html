@@ -89,6 +89,23 @@ tr:hover td{background:#f8fafc}
 .ii{display:flex;gap:6px;margin-bottom:8px}
 .ii input{flex:1;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:12px;outline:none}
 .ii button{padding:5px 10px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+/* Orders table */
+#page-deals{padding:0}
+.ofbtn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:#374151;white-space:nowrap}
+.ofbtn:hover{background:#f8fafc}
+.ofbtn.active{background:#2563eb;color:#fff;border-color:#2563eb}
+.oth{padding:10px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:left;cursor:pointer;white-space:nowrap;user-select:none}
+.oth:hover{color:#1e293b}
+.orow td{padding:9px 12px;font-size:13px;border-bottom:1px solid #f1f5f9;white-space:nowrap;cursor:pointer}
+.orow:hover td{background:#f8fafc}
+.orow.pink td{background:#fff1f2}
+.orow.pink:hover td{background:#ffe4e6}
+.sdot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;flex-shrink:0}
+.pgbtn{background:none;border:1px solid #e2e8f0;border-radius:5px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:#374151}
+.pgbtn:hover{background:#f8fafc}
+.pgnum{width:28px;height:28px;border:1px solid #e2e8f0;border-radius:5px;font-size:12px;cursor:pointer;background:none;display:flex;align-items:center;justify-content:center;color:#374151}
+.pgnum:hover{background:#f8fafc}
+.pgnum.active{background:#2563eb;color:#fff;border-color:#2563eb}
 /* Order page */
 #page-order{padding:0}
 .op-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
@@ -166,25 +183,60 @@ tr:hover td{background:#f8fafc}
   </div>
 
   <!-- DEALS / ORDERS -->
-  <div id="page-deals" class="page">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-      <div>
-        <h1 style="margin:0">Заказы</h1>
-        <p id="pipeline-val" style="font-size:13px;color:#64748b;margin-top:2px"></p>
+  <div id="page-deals" class="page" style="padding:0">
+    <!-- Toolbar -->
+    <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:10">
+      <button onclick="openDealModal()" style="width:28px;height:28px;border-radius:50%;background:#22c55e;border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+      <div style="display:flex;gap:4px;flex:1;min-width:0;flex-wrap:wrap;align-items:center">
+        <button id="f-all" class="ofbtn active" onclick="setOF('all')">Все заказы</button>
+        <button id="f-open" class="ofbtn" onclick="setOF('open')">Только незакрытые</button>
+        <button id="f-date" class="ofbtn" onclick="setOSort('date')">По дате создания</button>
+        <select id="f-status" class="ofbtn" style="padding:4px 8px" onchange="renderDeals()">
+          <option value="">По статусу</option>
+          <option value="open">Открыт</option>
+          <option value="in_work">В работе</option>
+          <option value="ready">Готов</option>
+          <option value="closed">Закрыт</option>
+          <option value="cancelled">Отменён</option>
+        </select>
+        <button class="ofbtn" onclick="clearOF()" style="color:#64748b">Очистить фильтры</button>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <div style="display:flex;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
-          <button id="vk" class="btn btn-p" style="border-radius:0;padding:7px 12px;font-size:12px" onclick="setView('kanban')">Канбан</button>
-          <button id="vl" class="btn btn-g" style="border-radius:0;padding:7px 12px;font-size:12px;border:none" onclick="setView('list')">Список</button>
-        </div>
-        <button class="btn btn-g" onclick="openQuickSale()">⚡ Быстрая продажа</button>
-        <button class="btn btn-p" onclick="openDealModal()">+ Добавить</button>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="btn" style="background:#22c55e;color:#fff;font-size:12px;padding:6px 12px;border-radius:7px" onclick="openQuickSale()">⚡ Продажа товара</button>
+        <button class="btn btn-g" style="font-size:12px;padding:6px 12px" onclick="openDealModal()">+ Добавить заказ</button>
       </div>
     </div>
-    <div id="deals-kanban" class="kanban"></div>
-    <div id="deals-list" style="display:none" class="card">
-      <table><thead><tr><th>Название</th><th>Клиент</th><th>Этап</th><th>Сумма</th><th></th></tr></thead>
-      <tbody id="deals-tbody"></tbody></table>
+    <!-- Table -->
+    <div style="overflow-x:auto;background:#fff">
+      <table id="orders-table" style="min-width:1100px">
+        <thead>
+          <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0">
+            <th style="width:32px;padding:10px 8px"><input type="checkbox" id="chk-all" onchange="toggleAllChk(this)"></th>
+            <th class="oth" onclick="setOSort('number')">Номер</th>
+            <th class="oth" onclick="setOSort('date')">Создан</th>
+            <th class="oth">Статус</th>
+            <th class="oth">Устройство</th>
+            <th class="oth">Цвет</th>
+            <th class="oth">Клиент</th>
+            <th class="oth" onclick="setOSort('amount')">Цена работ</th>
+            <th class="oth">Телефон клиента</th>
+            <th class="oth">Принял</th>
+            <th class="oth">Исполнитель</th>
+            <th class="oth">Кто закрыл</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody"></tbody>
+      </table>
+    </div>
+    <!-- Footer -->
+    <div style="background:#fff;border-top:1px solid #e2e8f0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:#374151">
+      <span id="orders-total"></span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="pgbtn" id="pg-prev" onclick="changePage(-1)">‹</button>
+        <div id="pg-nums" style="display:flex;gap:4px"></div>
+        <button class="pgbtn" id="pg-next" onclick="changePage(1)">›</button>
+        <span style="color:#94a3b8;margin-left:8px">/ стр.: <strong id="pg-per">20</strong></span>
+      </div>
     </div>
   </div>
 
@@ -577,35 +629,148 @@ function delClient(id){
   if(expandC===id)expandC=null;renderClients()
 }
 
-// ── DEALS ─────────────────────────────────────────────────────────────────────
-let dview='kanban'
-function setView(v){
-  dview=v
-  document.getElementById('vk').className=v==='kanban'?'btn btn-p':'btn btn-g'
-  document.getElementById('vk').style.cssText='border-radius:0;padding:7px 12px;font-size:12px'
-  document.getElementById('vl').className=v==='list'?'btn btn-p':'btn btn-g'
-  document.getElementById('vl').style.cssText='border-radius:0;padding:7px 12px;font-size:12px;border:none'
-  document.getElementById('deals-kanban').style.display=v==='kanban'?'flex':'none'
-  document.getElementById('deals-list').style.display=v==='list'?'block':'none'
+// ── DEALS / ORDERS TABLE ──────────────────────────────────────────────────────
+let oFilter='all', oSort='date', oSortDir=-1, oPage=1, oPerPage=20
+
+function setOF(f){
+  oFilter=f; oPage=1
+  document.querySelectorAll('.ofbtn[id^="f-"]').forEach(b=>b.classList.remove('active'))
+  const el=document.getElementById('f-'+f); if(el) el.classList.add('active')
   renderDeals()
 }
+function setOSort(s){
+  if(oSort===s) oSortDir*=-1; else{oSort=s;oSortDir=-1}
+  oPage=1; renderDeals()
+}
+function clearOF(){
+  oFilter='all'; oSort='date'; oSortDir=-1; oPage=1
+  document.getElementById('f-status').value=''
+  document.querySelectorAll('.ofbtn[id^="f-"]').forEach(b=>b.classList.remove('active'))
+  document.getElementById('f-all').classList.add('active')
+  renderDeals()
+}
+function changePage(d){
+  const orders=getFilteredOrders()
+  const pages=Math.max(1,Math.ceil(orders.length/oPerPage))
+  oPage=Math.min(Math.max(1,oPage+d),pages); renderDeals()
+}
+function toggleAllChk(cb){
+  document.querySelectorAll('.orow-chk').forEach(c=>c.checked=cb.checked)
+}
+
+const STATUS_DOT={
+  open:     {color:'#94a3b8',label:'Новый'},
+  in_work:  {color:'#f59e0b',label:'В работе'},
+  ready:    {color:'#ef4444',label:'Готов'},
+  closed:   {color:'#3b82f6',label:'Закрыт'},
+  cancelled:{color:'#22c55e',label:'Аутоприём'},
+}
+
+function getFilteredOrders(){
+  const deals=S.get('deals'), orders=S.get('orders')
+  // merge: saved orders + deals, orders take priority
+  const orderDeals=orders.map(o=>({
+    id:'o'+o.id, _order:o,
+    title: (o.device||'Аксессуары')+' '+(o.model||''),
+    client: o.client||'Розничный покупатель',
+    phone: o.phone||'',
+    device: o.device||'Аксессуары',
+    model: o.model||'',
+    color: o.color||'',
+    amount: o.total||o.price||0,
+    status: o.status||'open',
+    emp: o.emp||'',
+    exec: (o.works&&o.works[0]&&o.works[0].exec)||'',
+    closer: o.closer||'',
+    number: o.number||('№'+o.id),
+    created_at: o.created_at,
+  }))
+  const clients=S.get('clients')
+  const regularDeals=deals.filter(d=>!d.order_id).map(d=>{
+    const cl=clients.find(c=>c.id==d.client_id)
+    return {
+      id:'d'+d.id, _deal:d,
+      title:d.title, client:cl?cl.name:'Розничный покупатель',
+      phone:cl?cl.phone||'':'', device:d.title, model:'', color:'',
+      amount:d.amount||0, status:d.status==='closed'?'closed':d.status||'open',
+      emp:'', exec:'', closer:'', number:'ЗК-'+String(d.id).padStart(6,'0'),
+      created_at:d.created_at,
+    }
+  })
+  let all=[...orderDeals,...regularDeals]
+
+  // filter
+  const sf=document.getElementById('f-status')?.value||''
+  if(oFilter==='open') all=all.filter(o=>o.status!=='closed'&&o.status!=='cancelled')
+  if(sf) all=all.filter(o=>o.status===sf)
+
+  // sort
+  all.sort((a,b)=>{
+    if(oSort==='date') return oSortDir*(new Date(b.created_at)-new Date(a.created_at))
+    if(oSort==='amount') return oSortDir*(b.amount-a.amount)
+    if(oSort==='number') return oSortDir*a.number.localeCompare(b.number)
+    return 0
+  })
+  return all
+}
+
 function renderDeals(){
-  const deals=S.get('deals'),clients=S.get('clients')
-  const cn=id=>{const c=clients.find(c=>c.id==id);return c?c.name:''}
-  const pl=deals.filter(d=>d.status==='open').reduce((s,d)=>s+(+d.amount||0),0)
-  document.getElementById('pipeline-val').textContent='Воронка: '+fmt(pl)
-  if(dview==='kanban'){
-    document.getElementById('deals-kanban').innerHTML=Object.keys(SM).map(s=>{
-      const sd=deals.filter(d=>d.stage===s),tot=sd.reduce((sum,d)=>sum+(+d.amount||0),0)
-      return `<div class="kcol"><div class="khd" style="${SHM[s]}">${SM[s].l}<span>${sd.length}</span></div>${tot?`<p style="font-size:10px;color:#94a3b8;padding:0 4px;margin-bottom:6px">${fmt(tot)}</p>`:''}<div class="kcards">${sd.map(d=>`<div class="kcard"><div style="display:flex;justify-content:space-between"><span class="kt">${d.title}</span><span style="display:flex;gap:2px"><button class="btn-i" onclick="event.stopPropagation();openDealModal(${d.id})" style="padding:2px">${EICO}</button><button class="btn-i d" onclick="event.stopPropagation();delDeal(${d.id})" style="padding:2px">${DICO}</button></span></div><div class="kc">${d.client_id?cn(d.client_id):'<span style="color:#f59e0b;font-weight:500">Розничный покупатель</span>'}</div>${d.amount?`<div class="ka">${fmt(d.amount)}</div>`:''}</div>`).join('')}</div></div>`
-    }).join('')
+  const all=getFilteredOrders()
+  const pages=Math.max(1,Math.ceil(all.length/oPerPage))
+  oPage=Math.min(oPage,pages)
+  const slice=all.slice((oPage-1)*oPerPage, oPage*oPerPage)
+
+  document.getElementById('orders-total').textContent='Итого: '+all.length
+
+  const fdt2=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
+
+  document.getElementById('orders-tbody').innerHTML=slice.length?slice.map(o=>{
+    const sd=STATUS_DOT[o.status]||STATUS_DOT.open
+    const isPink=o.status==='cancelled'
+    return `<tr class="orow${isPink?' pink':''}" onclick="rowClick('${o.id}')">
+      <td onclick="event.stopPropagation()" style="width:32px"><input type="checkbox" class="orow-chk"></td>
+      <td style="color:#2563eb;font-weight:500">${o.number}</td>
+      <td style="color:#64748b">${fdt2(o.created_at)}</td>
+      <td><span class="sdot" style="background:${sd.color}"></span>${sd.label}</td>
+      <td>${o.device||'—'}</td>
+      <td>${o.color||'—'}</td>
+      <td>${o.client||'—'}</td>
+      <td style="font-weight:500">${o.amount?Number(o.amount).toLocaleString('ru')+' ₽':'0'}</td>
+      <td style="color:#64748b">${o.phone||'—'}</td>
+      <td style="color:#64748b">${o.emp||'—'}</td>
+      <td style="color:#64748b">${o.exec||'—'}</td>
+      <td style="color:#64748b">${o.closer||'—'}</td>
+    </tr>`
+  }).join(''):'<tr><td colspan="12" style="text-align:center;color:#94a3b8;padding:48px;font-size:13px">Заказы не найдены</td></tr>'
+
+  // pagination
+  const pg=document.getElementById('pg-nums')
+  let html=''
+  const show=arr=>{arr.forEach(n=>{if(n==='…')html+=`<span style="padding:0 4px;color:#94a3b8">…</span>`;else html+=`<button class="pgnum${n===oPage?' active':''}" onclick="goPage(${n})">${n}</button>`})}
+  if(pages<=7){const a=[];for(let i=1;i<=pages;i++)a.push(i);show(a)}
+  else if(oPage<=4)show([1,2,3,4,5,'…',pages])
+  else if(oPage>=pages-3)show([1,'…',pages-4,pages-3,pages-2,pages-1,pages])
+  else show([1,'…',oPage-1,oPage,oPage+1,'…',pages])
+  pg.innerHTML=html
+  document.getElementById('pg-prev').disabled=oPage===1
+  document.getElementById('pg-next').disabled=oPage===pages
+}
+
+function goPage(n){oPage=n;renderDeals()}
+
+function rowClick(id){
+  const orders=S.get('orders'),deals=S.get('deals')
+  if(id.startsWith('o')){
+    const oid=parseInt(id.slice(1))
+    const o=orders.find(o=>o.id===oid)
+    if(o) openOrder(o)
   } else {
-    document.getElementById('deals-tbody').innerHTML=deals.length?deals.map(d=>{
-      const m=SM[d.stage]||SM.new
-      return `<tr><td><strong>${d.title}</strong></td><td>${d.client_id?cn(d.client_id):'<span style="color:#f59e0b;font-weight:500">Розничный покупатель</span>'}</td><td><span class="badge ${m.c}">${m.l}</span></td><td style="color:#16a34a;font-weight:600">${fmt(d.amount)}</td><td style="white-space:nowrap"><button class="btn-i" onclick="openDealModal(${d.id})">${EICO}</button><button class="btn-i d" onclick="delDeal(${d.id})">${DICO}</button></td></tr>`
-    }).join(''):'<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:32px">Заказы не найдены</td></tr>'
+    const did=parseInt(id.slice(1))
+    const d=deals.find(d=>d.id===did)
+    if(d) openOrder({id:null,number:'ЗК-'+String(d.id).padStart(6,'0'),client:d.client||'',device:d.title,model:'',color:'',emp:'',src:'',price:d.amount||0,status:d.status||'open',works:[],created_at:d.created_at})
   }
 }
+
 function openDealModal(id){
   const deals=S.get('deals'),clients=S.get('clients'),d=id?deals.find(d=>d.id===id):null
   document.getElementById('dm-title').textContent=d?'Редактировать заказ':'Новый заказ'
@@ -627,7 +792,7 @@ function saveDeal(){
   S.set('deals',deals);cm('m-deal');renderDeals()
 }
 function delDeal(id){
-  if(!confirm('Удалить заказ?'))return
+  if(!confirm('Удалить?'))return
   S.set('deals',S.get('deals').filter(d=>d.id!==id));renderDeals()
 }
 
