@@ -129,18 +129,29 @@ tr:hover td{background:#f8fafc}
 .pgnum:hover{background:#f8fafc}
 .pgnum.active{background:#2563eb;color:#fff;border-color:#2563eb}
 /* Order page */
-.op-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
-.op-num{font-size:14px;font-weight:600;flex:1;min-width:0}
-.op-body{padding:20px}
+.op-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.op-num{font-size:15px;font-weight:700;color:#1e293b;flex:1;min-width:0}
+.op-body{padding:0}
 .fc{width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:7px 10px;font-size:13px;outline:none;font-family:inherit;background:#fff}
 .fc:focus{border-color:#2563eb;box-shadow:0 0 0 2px #dbeafe}
-.ot{padding:8px 14px;background:none;border:none;border-bottom:2px solid transparent;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;margin-bottom:-2px}
+.ot{padding:9px 14px;background:none;border:none;border-bottom:3px solid transparent;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;margin-bottom:-2px;white-space:nowrap}
+.ot:hover{color:#374151}
 .ot.active{color:#2563eb;border-bottom-color:#2563eb}
+.ot kbd{font-size:10px;font-family:inherit;font-weight:400;color:#94a3b8;background:none;border:none;padding:0;margin-left:3px}
 .star{font-size:26px;color:#d1d5db;cursor:pointer}.star.on{color:#f59e0b}
 .sum-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:13px}
 .sum-row{display:flex;justify-content:space-between;margin-bottom:6px}
 .sum-row:last-child{margin-bottom:0;padding-top:6px;border-top:1px solid #e2e8f0}
-@media(max-width:700px){.tcol{grid-template-columns:1fr}.fr{grid-template-columns:1fr}}
+.work-add-btn{flex:1;background:#dc2626;color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:500;cursor:pointer;transition:.15s;text-align:left;display:flex;align-items:center;gap:6px}
+.work-add-btn:hover{background:#b91c1c}
+.work-pct{font-size:11px;color:#64748b;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:2px}
+.oc-form-grid{display:grid;grid-template-columns:300px 1fr;background:#fff;border-bottom:1px solid #e2e8f0}
+.oc-left{padding:16px 18px;border-right:1px solid #e2e8f0}
+.oc-right{padding:16px 20px}
+.oc-fg{margin-bottom:12px}
+.oc-fg:last-child{margin-bottom:0}
+.oc-fg label{display:block;font-size:12px;font-weight:500;color:#374151;margin-bottom:4px}
+@media(max-width:700px){.tcol{grid-template-columns:1fr}.fr{grid-template-columns:1fr}.oc-form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -388,110 +399,262 @@ tr:hover td{background:#f8fafc}
 
   <!-- ORDER CARD PAGE -->
   <div id="page-order" class="page">
+
+    <!-- ── Action bar ── -->
     <div class="op-bar">
-      <button onclick="closeOrder()" style="background:none;border:none;cursor:pointer;color:#64748b;padding:4px 6px;border-radius:6px;display:flex;align-items:center;gap:4px;font-size:13px">
-        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        Назад
+      <button onclick="closeOrder()" style="background:none;border:none;cursor:pointer;color:#374151;padding:5px 7px;border-radius:6px;display:flex;align-items:center;font-size:20px;line-height:1;margin-right:2px">
+        <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
       </button>
       <span id="oc-num" class="op-num"></span>
-      <button onclick="saveOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px">
+      <button id="oc-save-btn" onclick="saveOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Сохранить
       </button>
-      <button class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 12px">
+      <button class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 14px;font-weight:600">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Оплата
       </button>
-      <button onclick="deleteOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px;color:#dc2626;border-color:#fecaca">
+      <button onclick="deleteOrder()" class="btn" style="background:#dc2626;color:#fff;font-size:12px;padding:6px 12px">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
         Удалить
       </button>
       <button class="btn btn-g" style="font-size:12px;padding:6px 12px">
-        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         История
       </button>
       <button onclick="printOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        Печать
+        Печать ▾
       </button>
+      <button class="btn btn-g" style="font-size:12px;padding:6px 12px">Ещё ▾</button>
+      <button style="margin-left:auto;width:32px;height:32px;border-radius:50%;background:#22c55e;border:none;cursor:pointer;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0" title="Написать клиенту">💬</button>
     </div>
+
+    <!-- ── Main form ── -->
     <div class="op-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
-        <div>
-          <div class="fg">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
+
+      <!-- Two-column form -->
+      <div class="oc-form-grid">
+
+        <!-- LEFT: Client / Employee / Source / Closer -->
+        <div class="oc-left">
+          <div class="oc-fg">
+            <label>Клиент <span style="color:#94a3b8;font-weight:400;font-size:11px">ⓘ</span> :</label>
             <div style="display:flex;gap:4px;align-items:flex-start">
               <div style="position:relative;flex:1">
                 <input id="oc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="clientSearch(this.value)" onblur="setTimeout(closeClientDrop,200)">
                 <div id="oc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
               </div>
-              <button type="button" onclick="openQuickClientModal()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
+              <button type="button" onclick="openQuickClientModal()" title="Редактировать / добавить клиента" style="height:34px;width:34px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:14px;color:#475569;flex-shrink:0;display:flex;align-items:center;justify-content:center">✏</button>
             </div>
             <input type="hidden" id="oc-client-id">
           </div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Принимающий сотрудник СЦ</label><input id="oc-emp" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Источник</label>
-            <select id="oc-src" class="fc"><option>Постоянный клиент</option><option>Новый клиент</option><option>Рекомендация</option><option>Соцсети</option><option>Сайт</option></select>
+
+          <div class="oc-fg">
+            <label>Принимающий сотрудник СЦ</label>
+            <input id="oc-emp" class="fc" placeholder="ФИО сотрудника" list="emp-list">
+            <datalist id="emp-list"></datalist>
           </div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Кто закрыл заказ</label><input id="oc-closer" class="fc"></div>
-        </div>
-        <div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Устройство</label><input id="oc-device" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Статус заказа</label>
-            <select id="oc-status" class="fc"><option value="open">🔵 Открыт</option><option value="in_work">🟡 В работе</option><option value="ready">🟢 Готов</option><option value="awaiting_payment">🟠 Ожидает оплаты (пост-оплата)</option><option value="closed">⚫ Закрыт</option><option value="cancelled">🔴 Отменён</option></select>
+
+          <div class="oc-fg">
+            <label>Источник</label>
+            <select id="oc-src" class="fc">
+              <option>Постоянный клиент</option>
+              <option>Новый клиент</option>
+              <option>Рекомендация</option>
+              <option>Соцсети</option>
+              <option>Сайт</option>
+              <option>Яндекс</option>
+              <option>Google</option>
+              <option>2GIS</option>
+              <option>Авито</option>
+            </select>
           </div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Ориентировочная цена (руб.)</label><input id="oc-price" type="number" class="fc" placeholder="0"></div>
+
+          <div class="oc-fg">
+            <label>Кто закрыл заказ</label>
+            <input id="oc-closer" class="fc" placeholder="—" list="emp-list">
+          </div>
         </div>
-        <div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Модель</label><input id="oc-model" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Цвет устройства</label><input id="oc-color" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Ориентировочная готовность</label><input id="oc-ready" type="datetime-local" class="fc"></div>
-          <div class="sum-box">
-            <div class="sum-row"><span style="color:#64748b">Сумма работ:</span><strong id="oc-total">0 руб.</strong></div>
-            <div class="sum-row"><span style="color:#64748b">Принято авансом:</span><span id="oc-adv-show">0 руб.</span></div>
-            <div class="sum-row"><span style="color:#64748b">Итого бонусов:</span><span id="oc-bonus" style="color:#16a34a;font-weight:600">0 руб.</span></div>
+
+        <!-- RIGHT: Device / Status / Price / Summary -->
+        <div class="oc-right">
+
+          <!-- Row 1: Device | Model | Color | Summary -->
+          <div style="display:flex;gap:10px;margin-bottom:12px;align-items:flex-end;flex-wrap:wrap">
+            <div class="oc-fg" style="flex:2;min-width:140px;margin-bottom:0">
+              <label>Устройство</label>
+              <input id="oc-device" class="fc" placeholder="iPhone 14 Pro" list="device-list" autocomplete="off">
+              <datalist id="device-list">
+                <option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option>
+                <option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option>
+                <option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option>
+                <option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option>
+                <option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option>
+                <option>Samsung Galaxy S24 Ultra</option><option>Samsung Galaxy S24+</option><option>Samsung Galaxy S24</option>
+                <option>Samsung Galaxy S23 Ultra</option><option>Samsung Galaxy S23+</option><option>Samsung Galaxy S23</option>
+                <option>iPad Pro 12.9"</option><option>iPad Pro 11"</option><option>iPad Air</option><option>iPad mini</option>
+                <option>MacBook Pro</option><option>MacBook Air</option><option>iMac</option>
+              </datalist>
+            </div>
+            <div class="oc-fg" style="flex:1;min-width:100px;margin-bottom:0">
+              <label>Модель</label>
+              <input id="oc-model" class="fc" placeholder="—">
+            </div>
+            <div class="oc-fg" style="flex:1;min-width:100px;margin-bottom:0">
+              <label>Цвет устройства</label>
+              <input id="oc-color" class="fc" placeholder="—">
+            </div>
+            <!-- Summary -->
+            <div style="flex-shrink:0;text-align:right;padding-bottom:2px;white-space:nowrap">
+              <div style="font-size:12px;color:#374151;margin-bottom:3px">Сумма работ по заказу: <strong id="oc-total">0 руб.</strong></div>
+              <div style="font-size:12px;color:#374151">Принято авансом: <span id="oc-adv-show">0 руб.</span></div>
+            </div>
+          </div>
+
+          <!-- Row 2: Status | Ready -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+            <div class="oc-fg" style="margin-bottom:0">
+              <label>Статус заказа</label>
+              <select id="oc-status" class="fc">
+                <option value="open">Новый</option>
+                <option value="in_work">В работе</option>
+                <option value="ready">Готов к выдаче</option>
+                <option value="awaiting_payment">Ожидает оплаты (пост-оплата)</option>
+                <option value="closed">Закрыт</option>
+                <option value="cancelled">Отменён</option>
+              </select>
+            </div>
+            <div class="oc-fg" style="margin-bottom:0">
+              <label>Ориентировочная готовность &nbsp;<a href="#" onclick="document.getElementById('oc-ready').focus();return false" style="color:#2563eb;font-size:11px;text-decoration:none;font-weight:400">заполнить время</a></label>
+              <input id="oc-ready" type="datetime-local" class="fc">
+            </div>
+          </div>
+
+          <!-- Row 3: Price -->
+          <div class="oc-fg" style="max-width:380px;margin-bottom:0">
+            <label>Ориентировочная цена (руб.)</label>
+            <input id="oc-price" type="number" class="fc" placeholder="0">
           </div>
         </div>
       </div>
 
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-        <button onclick="addWork('Работа')" class="btn btn-g" style="font-size:12px">+ Добавить работу <span style="color:#94a3b8;font-size:11px">+10%</span></button>
-        <button onclick="addWork('Чистка')" class="btn btn-g" style="font-size:12px">+ Добавить чистку <span style="color:#94a3b8;font-size:11px">+7%</span></button>
-        <button onclick="addWork('Бронирование')" class="btn btn-g" style="font-size:12px">+ Добавить бронирование <span style="color:#94a3b8;font-size:11px">+10%</span></button>
-        <button onclick="addWork('Аксессуар')" class="btn btn-g" style="font-size:12px">+ Добавить аксессуар <span style="color:#94a3b8;font-size:11px">+10%</span></button>
-      </div>
-
-      <div style="display:flex;gap:2px;border-bottom:2px solid #e2e8f0;margin-bottom:16px">
-        <button class="ot active" onclick="otab(this,'ot-main')">О заказе</button>
-        <button class="ot" onclick="otab(this,'ot-device')">Об устройстве</button>
-        <button class="ot" onclick="otab(this,'ot-works')">Работы</button>
-        <button class="ot" onclick="otab(this,'ot-warranty')">Гарантия</button>
-        <button class="ot" onclick="otab(this,'ot-rating')">Оценка</button>
-      </div>
-
-      <div id="ot-main">
-        <div class="fr" style="max-width:700px">
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Комментарий</label><textarea id="oc-comment" class="fc" style="height:90px;resize:vertical"></textarea></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Аванс (₽)</label><input id="oc-adv" type="number" class="fc" placeholder="0" oninput="updAdv(this.value)"></div>
+      <!-- ── Work add buttons (2×2 red grid) ── -->
+      <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:700px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <button onclick="addWork('Работа')" class="work-add-btn">
+              <svg style="width:15px;height:15px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              Добавить работу
+            </button>
+            <span class="work-pct">+10% <span title="Процент исполнителя" style="cursor:help;color:#94a3b8">ⓘ</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button onclick="addWork('Чистка')" class="work-add-btn">
+              <svg style="width:15px;height:15px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18M8.56 2.9A7 7 0 0 1 19 9v1M14 9a2 2 0 0 1-2 2"/><path d="M5 9v1a7 7 0 0 0 9.13 6.69M20 5l-3 3"/></svg>
+              Добавить чистку
+            </button>
+            <span class="work-pct">+7% <span title="Процент исполнителя" style="cursor:help;color:#94a3b8">ⓘ</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button onclick="addWork('Бронирование')" class="work-add-btn">
+              <svg style="width:15px;height:15px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Добавить бронирование
+            </button>
+            <span class="work-pct">+10% <span title="Процент исполнителя" style="cursor:help;color:#94a3b8">ⓘ</span></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button onclick="addWork('Аксессуар')" class="work-add-btn">
+              <svg style="width:15px;height:15px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Добавить аксессуар
+            </button>
+            <span class="work-pct">+10% <span title="Процент исполнителя" style="cursor:help;color:#94a3b8">ⓘ</span></span>
+          </div>
         </div>
       </div>
 
-      <div id="ot-device" style="display:none">
+      <!-- ── Tabs ── -->
+      <div style="background:#fff;padding:0 20px;border-bottom:2px solid #e2e8f0;display:flex;gap:0;overflow-x:auto">
+        <button class="ot active" onclick="otab(this,'ot-main')">О заказе <kbd>CTRL+1</kbd></button>
+        <button class="ot" onclick="otab(this,'ot-device')">Об устройстве <kbd>CTRL+2</kbd></button>
+        <button class="ot" onclick="otab(this,'ot-testing')">Тестирование <kbd>CTRL+3</kbd></button>
+        <button class="ot" onclick="otab(this,'ot-works')">Работы <kbd>CTRL+4</kbd></button>
+        <button class="ot" onclick="otab(this,'ot-warranty')">Гарантия <kbd>CTRL+5</kbd></button>
+        <button class="ot" onclick="otab(this,'ot-rating')">Оценка <kbd>CTRL+O</kbd></button>
+        <button class="ot" onclick="otab(this,'ot-video')">Видео <kbd>CTRL+E</kbd></button>
+      </div>
+
+      <!-- ── Tab: О заказе ── -->
+      <div id="ot-main" style="padding:20px">
+        <div style="display:flex;gap:32px;align-items:flex-start;flex-wrap:wrap">
+          <div style="flex:1;min-width:280px">
+            <p style="font-size:13px;color:#374151;margin-bottom:6px">
+              <svg style="width:14px;height:14px;vertical-align:-2px;color:#64748b" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span style="color:#64748b"> Сервисный центр:</span> <strong>Zero.height.crm</strong>
+            </p>
+            <p style="font-size:12px;color:#64748b;margin-bottom:16px" id="oc-created-disp">
+              <svg style="width:13px;height:13px;vertical-align:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Создан: —
+            </p>
+            <div class="fr" style="max-width:560px">
+              <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Комментарий</label><textarea id="oc-comment" class="fc" style="height:90px;resize:vertical"></textarea></div>
+              <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Аванс (₽)</label><input id="oc-adv" type="number" class="fc" placeholder="0" oninput="updAdv(this.value)"><div style="font-size:11px;color:#64748b;margin-top:3px">Итого бонусов: <span id="oc-bonus" style="color:#16a34a;font-weight:600">0 руб.</span></div></div>
+            </div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <label style="font-size:13px;color:#374151;white-space:nowrap">Промокод:</label>
+              <input id="oc-promo" class="fc" style="max-width:200px" placeholder="">
+              <button class="btn btn-g" style="font-size:12px;padding:6px 12px;white-space:nowrap">Применить промокод</button>
+            </div>
+          </div>
+          <div style="flex-shrink:0;padding-top:4px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:#374151;font-weight:500">
+              <input type="checkbox" id="oc-urgent" style="width:15px;height:15px;cursor:pointer"> Срочный заказ
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tab: Об устройстве ── -->
+      <div id="ot-device" style="display:none;padding:20px">
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:800px">
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Серийный номер</label><input id="oc-serial" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">IMEI</label><input id="oc-imei" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Состояние</label><select id="oc-cond" class="fc"><option>Хорошее</option><option>Удовлетворительное</option><option>Плохое</option></select></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Неисправность</label><input id="oc-problem" class="fc"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Комплектация</label><input id="oc-kit" class="fc" placeholder="Зарядка, чехол..."></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Серийный номер</label><input id="oc-serial" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">IMEI</label><input id="oc-imei" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Состояние</label>
+            <select id="oc-cond" class="fc"><option>Хорошее</option><option>Удовлетворительное</option><option>Плохое</option></select>
+          </div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Описание неисправности</label><input id="oc-problem" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Комплектация</label><input id="oc-kit" class="fc" placeholder="Зарядка, чехол..."></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Внешний вид</label><input id="oc-appearance" class="fc" placeholder="Царапины, трещины..."></div>
         </div>
       </div>
 
-      <div id="ot-works" style="display:none">
-        <p style="font-size:12px;color:#f59e0b;margin-bottom:12px">Если в заказ внесены данные клиента, необходимо подписать заявление о присоединении к оферте.</p>
-        <div style="overflow-x:auto">
-          <table style="min-width:860px">
+      <!-- ── Tab: Тестирование ── -->
+      <div id="ot-testing" style="display:none;padding:20px">
+        <p style="font-size:13px;font-weight:600;color:#374151;margin-bottom:14px">Тестирование устройства</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;max-width:800px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-screen"> Дисплей / Тачскрин</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-camera"> Камеры</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-battery"> Аккумулятор</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-speaker"> Динамик / Микрофон</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-wifi"> Wi-Fi / Bluetooth</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-gsm"> GSM / SIM</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-charge"> Зарядный порт</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-btn"> Кнопки</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-faceid"> Face ID / Touch ID</label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" id="tst-nfc"> NFC</label>
+        </div>
+      </div>
+
+      <!-- ── Tab: Работы ── -->
+      <div id="ot-works" style="display:none;padding:20px">
+        <p style="font-size:12px;color:#f59e0b;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+          <svg style="width:14px;height:14px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Если в заказ внесены данные клиента, необходимо подписать заявление о присоединении к оферте.
+        </p>
+        <div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:10px">
+          <table style="min-width:860px;width:100%">
             <thead><tr style="background:#f8fafc">
-              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Работа</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:left">Работа / Услуга</th>
               <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right">Цена (руб)</th>
               <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Бонус</th>
               <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Артикул</th>
@@ -499,31 +662,47 @@ tr:hover td{background:#f8fafc}
               <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right">Цена зап. (руб)</th>
               <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Гарантия</th>
               <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Исполнитель</th>
-              <th></th>
+              <th style="width:36px"></th>
             </tr></thead>
             <tbody id="works-tbody"></tbody>
           </table>
         </div>
       </div>
 
-      <div id="ot-warranty" style="display:none">
+      <!-- ── Tab: Гарантия ── -->
+      <div id="ot-warranty" style="display:none;padding:20px">
         <div class="fr" style="max-width:600px">
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Гарантия (дни)</label><input id="oc-war" type="number" class="fc" placeholder="14"></div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Дата окончания</label><input id="oc-war-end" type="date" class="fc"></div>
-          <div class="fg" style="grid-column:1/-1"><label style="font-size:12px;color:#64748b;font-weight:400">Условия гарантии</label><textarea id="oc-war-note" class="fc" style="height:80px;resize:vertical"></textarea></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Гарантия (дни)</label><input id="oc-war" type="number" class="fc" placeholder="14"></div>
+          <div class="fg"><label style="font-size:12px;color:#374151;font-weight:500">Дата окончания гарантии</label><input id="oc-war-end" type="date" class="fc"></div>
+          <div class="fg" style="grid-column:1/-1"><label style="font-size:12px;color:#374151;font-weight:500">Условия гарантии</label><textarea id="oc-war-note" class="fc" style="height:80px;resize:vertical"></textarea></div>
         </div>
       </div>
 
-      <div id="ot-rating" style="display:none">
-        <p style="font-size:13px;color:#64748b;margin-bottom:10px">Оценка клиента</p>
-        <div style="display:flex;gap:6px;margin-bottom:14px" id="stars-wrap">
+      <!-- ── Tab: Оценка ── -->
+      <div id="ot-rating" style="display:none;padding:20px">
+        <p style="font-size:13px;color:#64748b;margin-bottom:12px;font-weight:500">Оценка клиента</p>
+        <div style="display:flex;gap:6px;margin-bottom:16px" id="stars-wrap">
           <span class="star" onclick="rate(1)">★</span><span class="star" onclick="rate(2)">★</span>
           <span class="star" onclick="rate(3)">★</span><span class="star" onclick="rate(4)">★</span><span class="star" onclick="rate(5)">★</span>
         </div>
-        <div class="fg" style="max-width:400px"><label style="font-size:12px;color:#64748b;font-weight:400">Отзыв</label><textarea id="oc-review" class="fc" style="height:80px;resize:vertical"></textarea></div>
+        <div class="fg" style="max-width:420px"><label style="font-size:12px;color:#374151;font-weight:500">Комментарий клиента</label><textarea id="oc-review" class="fc" style="height:80px;resize:vertical"></textarea></div>
       </div>
-    </div>
-  </div>
+
+      <!-- ── Tab: Видео ── -->
+      <div id="ot-video" style="display:none;padding:20px">
+        <p style="font-size:13px;color:#64748b;margin-bottom:12px;font-weight:500">Видеофиксация состояния устройства</p>
+        <div class="fg" style="max-width:500px">
+          <label style="font-size:12px;color:#374151;font-weight:500">Ссылка на видео (YouTube, облако и т.д.)</label>
+          <input id="oc-video-url" class="fc" placeholder="https://...">
+        </div>
+        <div class="fg" style="max-width:500px;margin-top:8px">
+          <label style="font-size:12px;color:#374151;font-weight:500">Примечание</label>
+          <textarea id="oc-video-note" class="fc" style="height:70px;resize:vertical" placeholder="Описание видео..."></textarea>
+        </div>
+      </div>
+
+    </div><!-- /op-body -->
+  </div><!-- /page-order -->
 
   <!-- WHOLESALE ORDER PAGE -->
   <div id="page-wholesale" class="page">
@@ -1614,7 +1793,10 @@ function openQuickClientModal(){
 function openOrder(o){
   CUR=JSON.parse(JSON.stringify(o)) // deep copy
   const dt=new Date(o.created_at)
-  document.getElementById('oc-num').textContent=(o.number||('№'+o.id))+' от '+dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
+  const dtStr=dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
+  document.getElementById('oc-num').textContent=(o.number||('№'+o.id))+' от '+dtStr
+  const cd=document.getElementById('oc-created-disp')
+  if(cd) cd.innerHTML='<svg style="width:13px;height:13px;vertical-align:-2px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Создан: '+dtStr
   document.getElementById('oc-client').value=o.client||''
   document.getElementById('oc-client-id').value=o.client_id||''
   document.getElementById('oc-emp').value=o.emp||''
@@ -1632,10 +1814,15 @@ function openOrder(o){
   document.getElementById('oc-imei').value=o.imei||''
   document.getElementById('oc-problem').value=o.problem||''
   document.getElementById('oc-kit').value=o.kit||''
+  document.getElementById('oc-appearance').value=o.appearance||''
   document.getElementById('oc-war').value=o.war||''
   document.getElementById('oc-war-end').value=o.war_end||''
   document.getElementById('oc-war-note').value=o.war_note||''
   document.getElementById('oc-review').value=o.review||''
+  document.getElementById('oc-promo').value=o.promo||''
+  document.getElementById('oc-urgent').checked=!!(o.urgent)
+  document.getElementById('oc-video-url').value=o.video_url||''
+  document.getElementById('oc-video-note').value=o.video_note||''
   updAdv(o.adv||0)
   renderWorks()
   otab(document.querySelector('.ot'),'ot-main')
@@ -1668,10 +1855,15 @@ function collectOrder(){
     imei:   document.getElementById('oc-imei').value,
     problem:document.getElementById('oc-problem').value,
     kit:    document.getElementById('oc-kit').value,
+    appearance:document.getElementById('oc-appearance').value,
     war:    document.getElementById('oc-war').value,
     war_end:document.getElementById('oc-war-end').value,
     war_note:document.getElementById('oc-war-note').value,
     review: document.getElementById('oc-review').value,
+    promo:  document.getElementById('oc-promo').value,
+    urgent: document.getElementById('oc-urgent').checked,
+    video_url:  document.getElementById('oc-video-url').value,
+    video_note: document.getElementById('oc-video-note').value,
     total:  calcTotal(),
   }
 }
@@ -1690,9 +1882,8 @@ function saveOrder(){
   else deals.push({id:S.nid('deals'),...dealObj})
   S.set('deals',deals)
   // show saved indicator
-  const btn=document.querySelector('.op-bar .btn-g')
-  const orig=btn.textContent;btn.textContent='✓ Сохранено';btn.style.color='#16a34a'
-  setTimeout(()=>{btn.innerHTML='<svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить';btn.style.color=''},2000)
+  const btn=document.getElementById('oc-save-btn')
+  if(btn){btn.textContent='✓ Сохранено';btn.style.color='#16a34a';setTimeout(()=>{btn.innerHTML='<svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить';btn.style.color=''},2000)}
 }
 function deleteOrder(){
   if(!confirm('Удалить заказ?'))return
