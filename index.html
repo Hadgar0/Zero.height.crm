@@ -436,16 +436,66 @@ tr:hover td{background:#f8fafc}
 
 <!-- Client modal -->
 <div class="overlay hidden" id="m-client">
-  <div class="modal">
-    <div class="mhd"><h3 id="cm-title">Новый клиент</h3><button class="btn-i" onclick="cm('m-client')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-    <div class="mbd">
-      <input type="hidden" id="ci">
-      <div class="fg"><label>Имя *</label><input id="cn"></div>
-      <div class="fr"><div class="fg"><label>Email</label><input id="ce" type="email"></div><div class="fg"><label>Телефон</label><input id="cp"></div></div>
-      <div class="fr"><div class="fg"><label>Компания</label><input id="cc"></div><div class="fg"><label>Статус</label><select id="cs"><option value="lead">Лид</option><option value="active">Активный</option><option value="inactive">Неактивный</option></select></div></div>
-      <div class="fg"><label>Заметки</label><textarea id="cno"></textarea></div>
+  <div class="modal" style="max-width:680px;width:95vw">
+    <div class="mhd" style="justify-content:space-between">
+      <h3 id="cm-title">Новый клиент</h3>
+      <button class="btn-i" onclick="cm('m-client')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <div class="mft"><button class="btn btn-g" onclick="cm('m-client')">Отмена</button><button class="btn btn-p" onclick="saveClient()">Сохранить</button></div>
+    <div style="display:flex;gap:8px;padding:12px 20px;border-bottom:1px solid #f1f5f9">
+      <button class="btn" style="background:#f59e0b;color:#fff;font-size:13px" onclick="saveClient()">Добавить</button>
+      <button class="btn btn-g" style="font-size:13px" onclick="clearClientForm()">Очистить</button>
+      <button class="btn btn-g" style="font-size:13px;color:#94a3b8" onclick="toggleClientPhone()">Показать телефон</button>
+    </div>
+    <div class="mbd" style="max-height:65vh;overflow-y:auto">
+      <input type="hidden" id="ci">
+      <input type="hidden" id="cs" value="lead">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 20px">
+        <!-- Left -->
+        <div>
+          <div class="fg"><label>* Полное имя (ФИО)</label><input id="cn" class="fc"></div>
+          <div class="fg"><label>Эл. почта</label><input id="ce" type="email" class="fc"></div>
+          <div class="fg">
+            <label>* Телефон</label>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select id="cp-code" class="fc" style="width:72px;flex-shrink:0"><option>+7</option><option>+1</option><option>+44</option><option>+49</option><option>+86</option></select>
+              <input id="cp" class="fc" placeholder="(000) 000-00-00">
+            </div>
+          </div>
+          <div class="fg"><label>Дополнительный телефон</label><input id="cp2" class="fc"></div>
+          <div class="fg"><label>Адрес</label><textarea id="cadr" class="fc" style="height:72px;resize:none"></textarea></div>
+        </div>
+        <!-- Right -->
+        <div>
+          <div class="fg"><label>* Имя для SMS</label><input id="csms" class="fc"></div>
+          <div class="fg"><label>* Язык</label>
+            <select id="clang" class="fc"><option value="ru">Русский</option><option value="en">English</option><option value="kz">Казахский</option></select>
+          </div>
+          <div class="fg"><label>Комментарий</label><textarea id="cno" class="fc" style="height:72px;resize:none"></textarea></div>
+          <div class="fg">
+            <label>Уведомления</label>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+              <label style="display:flex;align-items:center;gap:7px;font-weight:400;font-size:13px;cursor:pointer"><input type="checkbox" id="cno-call"> Не звонить</label>
+              <label style="display:flex;align-items:center;gap:7px;font-weight:400;font-size:13px;cursor:pointer"><input type="checkbox" id="csms-send" checked> Отправлять SMS</label>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Прочее</label>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+              <label style="display:flex;align-items:center;gap:7px;font-weight:400;font-size:13px;cursor:pointer"><input type="checkbox" id="ccorp"> Корпоративный клиент</label>
+              <label style="display:flex;align-items:center;gap:7px;font-weight:400;font-size:13px;cursor:pointer"><input type="checkbox" id="cnorf"> Не является гражданином РФ (без отчества)</label>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Безналичный расчет</label>
+            <div style="display:flex;gap:16px;margin-top:6px">
+              <label style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:13px;cursor:pointer"><input type="radio" name="cpay" value="none" checked> Нет</label>
+              <label style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:13px;cursor:pointer"><input type="radio" name="cpay" value="legal"> Юр. лицо</label>
+              <label style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:13px;cursor:pointer"><input type="radio" name="cpay" value="ip"> ИП</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -633,17 +683,61 @@ function openClientModal(id){
   document.getElementById('cm-title').textContent=c?'Редактировать клиента':'Новый клиент'
   document.getElementById('ci').value=c?c.id:''
   document.getElementById('cn').value=c?c.name:''
+  document.getElementById('csms').value=c?c.sms_name||c.name||'':''
   document.getElementById('ce').value=c?c.email||'':''
   document.getElementById('cp').value=c?c.phone||'':''
-  document.getElementById('cc').value=c?c.company||'':''
-  document.getElementById('cs').value=c?c.status:'lead'
+  document.getElementById('cp2').value=c?c.phone2||'':''
+  document.getElementById('cadr').value=c?c.address||'':''
+  document.getElementById('clang').value=c?c.lang||'ru':'ru'
   document.getElementById('cno').value=c?c.notes||'':''
+  document.getElementById('cno-call').checked=c?!!c.no_call:false
+  document.getElementById('csms-send').checked=c?!!c.send_sms:true
+  document.getElementById('ccorp').checked=c?!!c.is_corp:false
+  document.getElementById('cnorf').checked=c?!!c.no_rf:false
+  const payVal=c?c.payment_type||'none':'none'
+  document.querySelectorAll('input[name="cpay"]').forEach(r=>r.checked=r.value===payVal)
   om('m-client')
+}
+function clearClientForm(){
+  document.getElementById('ci').value=''
+  document.getElementById('cn').value=''
+  document.getElementById('csms').value=''
+  document.getElementById('ce').value=''
+  document.getElementById('cp').value=''
+  document.getElementById('cp2').value=''
+  document.getElementById('cadr').value=''
+  document.getElementById('clang').value='ru'
+  document.getElementById('cno').value=''
+  document.getElementById('cno-call').checked=false
+  document.getElementById('csms-send').checked=true
+  document.getElementById('ccorp').checked=false
+  document.getElementById('cnorf').checked=false
+  document.querySelector('input[name="cpay"][value="none"]').checked=true
+}
+function toggleClientPhone(){
+  const el=document.getElementById('cp')
+  el.type=el.type==='password'?'text':'password'
 }
 function saveClient(){
   const name=document.getElementById('cn').value.trim();if(!name){alert('Имя обязательно');return}
   const id=document.getElementById('ci').value,cl=S.get('clients')
-  const obj={name,email:document.getElementById('ce').value,phone:document.getElementById('cp').value,company:document.getElementById('cc').value,status:document.getElementById('cs').value,notes:document.getElementById('cno').value}
+  const payEl=document.querySelector('input[name="cpay"]:checked')
+  const obj={
+    name,
+    sms_name:document.getElementById('csms').value||name,
+    email:document.getElementById('ce').value,
+    phone:document.getElementById('cp').value,
+    phone2:document.getElementById('cp2').value,
+    address:document.getElementById('cadr').value,
+    lang:document.getElementById('clang').value,
+    notes:document.getElementById('cno').value,
+    no_call:document.getElementById('cno-call').checked,
+    send_sms:document.getElementById('csms-send').checked,
+    is_corp:document.getElementById('ccorp').checked,
+    no_rf:document.getElementById('cnorf').checked,
+    payment_type:payEl?payEl.value:'none',
+    status:'active'
+  }
   let newId
   if(id){const i=cl.findIndex(c=>c.id==id);cl[i]={...cl[i],...obj};newId=cl[i].id}
   else{newId=S.nid('clients');cl.push({id:newId,...obj,created_at:new Date().toISOString(),interactions:[]})}
@@ -894,14 +988,10 @@ function selectClient(id){
 }
 function openQuickClientModal(){
   const name=document.getElementById('oc-client').value.trim()
-  document.getElementById('cm-title').textContent='Новый клиент'
-  document.getElementById('ci').value=''
+  clearClientForm()
   document.getElementById('cn').value=name
-  document.getElementById('ce').value=''
-  document.getElementById('cp').value=''
-  document.getElementById('cc').value=''
-  document.getElementById('cs').value='lead'
-  document.getElementById('cno').value=''
+  document.getElementById('csms').value=name
+  document.getElementById('cm-title').textContent='Новый клиент'
   window._clientFromOrder=true
   om('m-client')
 }
