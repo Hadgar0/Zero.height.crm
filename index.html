@@ -296,7 +296,17 @@ tr:hover td{background:#f8fafc}
     <div class="op-body">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
         <div>
-          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label><input id="oc-client" class="fc"></div>
+          <div class="fg">
+            <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
+            <div style="display:flex;gap:4px;align-items:flex-start">
+              <div style="position:relative;flex:1">
+                <input id="oc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="clientSearch(this.value)" onblur="setTimeout(closeClientDrop,200)">
+                <div id="oc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
+              </div>
+              <button type="button" onclick="openQuickClientModal()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
+            </div>
+            <input type="hidden" id="oc-client-id">
+          </div>
           <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Принимающий сотрудник СЦ</label><input id="oc-emp" class="fc"></div>
           <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Источник</label>
             <select id="oc-src" class="fc"><option>Постоянный клиент</option><option>Новый клиент</option><option>Рекомендация</option><option>Соцсети</option><option>Сайт</option></select>
@@ -634,8 +644,17 @@ function saveClient(){
   const name=document.getElementById('cn').value.trim();if(!name){alert('Имя обязательно');return}
   const id=document.getElementById('ci').value,cl=S.get('clients')
   const obj={name,email:document.getElementById('ce').value,phone:document.getElementById('cp').value,company:document.getElementById('cc').value,status:document.getElementById('cs').value,notes:document.getElementById('cno').value}
-  if(id){const i=cl.findIndex(c=>c.id==id);cl[i]={...cl[i],...obj}}else cl.push({id:S.nid('clients'),...obj,created_at:new Date().toISOString(),interactions:[]})
-  S.set('clients',cl);cm('m-client');renderClients()
+  let newId
+  if(id){const i=cl.findIndex(c=>c.id==id);cl[i]={...cl[i],...obj};newId=cl[i].id}
+  else{newId=S.nid('clients');cl.push({id:newId,...obj,created_at:new Date().toISOString(),interactions:[]})}
+  S.set('clients',cl);cm('m-client')
+  if(window._clientFromOrder){
+    window._clientFromOrder=false
+    document.getElementById('oc-client').value=obj.name
+    document.getElementById('oc-client-id').value=newId
+  } else {
+    renderClients()
+  }
 }
 function delClient(id){
   if(!confirm('Удалить клиента?'))return
@@ -849,11 +868,50 @@ function openOrderInTab(o){
 function openNewOrderTab(){
   openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Постоянный клиент',price:'',status:'open',works:[],created_at:new Date().toISOString()})
 }
+// ── CLIENT AUTOCOMPLETE ───────────────────────────────────────────────────────
+function clientSearch(val){
+  const drop=document.getElementById('oc-client-drop')
+  const q=val.trim().toLowerCase()
+  if(!q){drop.style.display='none';return}
+  const matches=S.get('clients').filter(c=>
+    c.name.toLowerCase().includes(q)||(c.phone&&c.phone.includes(q))
+  ).slice(0,8)
+  if(!matches.length){drop.style.display='none';return}
+  drop.innerHTML=matches.map(c=>`<div onclick="selectClient(${c.id})" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f1f5f9" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background=''">
+    <div style="font-size:13px;font-weight:500;color:#1e293b">${c.name}</div>
+    ${c.phone?`<div style="font-size:11px;color:#64748b">${c.phone}</div>`:''}
+  </div>`).join('')
+  drop.style.display='block'
+}
+function closeClientDrop(){
+  const d=document.getElementById('oc-client-drop');if(d)d.style.display='none'
+}
+function selectClient(id){
+  const c=S.get('clients').find(c=>c.id===id);if(!c)return
+  document.getElementById('oc-client').value=c.name
+  document.getElementById('oc-client-id').value=c.id
+  closeClientDrop()
+}
+function openQuickClientModal(){
+  const name=document.getElementById('oc-client').value.trim()
+  document.getElementById('cm-title').textContent='Новый клиент'
+  document.getElementById('ci').value=''
+  document.getElementById('cn').value=name
+  document.getElementById('ce').value=''
+  document.getElementById('cp').value=''
+  document.getElementById('cc').value=''
+  document.getElementById('cs').value='lead'
+  document.getElementById('cno').value=''
+  window._clientFromOrder=true
+  om('m-client')
+}
+
 function openOrder(o){
   CUR=JSON.parse(JSON.stringify(o)) // deep copy
   const dt=new Date(o.created_at)
   document.getElementById('oc-num').textContent=(o.number||('№'+o.id))+' от '+dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
   document.getElementById('oc-client').value=o.client||''
+  document.getElementById('oc-client-id').value=o.client_id||''
   document.getElementById('oc-emp').value=o.emp||''
   document.getElementById('oc-src').value=o.src||'Постоянный клиент'
   document.getElementById('oc-closer').value=o.closer||''
@@ -888,7 +946,8 @@ function closeOrder(){
 function collectOrder(){
   return {
     ...CUR,
-    client: document.getElementById('oc-client').value,
+    client:    document.getElementById('oc-client').value,
+    client_id: document.getElementById('oc-client-id').value||null,
     emp:    document.getElementById('oc-emp').value,
     src:    document.getElementById('oc-src').value,
     closer: document.getElementById('oc-closer').value,
