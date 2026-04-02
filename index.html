@@ -142,7 +142,7 @@ tr:hover td{background:#f8fafc}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Задачи
     </a>
     <a onclick="openSettings()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Настройки
     </a>
   </nav>
@@ -207,7 +207,7 @@ tr:hover td{background:#f8fafc}
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
         <button class="btn" style="background:#22c55e;color:#fff;font-size:12px;padding:6px 12px;border-radius:7px" onclick="openQuickSale()">⚡ Продажа товара</button>
-        <button class="btn btn-g" style="font-size:12px;padding:6px 12px" onclick="openDealModal()">+ Добавить заказ</button>
+        <button class="btn btn-g" style="font-size:12px;padding:6px 12px" onclick="openNewOrderTab()">+ Добавить заказ</button>
       </div>
     </div>
     <!-- Table -->
@@ -780,11 +780,11 @@ function rowClick(id){
   if(id.startsWith('o')){
     const oid=parseInt(id.slice(1))
     const o=orders.find(o=>o.id===oid)
-    if(o) openOrder(o)
+    if(o) openOrderInTab(o)
   } else {
     const did=parseInt(id.slice(1))
     const d=deals.find(d=>d.id===did)
-    if(d) openOrder({id:null,number:getOrg()+'-'+String(d.id).padStart(6,'0'),client:d.client||'',device:d.title,model:'',color:'',emp:'',src:'',price:d.amount||0,status:d.status||'open',works:[],created_at:d.created_at})
+    if(d) openOrderInTab({id:null,number:getOrg()+'-'+String(d.id).padStart(6,'0'),client:d.client||'',device:d.title,model:'',color:'',emp:'',src:'',price:d.amount||0,status:d.status||'open',works:[],created_at:d.created_at})
   }
 }
 
@@ -825,7 +825,7 @@ function openQuickSale(){
 function doQuickSale(){
   cm('m-quick')
   const num=genNum()
-  openOrder({
+  openOrderInTab({
     id:null, number:num,
     client: document.getElementById('qs-client').value,
     device: 'Аксессуары',
@@ -834,12 +834,19 @@ function doQuickSale(){
     emp:    document.getElementById('qs-emp').value,
     src:    document.getElementById('qs-src').value,
     price:  document.getElementById('qs-price').value,
-    status:'open', works:[], created_at:now.toISOString()
+    status:'open', works:[], created_at:new Date().toISOString()
   })
 }
 
 // ── ORDER PAGE ────────────────────────────────────────────────────────────────
 let CUR=null
+function openOrderInTab(o){
+  localStorage.setItem('_order_tab', JSON.stringify(o))
+  window.open(location.pathname+'?order=1','_blank')
+}
+function openNewOrderTab(){
+  openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Постоянный клиент',price:'',status:'open',works:[],created_at:new Date().toISOString()})
+}
 function openOrder(o){
   CUR=JSON.parse(JSON.stringify(o)) // deep copy
   const dt=new Date(o.created_at)
@@ -1069,7 +1076,24 @@ function openSettings(){
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-renderDash()
+;(function(){
+  const params=new URLSearchParams(location.search)
+  if(params.get('order')){
+    const raw=localStorage.getItem('_order_tab')
+    if(raw){
+      localStorage.removeItem('_order_tab')
+      const o=JSON.parse(raw)
+      // Hide sidebar nav, show only order page
+      document.querySelector('nav').style.display='none'
+      document.getElementById('main').style.marginLeft='0'
+      document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+      document.getElementById('page-order').classList.add('active')
+      openOrder(o)
+      return
+    }
+  }
+  renderDash()
+})()
 </script>
 </body>
 </html>
