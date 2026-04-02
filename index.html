@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>zero.height.crm</title>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/barcodes/JsBarcode.code128.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;display:flex;height:100vh;overflow:hidden}
@@ -286,6 +287,14 @@ tr:hover td{background:#f8fafc}
         <button class="btn btn-g" style="font-size:12px" onclick="openArrivalModal()">📥 Приход товара</button>
         <button class="btn btn-g" style="font-size:12px;color:#dc2626;border-color:#fecaca" onclick="openDefectModal()">🗑 Списание в брак</button>
         <button class="btn btn-g" style="font-size:12px" onclick="openAddItemModal()">+ Добавить товар</button>
+        <button class="btn btn-g" style="font-size:12px" onclick="openXlsxImport()">
+          <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Импорт Excel
+        </button>
+        <button class="btn btn-g" style="font-size:12px" onclick="exportXlsx()">
+          <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Экспорт Excel
+        </button>
         <button class="btn btn-g" style="font-size:12px" onclick="open1cModal()">
           <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Интеграция 1С
@@ -694,6 +703,84 @@ tr:hover td{background:#f8fafc}
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Warehouse: Excel Import modal -->
+<div class="overlay hidden" id="m-xlsx-import">
+  <div class="modal" style="max-width:780px;width:96vw">
+    <div class="mhd">
+      <h3>📊 Импорт товаров из Excel</h3>
+      <button class="btn-i" onclick="cm('m-xlsx-import')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mbd" style="max-height:75vh;overflow-y:auto">
+
+      <!-- Step 1: file upload -->
+      <div id="xlsx-step1">
+        <div id="xlsx-drop-zone" style="border:2px dashed #cbd5e1;border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s"
+          onclick="document.getElementById('xlsx-file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='#2563eb'"
+          ondragleave="this.style.borderColor='#cbd5e1'"
+          ondrop="event.preventDefault();this.style.borderColor='#cbd5e1';handleXlsxDrop(event)">
+          <svg style="width:40px;height:40px;color:#94a3b8;margin:0 auto 10px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <p style="font-size:14px;font-weight:600;color:#374151;margin-bottom:4px">Перетащите файл Excel или нажмите для выбора</p>
+          <p style="font-size:12px;color:#94a3b8">Поддерживаются .xlsx, .xls, .csv</p>
+          <input type="file" id="xlsx-file-input" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleXlsxFile(this.files[0])">
+        </div>
+        <div style="margin-top:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px">
+          <p style="font-size:12px;font-weight:600;color:#374151;margin-bottom:6px">Ожидаемые колонки (порядок не важен, ищем по названию):</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Наименование *</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Артикул</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Штрихкод</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Категория</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Цвет</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Количество</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Цена</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">Источник (1c/local)</span>
+            <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;padding:2px 8px;border-radius:10px">ID в 1С</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: mapping + preview -->
+      <div id="xlsx-step2" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <p style="font-size:13px;font-weight:600;color:#374151" id="xlsx-file-info"></p>
+          <button class="btn btn-g" style="font-size:12px" onclick="showXlsxStep1()">← Выбрать другой файл</button>
+        </div>
+
+        <!-- Column mapping -->
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:14px">
+          <p style="font-size:12px;font-weight:600;color:#374151;margin-bottom:10px">Привязка колонок Excel → поля склада</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="xlsx-mapping"></div>
+        </div>
+
+        <!-- Preview table -->
+        <p style="font-size:12px;color:#64748b;margin-bottom:6px">Предпросмотр (первые 5 строк):</p>
+        <div style="overflow-x:auto;border:1px solid #e2e8f0;border-radius:8px;margin-bottom:12px">
+          <table id="xlsx-preview-table" style="min-width:500px;width:100%;font-size:12px"></table>
+        </div>
+
+        <!-- Import options -->
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+            <input type="radio" name="xlsx-mode" value="add" checked> Добавить новые (не трогать существующие)
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+            <input type="radio" name="xlsx-mode" value="update"> Обновить совпадающие по артикулу
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+            <input type="radio" name="xlsx-mode" value="replace"> Заменить всё
+          </label>
+        </div>
+        <p id="xlsx-row-count" style="font-size:12px;color:#64748b;margin-top:8px"></p>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-g" onclick="cm('m-xlsx-import')">Отмена</button>
+      <button id="xlsx-import-btn" class="btn btn-p" style="display:none" onclick="doXlsxImport()">✓ Импортировать</button>
     </div>
   </div>
 </div>
@@ -1671,6 +1758,171 @@ function saveWhItem(){
   if(id){const i=items.findIndex(it=>it.id==id);if(i>=0){obj.defect=items[i].defect||0;items[i]={...items[i],...obj}}}
   else{items.push({id:S.nid('wh_items'),...obj,created_at:new Date().toISOString()})}
   S.set('wh_items',items);cm('m-wh-item');renderWarehouse()
+}
+
+// ── EXCEL IMPORT / EXPORT ─────────────────────────────────────────────────────
+let _xlsxData=[] // parsed rows from file
+
+// Field map: internal key → possible column names in excel
+const XLSX_FIELDS={
+  name:    ['наименование','название','товар','name','запчасть'],
+  sku:     ['артикул','sku','код','code'],
+  barcode: ['штрихкод','barcode','ean','upc'],
+  cat:     ['категория','category','тип'],
+  color:   ['цвет','color'],
+  qty:     ['количество','qty','count','кол-во','остаток'],
+  price:   ['цена','price','стоимость','себестоимость'],
+  src:     ['источник','source','1с','1c'],
+  id_1c:   ['id 1с','id_1c','id в 1с','1c id','guid'],
+}
+
+function openXlsxImport(){
+  showXlsxStep1()
+  om('m-xlsx-import')
+}
+
+function showXlsxStep1(){
+  document.getElementById('xlsx-step1').style.display='block'
+  document.getElementById('xlsx-step2').style.display='none'
+  document.getElementById('xlsx-import-btn').style.display='none'
+  document.getElementById('xlsx-file-input').value=''
+  _xlsxData=[]
+}
+
+function handleXlsxDrop(e){
+  const file=e.dataTransfer.files[0]
+  if(file) handleXlsxFile(file)
+}
+
+function handleXlsxFile(file){
+  if(!file) return
+  const reader=new FileReader()
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'array'})
+      const ws=wb.Sheets[wb.SheetNames[0]]
+      const rows=XLSX.utils.sheet_to_json(ws,{defval:''})
+      if(!rows.length){alert('Файл пустой или не содержит данных');return}
+      _xlsxData=rows
+      buildXlsxMapping(rows,file.name)
+    }catch(err){alert('Ошибка чтения файла: '+err.message)}
+  }
+  reader.readAsArrayBuffer(file)
+}
+
+function buildXlsxMapping(rows,filename){
+  const cols=Object.keys(rows[0])
+  // auto-detect mapping
+  const autoMap={}
+  Object.entries(XLSX_FIELDS).forEach(([field,aliases])=>{
+    const found=cols.find(c=>aliases.some(a=>c.toLowerCase().trim().includes(a)))
+    autoMap[field]=found||''
+  })
+
+  document.getElementById('xlsx-file-info').textContent=`Файл: ${filename} · ${rows.length} строк · лист 1`
+
+  // build mapping UI
+  const labels={name:'Наименование *',sku:'Артикул',barcode:'Штрихкод',cat:'Категория',color:'Цвет',qty:'Количество',price:'Цена',src:'Источник',id_1c:'ID в 1С'}
+  document.getElementById('xlsx-mapping').innerHTML=Object.keys(XLSX_FIELDS).map(field=>`
+    <div class="fg" style="margin-bottom:6px">
+      <label style="font-size:11px">${labels[field]}</label>
+      <select id="map-${field}" class="fc" style="font-size:12px" onchange="updateXlsxPreview()">
+        <option value="">— не использовать —</option>
+        ${cols.map(c=>`<option value="${c}" ${autoMap[field]===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>`).join('')
+
+  document.getElementById('xlsx-step1').style.display='none'
+  document.getElementById('xlsx-step2').style.display='block'
+  document.getElementById('xlsx-import-btn').style.display='inline-flex'
+  updateXlsxPreview()
+}
+
+function getXlsxMapping(){
+  const m={}
+  Object.keys(XLSX_FIELDS).forEach(f=>{m[f]=document.getElementById('map-'+f)?.value||''})
+  return m
+}
+
+function updateXlsxPreview(){
+  const m=getXlsxMapping()
+  const preview=_xlsxData.slice(0,5)
+  const fields=Object.keys(XLSX_FIELDS)
+  const labels={name:'Наим.',sku:'Артикул',barcode:'Штрихкод',cat:'Категория',color:'Цвет',qty:'Кол-во',price:'Цена',src:'Источник',id_1c:'ID 1С'}
+  const table=document.getElementById('xlsx-preview-table')
+  table.innerHTML=`<thead><tr style="background:#f8fafc">${fields.filter(f=>m[f]).map(f=>`<th style="padding:6px 10px;font-size:11px;font-weight:500;color:#64748b;white-space:nowrap">${labels[f]}</th>`).join('')}</tr></thead>
+  <tbody>${preview.map(row=>`<tr style="border-bottom:1px solid #f1f5f9">${fields.filter(f=>m[f]).map(f=>`<td style="padding:5px 10px;font-size:12px;white-space:nowrap">${row[m[f]]??''}</td>`).join('')}</tr>`).join('')}</tbody>`
+  document.getElementById('xlsx-row-count').textContent=`Итого строк для импорта: ${_xlsxData.length}`
+}
+
+function doXlsxImport(){
+  const m=getXlsxMapping()
+  if(!m.name){alert('Укажите колонку для "Наименование"');return}
+  const mode=document.querySelector('input[name="xlsx-mode"]:checked')?.value||'add'
+  const items=S.get('wh_items')||[]
+  let added=0,updated=0,skipped=0
+
+  _xlsxData.forEach(row=>{
+    const name=String(row[m.name]||'').trim()
+    if(!name){skipped++;return}
+    const obj={
+      name,
+      sku:   m.sku   ? String(row[m.sku]||'').trim()   : '',
+      barcode:m.barcode?String(row[m.barcode]||'').trim():'',
+      cat:   m.cat   ? String(row[m.cat]||'').trim()||'Запчасть' : 'Запчасть',
+      color: m.color ? String(row[m.color]||'').trim()  : '',
+      qty:   m.qty   ? (parseFloat(row[m.qty])||0)      : 0,
+      price: m.price ? (parseFloat(row[m.price])||0)    : 0,
+      src:   m.src   ? (String(row[m.src]||'').toLowerCase().includes('1c')||String(row[m.src]||'').toLowerCase().includes('1с')?'1c':'local') : 'local',
+      id_1c: m.id_1c ? String(row[m.id_1c]||'').trim() : '',
+      defect:0,
+    }
+
+    if(mode==='add'){
+      items.push({id:S.nid('wh_items'),...obj,created_at:new Date().toISOString()})
+      added++
+    } else if(mode==='update'){
+      const idx=obj.sku?items.findIndex(i=>i.sku&&i.sku===obj.sku):items.findIndex(i=>i.name===obj.name)
+      if(idx>=0){items[idx]={...items[idx],...obj};updated++}
+      else{items.push({id:S.nid('wh_items'),...obj,created_at:new Date().toISOString()});added++}
+    } else if(mode==='replace'){
+      const idx=items.findIndex(i=>i.name===obj.name)
+      if(idx>=0){items[idx]={...items[idx],...obj};updated++}
+      else{items.push({id:S.nid('wh_items'),...obj,created_at:new Date().toISOString()});added++}
+    }
+  })
+
+  if(mode==='replace'&&!added&&!updated){S.set('wh_items',items)}
+  else S.set('wh_items',items)
+
+  cm('m-xlsx-import')
+  renderWarehouse()
+  alert(`✓ Импорт завершён:\nДобавлено: ${added}\nОбновлено: ${updated}\nПропущено: ${skipped}`)
+}
+
+function exportXlsx(){
+  const items=S.get('wh_items')||[]
+  if(!items.length){alert('Склад пуст');return}
+  const rows=items.map(it=>({
+    'Наименование':it.name,
+    'Артикул':it.sku||'',
+    'Штрихкод':it.barcode||'',
+    'Категория':it.cat||'',
+    'Цвет':it.color||'',
+    'Количество':it.qty||0,
+    'Цена':it.price||0,
+    'Сумма':((it.qty||0)*(it.price||0)),
+    'Источник':it.src==='1c'?'1c':'local',
+    'ID в 1С':it.id_1c||'',
+    'Брак':it.defect||0,
+    'Дата добавления':it.created_at?new Date(it.created_at).toLocaleDateString('ru'):'',
+  }))
+  const ws=XLSX.utils.json_to_sheet(rows)
+  // column widths
+  ws['!cols']=[{wch:35},{wch:12},{wch:14},{wch:14},{wch:10},{wch:10},{wch:10},{wch:12},{wch:8},{wch:14},{wch:6},{wch:16}]
+  const wb=XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb,ws,'Склад')
+  XLSX.writeFile(wb,`Склад_${new Date().toLocaleDateString('ru').replace(/\./g,'-')}.xlsx`)
 }
 
 function whBarcodeEnter(val){
