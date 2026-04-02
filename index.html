@@ -92,6 +92,12 @@ tr:hover td{background:#f8fafc}
 .ii button{padding:5px 10px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px}
 /* Orders table */
 .ofbtn{background:none;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px;font-size:12px;cursor:pointer;color:#374151;white-space:nowrap}
+.plus-wrap{position:relative;flex-shrink:0}
+.plus-btn{width:28px;height:28px;border-radius:50%;background:#22c55e;border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center}
+.plus-menu{display:none;position:absolute;top:32px;left:0;background:#fff;border:1px solid #e2e8f0;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.13);z-index:300;min-width:230px;padding:6px 0}
+.plus-wrap:hover .plus-menu{display:block}
+.pmitem{display:block;width:100%;text-align:left;background:none;border:none;padding:9px 16px;font-size:13px;color:#1e293b;cursor:pointer;font-family:inherit}
+.pmitem:hover{background:#f1f5f9}
 .ofbtn:hover{background:#f8fafc}
 .ofbtn.active{background:#2563eb;color:#fff;border-color:#2563eb}
 .oth{padding:10px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:left;cursor:pointer;white-space:nowrap;user-select:none}
@@ -189,7 +195,15 @@ tr:hover td{background:#f8fafc}
   <div id="page-deals" class="page" style="padding:0">
     <!-- Toolbar -->
     <div style="background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:10">
-      <button onclick="openDealModal()" style="width:28px;height:28px;border-radius:50%;background:#22c55e;border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+      <div class="plus-wrap" id="plus-menu-wrap">
+        <button class="plus-btn">+</button>
+        <div class="plus-menu">
+          <button class="pmitem" onclick="openNewOrderTab()">🔧 Создать заказ (ремонт)</button>
+          <button class="pmitem" onclick="openWholesaleOrderTab()">📦 Создание заказа (опт продажи)</button>
+          <button class="pmitem" onclick="openQuickSale()">🛍 Продажа товара</button>
+          <button class="pmitem" onclick="openQuickRepairTab()">⚡ Быстрые работы (ремонт)</button>
+        </div>
+      </div>
       <div style="display:flex;gap:4px;flex:1;min-width:0;flex-wrap:wrap;align-items:center">
         <button id="f-all" class="ofbtn active" onclick="setOF('all')">Все заказы</button>
         <button id="f-open" class="ofbtn" onclick="setOF('open')">Только незакрытые</button>
@@ -204,10 +218,6 @@ tr:hover td{background:#f8fafc}
           <option value="cancelled">Отменён</option>
         </select>
         <button class="ofbtn" onclick="clearOF()" style="color:#64748b">Очистить фильтры</button>
-      </div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
-        <button class="btn" style="background:#22c55e;color:#fff;font-size:12px;padding:6px 12px;border-radius:7px" onclick="openQuickSale()">⚡ Продажа товара</button>
-        <button class="btn btn-g" style="font-size:12px;padding:6px 12px" onclick="openNewOrderTab()">+ Добавить заказ</button>
       </div>
     </div>
     <!-- Table -->
@@ -759,7 +769,7 @@ function delClient(id){
 }
 
 // ── DEALS / ORDERS TABLE ──────────────────────────────────────────────────────
-let oFilter='all', oSort='date', oSortDir=-1, oPage=1, oPerPage=20
+let oFilter='all', oSort='date', oSortDir=1, oPage=1, oPerPage=20
 
 function setOF(f){
   oFilter=f; oPage=1
@@ -772,7 +782,7 @@ function setOSort(s){
   oPage=1; renderDeals()
 }
 function clearOF(){
-  oFilter='all'; oSort='date'; oSortDir=-1; oPage=1
+  oFilter='all'; oSort='date'; oSortDir=1; oPage=1
   document.getElementById('f-status').value=''
   document.querySelectorAll('.ofbtn[id^="f-"]').forEach(b=>b.classList.remove('active'))
   document.getElementById('f-all').classList.add('active')
@@ -958,6 +968,24 @@ function openOrderInTab(o){
   const base=location.href.split('?')[0].split('#')[0]
   const w=window.open(base+'?order=1','_blank')
   if(!w){alert('Разрешите всплывающие окна в браузере для этого сайта')}
+}
+// ── PLUS MENU ──────────────────────────────────────────────────────────────────
+function togglePlusMenu(){
+  const m=document.getElementById('plus-menu')
+  m.style.display=m.style.display==='none'?'block':'none'
+}
+function closePlusMenu(){
+  document.getElementById('plus-menu').style.display='none'
+}
+document.addEventListener('click',function(e){
+  const wrap=document.getElementById('plus-menu-wrap')
+  if(wrap&&!wrap.contains(e.target)) closePlusMenu()
+})
+function openWholesaleOrderTab(){
+  openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Оптовая продажа',price:'',status:'open',works:[],order_type:'wholesale',created_at:new Date().toISOString()})
+}
+function openQuickRepairTab(){
+  openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Постоянный клиент',price:'',status:'open',works:[],order_type:'quick_repair',created_at:new Date().toISOString()})
 }
 function openNewOrderTab(){
   openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Постоянный клиент',price:'',status:'open',works:[],created_at:new Date().toISOString()})
