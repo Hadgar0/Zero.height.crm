@@ -842,7 +842,9 @@ function doQuickSale(){
 let CUR=null
 function openOrderInTab(o){
   localStorage.setItem('_order_tab', JSON.stringify(o))
-  window.open(location.pathname+'?order=1','_blank')
+  const base=location.href.split('?')[0].split('#')[0]
+  const w=window.open(base+'?order=1','_blank')
+  if(!w){alert('Разрешите всплывающие окна в браузере для этого сайта')}
 }
 function openNewOrderTab(){
   openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Постоянный клиент',price:'',status:'open',works:[],created_at:new Date().toISOString()})
