@@ -142,6 +142,10 @@ tr:hover td{background:#f8fafc}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Задачи
     </a>
   </nav>
+  <a onclick="openSettings()" style="margin:0 6px 8px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Настройки
+  </a>
   <div class="sb-ver">v1.0.0</div>
 </div>
 
@@ -469,6 +473,18 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
+<!-- Settings modal -->
+<div class="overlay hidden" id="m-settings">
+  <div class="modal" style="max-width:380px">
+    <div class="mhd"><h3>Настройки</h3><button class="btn-i" onclick="cm('m-settings')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <div class="fg"><label>Краткое имя организации</label><input id="set-org" placeholder="Напр: 655" maxlength="20"></div>
+      <p style="font-size:12px;color:#94a3b8;margin-top:-8px">Используется в номере заказа: <strong id="set-preview">655-021512</strong></p>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-settings')">Отмена</button><button class="btn btn-p" onclick="saveSettings()">Сохранить</button></div>
+  </div>
+</div>
+
 <!-- Add work modal -->
 <div class="overlay hidden" id="m-work">
   <div class="modal" style="max-width:460px">
@@ -694,7 +710,7 @@ function getFilteredOrders(){
       title:d.title, client:cl?cl.name:'Розничный покупатель',
       phone:cl?cl.phone||'':'', device:d.title, model:'', color:'',
       amount:d.amount||0, status:d.status==='closed'?'closed':d.status||'open',
-      emp:'', exec:'', closer:'', number:'ЗК-'+String(d.id).padStart(6,'0'),
+      emp:'', exec:'', closer:'', number:getOrg()+'-'+String(d.id).padStart(6,'0'),
       created_at:d.created_at,
     }
   })
@@ -768,7 +784,7 @@ function rowClick(id){
   } else {
     const did=parseInt(id.slice(1))
     const d=deals.find(d=>d.id===did)
-    if(d) openOrder({id:null,number:'ЗК-'+String(d.id).padStart(6,'0'),client:d.client||'',device:d.title,model:'',color:'',emp:'',src:'',price:d.amount||0,status:d.status||'open',works:[],created_at:d.created_at})
+    if(d) openOrder({id:null,number:getOrg()+'-'+String(d.id).padStart(6,'0'),client:d.client||'',device:d.title,model:'',color:'',emp:'',src:'',price:d.amount||0,status:d.status||'open',works:[],created_at:d.created_at})
   }
 }
 
@@ -808,8 +824,7 @@ function openQuickSale(){
 }
 function doQuickSale(){
   cm('m-quick')
-  const now=new Date()
-  const num=String(now.getFullYear()).slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'-'+String(Math.floor(Math.random()*90000)+10000)
+  const num=genNum()
   openOrder({
     id:null, number:num,
     client: document.getElementById('qs-client').value,
@@ -1024,6 +1039,33 @@ function saveTask(){
 function delTask(id){
   if(!confirm('Удалить задачу?'))return
   S.set('tasks',S.get('tasks').filter(t=>t.id!==id));renderTasks()
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
+function getOrg(){ return localStorage.getItem('org_code')||'ЗК' }
+function genNum(){
+  const org=getOrg()
+  const orders=S.get('orders')
+  const seq=String((orders.length||0)+1).padStart(6,'0')
+  return org+'-'+seq
+}
+function saveSettings(){
+  const v=document.getElementById('set-org').value.trim()
+  if(v) localStorage.setItem('org_code',v)
+  cm('m-settings')
+}
+document.getElementById('m-settings').addEventListener('click',function(e){if(e.target===this)cm('m-settings')})
+document.getElementById('set-org').addEventListener('input',function(){
+  const v=this.value.trim()||'ЗК'
+  const orders=S.get('orders')
+  const seq=String((orders.length||0)+1).padStart(6,'0')
+  document.getElementById('set-preview').textContent=v+'-'+seq
+})
+function openSettings(){
+  document.getElementById('set-org').value=localStorage.getItem('org_code')||''
+  const orders=S.get('orders'),org=getOrg()
+  document.getElementById('set-preview').textContent=org+'-'+String((orders.length||0)+1).padStart(6,'0')
+  om('m-settings')
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
