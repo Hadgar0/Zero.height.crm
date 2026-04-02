@@ -413,6 +413,106 @@ tr:hover td{background:#f8fafc}
     </div>
   </div>
 
+  <!-- WHOLESALE ORDER PAGE -->
+  <div id="page-wholesale" class="page">
+    <div class="op-bar">
+      <button onclick="closeOrder()" style="background:none;border:none;cursor:pointer;color:#64748b;padding:4px 6px;border-radius:6px;display:flex;align-items:center;gap:4px;font-size:13px">
+        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Назад
+      </button>
+      <span id="wc-num" class="op-num"></span>
+      <span style="font-size:11px;background:#f59e0b;color:#fff;padding:2px 8px;border-radius:12px;font-weight:600">ОПТ</span>
+      <button onclick="saveWholesale()" class="btn btn-g" style="font-size:12px;padding:6px 12px">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Сохранить
+      </button>
+      <button onclick="markShipped()" class="btn" style="background:#16a34a;color:#fff;font-size:12px;padding:6px 12px">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Товар выгружен
+      </button>
+      <button onclick="deleteWholesale()" class="btn btn-g" style="font-size:12px;padding:6px 12px;color:#dc2626;border-color:#fecaca">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Удалить
+      </button>
+    </div>
+    <div class="op-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px">
+        <!-- Client -->
+        <div>
+          <div class="fg">
+            <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
+            <div style="display:flex;gap:4px;align-items:flex-start">
+              <div style="position:relative;flex:1">
+                <input id="wc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="wClientSearch(this.value)" onblur="setTimeout(closeWClientDrop,200)">
+                <div id="wc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
+              </div>
+              <button type="button" onclick="openQuickClientModalW()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
+            </div>
+            <input type="hidden" id="wc-client-id">
+          </div>
+        </div>
+        <!-- Warehouse -->
+        <div>
+          <div class="fg">
+            <label style="font-size:12px;color:#64748b;font-weight:400">Склад списания</label>
+            <select id="wc-warehouse" class="fc">
+              <option value="main">Основной склад</option>
+              <option value="reserve">Резервный склад</option>
+              <option value="shop">Торговый зал</option>
+              <option value="service">Сервисный склад</option>
+            </select>
+          </div>
+        </div>
+        <!-- Status -->
+        <div>
+          <div class="fg">
+            <label style="font-size:12px;color:#64748b;font-weight:400">Статус</label>
+            <select id="wc-status" class="fc">
+              <option value="awaiting_payment">🟠 Ожидает оплаты</option>
+              <option value="paid">🟢 Оплачен</option>
+              <option value="closed">⚫ Закрыт</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label style="font-size:12px;color:#64748b;font-weight:400">Комментарий</label>
+            <textarea id="wc-comment" class="fc" style="height:60px;resize:none"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Items -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <h3 style="font-size:14px;font-weight:600;margin:0">Товары</h3>
+        <button onclick="addWholesaleItem()" class="btn btn-p" style="font-size:12px;padding:6px 14px">+ Добавить товар</button>
+      </div>
+      <div style="overflow-x:auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:16px">
+        <table style="min-width:600px;width:100%">
+          <thead><tr style="background:#f8fafc">
+            <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:left">Наименование</th>
+            <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right;width:90px">Кол-во</th>
+            <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right;width:110px">Цена (₽)</th>
+            <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right;width:110px">Итого (₽)</th>
+            <th style="width:36px"></th>
+          </tr></thead>
+          <tbody id="wc-items-tbody"></tbody>
+          <tfoot>
+            <tr style="background:#f8fafc;border-top:2px solid #e2e8f0">
+              <td colspan="3" style="padding:10px 12px;font-size:13px;font-weight:600;text-align:right">Итого:</td>
+              <td style="padding:10px 12px;font-size:14px;font-weight:700;text-align:right" id="wc-total">0 ₽</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- Shipped indicator -->
+      <div id="wc-shipped-bar" style="display:none;background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;font-size:13px;color:#166534;font-weight:500">
+        <svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        Товар выгружен · <span id="wc-shipped-date"></span>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <!-- MODALS -->
@@ -752,7 +852,11 @@ function saveClient(){
   if(id){const i=cl.findIndex(c=>c.id==id);cl[i]={...cl[i],...obj};newId=cl[i].id}
   else{newId=S.nid('clients');cl.push({id:newId,...obj,created_at:new Date().toISOString(),interactions:[]})}
   S.set('clients',cl);cm('m-client')
-  if(window._clientFromOrder){
+  if(window._clientFromOrder==='wholesale'){
+    window._clientFromOrder=false
+    document.getElementById('wc-client').value=obj.name
+    document.getElementById('wc-client-id').value=newId
+  } else if(window._clientFromOrder){
     window._clientFromOrder=false
     document.getElementById('oc-client').value=obj.name
     document.getElementById('oc-client-id').value=newId
@@ -982,7 +1086,10 @@ document.addEventListener('click',function(e){
   if(wrap&&!wrap.contains(e.target)) closePlusMenu()
 })
 function openWholesaleOrderTab(){
-  openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Оптовая продажа',price:'',status:'open',works:[],order_type:'wholesale',created_at:new Date().toISOString()})
+  localStorage.setItem('_wholesale_tab', JSON.stringify({id:null,number:genNum(),client:'',client_id:null,warehouse:'main',status:'awaiting_payment',comment:'',items:[],shipped:false,shipped_at:'',created_at:new Date().toISOString()}))
+  const base=location.href.split('?')[0].split('#')[0]
+  const w=window.open(base+'?wholesale=1','_blank')
+  if(!w) alert('Разрешите всплывающие окна в браузере')
 }
 function openQuickRepairTab(){
   openOrderInTab({id:null,number:genNum(),client:'',device:'',model:'',color:'',emp:'',src:'Постоянный клиент',price:'',status:'open',works:[],order_type:'quick_repair',created_at:new Date().toISOString()})
@@ -1254,6 +1361,141 @@ function openSettings(){
   om('m-settings')
 }
 
+// ── WHOLESALE ─────────────────────────────────────────────────────────────────
+let WCUR=null
+
+function openWholesale(o){
+  WCUR=JSON.parse(JSON.stringify(o))
+  const dt=new Date(o.created_at)
+  document.getElementById('wc-num').textContent=(o.number||'Опт №')+' от '+dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
+  document.getElementById('wc-client').value=o.client||''
+  document.getElementById('wc-client-id').value=o.client_id||''
+  document.getElementById('wc-warehouse').value=o.warehouse||'main'
+  document.getElementById('wc-status').value=o.status||'awaiting_payment'
+  document.getElementById('wc-comment').value=o.comment||''
+  renderWholesaleItems()
+  const sb=document.getElementById('wc-shipped-bar')
+  if(o.shipped){
+    sb.style.display='flex'
+    document.getElementById('wc-shipped-date').textContent=o.shipped_at?new Date(o.shipped_at).toLocaleString('ru'):''
+  } else {
+    sb.style.display='none'
+  }
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.getElementById('page-wholesale').classList.add('active')
+  document.getElementById('main').scrollTop=0
+}
+
+function renderWholesaleItems(){
+  const items=WCUR.items||[]
+  const tbody=document.getElementById('wc-items-tbody')
+  if(!items.length){
+    tbody.innerHTML='<tr><td colspan="5" style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Нет товаров. Нажмите «+ Добавить товар»</td></tr>'
+    document.getElementById('wc-total').textContent='0 ₽'
+    return
+  }
+  tbody.innerHTML=items.map((it,i)=>`<tr style="border-bottom:1px solid #f1f5f9">
+    <td style="padding:8px 12px"><input class="fc" value="${it.name||''}" oninput="WCUR.items[${i}].name=this.value" placeholder="Наименование" style="min-width:180px"></td>
+    <td style="padding:8px 12px"><input class="fc" type="number" value="${it.qty||1}" oninput="WCUR.items[${i}].qty=+this.value;renderWholesaleTotal()" style="text-align:right"></td>
+    <td style="padding:8px 12px"><input class="fc" type="number" value="${it.price||0}" oninput="WCUR.items[${i}].price=+this.value;renderWholesaleTotal()" style="text-align:right"></td>
+    <td style="padding:8px 12px;text-align:right;font-weight:500">${((it.qty||1)*(it.price||0)).toLocaleString('ru')} ₽</td>
+    <td style="padding:8px;text-align:center"><button onclick="removeWholesaleItem(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:16px;line-height:1">×</button></td>
+  </tr>`).join('')
+  renderWholesaleTotal()
+}
+
+function renderWholesaleTotal(){
+  const total=(WCUR.items||[]).reduce((s,it)=>s+(it.qty||1)*(it.price||0),0)
+  document.getElementById('wc-total').textContent=total.toLocaleString('ru')+' ₽'
+}
+
+function addWholesaleItem(){
+  if(!WCUR.items) WCUR.items=[]
+  WCUR.items.push({name:'',qty:1,price:0})
+  renderWholesaleItems()
+}
+
+function removeWholesaleItem(i){
+  WCUR.items.splice(i,1)
+  renderWholesaleItems()
+}
+
+function collectWholesale(){
+  return {
+    ...WCUR,
+    client:    document.getElementById('wc-client').value,
+    client_id: document.getElementById('wc-client-id').value||null,
+    warehouse: document.getElementById('wc-warehouse').value,
+    status:    document.getElementById('wc-status').value,
+    comment:   document.getElementById('wc-comment').value,
+    total:     (WCUR.items||[]).reduce((s,it)=>s+(it.qty||1)*(it.price||0),0),
+  }
+}
+
+function saveWholesale(){
+  const data=collectWholesale()
+  const ws=S.get('wholesale')||[]
+  if(data.id){const i=ws.findIndex(w=>w.id===data.id);if(i>=0)ws[i]=data;else ws.push(data)}
+  else{data.id=S.nid('wholesale');ws.push(data)}
+  S.set('wholesale',ws)
+  WCUR=data
+  const btn=document.querySelector('#page-wholesale .op-bar .btn-g')
+  const orig=btn.textContent;btn.textContent='✓ Сохранено';btn.style.color='#16a34a'
+  setTimeout(()=>{btn.innerHTML='<svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить';btn.style.color=''},2000)
+}
+
+function markShipped(){
+  if(!confirm('Отметить товар как выгруженный?')) return
+  WCUR.shipped=true
+  WCUR.shipped_at=new Date().toISOString()
+  WCUR.status='closed'
+  document.getElementById('wc-status').value='closed'
+  saveWholesale()
+  const sb=document.getElementById('wc-shipped-bar')
+  sb.style.display='flex'
+  document.getElementById('wc-shipped-date').textContent=new Date(WCUR.shipped_at).toLocaleString('ru')
+}
+
+function deleteWholesale(){
+  if(!confirm('Удалить оптовый заказ?')) return
+  if(WCUR.id){
+    const ws=S.get('wholesale')||[]
+    S.set('wholesale',ws.filter(w=>w.id!==WCUR.id))
+  }
+  window.close()
+}
+
+function wClientSearch(val){
+  const drop=document.getElementById('wc-client-drop')
+  const q=val.trim().toLowerCase()
+  if(!q){drop.style.display='none';return}
+  const matches=S.get('clients').filter(c=>
+    c.name.toLowerCase().includes(q)||(c.phone&&c.phone.includes(q))
+  ).slice(0,8)
+  if(!matches.length){drop.style.display='none';return}
+  drop.innerHTML=matches.map(c=>`<div onclick="selectWClient(${c.id})" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f1f5f9" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background=''">
+    <div style="font-size:13px;font-weight:500;color:#1e293b">${c.name}</div>
+    ${c.phone?`<div style="font-size:11px;color:#64748b">${c.phone}</div>`:''}
+  </div>`).join('')
+  drop.style.display='block'
+}
+function closeWClientDrop(){const d=document.getElementById('wc-client-drop');if(d)d.style.display='none'}
+function selectWClient(id){
+  const c=S.get('clients').find(c=>c.id===id);if(!c)return
+  document.getElementById('wc-client').value=c.name
+  document.getElementById('wc-client-id').value=c.id
+  closeWClientDrop()
+}
+function openQuickClientModalW(){
+  const name=document.getElementById('wc-client').value.trim()
+  clearClientForm()
+  document.getElementById('cn').value=name
+  document.getElementById('csms').value=name
+  document.getElementById('cm-title').textContent='Новый клиент'
+  window._clientFromOrder='wholesale'
+  om('m-client')
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 ;(function(){
   const params=new URLSearchParams(location.search)
@@ -1262,12 +1504,22 @@ function openSettings(){
     if(raw){
       localStorage.removeItem('_order_tab')
       const o=JSON.parse(raw)
-      // Hide sidebar nav, show only order page
       document.querySelector('nav').style.display='none'
       document.getElementById('main').style.marginLeft='0'
       document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
       document.getElementById('page-order').classList.add('active')
       openOrder(o)
+      return
+    }
+  }
+  if(params.get('wholesale')){
+    const raw=localStorage.getItem('_wholesale_tab')
+    if(raw){
+      localStorage.removeItem('_wholesale_tab')
+      const o=JSON.parse(raw)
+      document.querySelector('nav').style.display='none'
+      document.getElementById('main').style.marginLeft='0'
+      openWholesale(o)
       return
     }
   }
