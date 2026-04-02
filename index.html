@@ -147,6 +147,9 @@ tr:hover td{background:#f8fafc}
     <a onclick="nav('tasks',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Задачи
     </a>
+    <a onclick="nav('warehouse',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Склад
+    </a>
     <a onclick="openSettings()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       Настройки
@@ -271,6 +274,86 @@ tr:hover td{background:#f8fafc}
     <div class="card" id="tdcard" style="display:none">
       <div class="card-hd"><h2 style="color:#94a3b8">Завершённые</h2><span id="dtc" style="font-size:12px;color:#94a3b8"></span></div>
       <div id="tasks-done"></div>
+    </div>
+  </div>
+
+  <!-- WAREHOUSE PAGE -->
+  <div id="page-warehouse" class="page page-pad">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+      <h1 style="margin:0">Склад</h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-g" style="font-size:12px" onclick="openArrivalModal()">📥 Приход товара</button>
+        <button class="btn btn-g" style="font-size:12px;color:#dc2626;border-color:#fecaca" onclick="openDefectModal()">🗑 Списание в брак</button>
+        <button class="btn btn-g" style="font-size:12px" onclick="openAddItemModal()">+ Добавить товар</button>
+        <button class="btn btn-g" style="font-size:12px" onclick="open1cModal()">
+          <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Интеграция 1С
+        </button>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+      <div class="sw" style="flex:1;min-width:200px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="wh-search" placeholder="Поиск по наименованию, артикулу..." oninput="renderWarehouse()">
+      </div>
+      <select id="wh-src" class="ofbtn" style="padding:5px 10px" onchange="renderWarehouse()">
+        <option value="">Все источники</option>
+        <option value="1c">Только 1С</option>
+        <option value="local">Только свои</option>
+      </select>
+      <select id="wh-cat" class="ofbtn" style="padding:5px 10px" onchange="renderWarehouse()">
+        <option value="">Все категории</option>
+        <option value="Запчасть">Запчасти</option>
+        <option value="Аксессуар">Аксессуары</option>
+        <option value="Расходник">Расходники</option>
+        <option value="Прочее">Прочее</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow-x:auto">
+      <table style="width:100%;min-width:800px">
+        <thead>
+          <tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0">
+            <th class="oth">Запчасть / Товар</th>
+            <th class="oth">Артикул</th>
+            <th class="oth">Категория</th>
+            <th class="oth" style="text-align:right">Количество</th>
+            <th class="oth" style="text-align:right">Цена (₽)</th>
+            <th class="oth" style="text-align:right">Сумма (₽)</th>
+            <th class="oth">Источник</th>
+            <th class="oth">Брак</th>
+            <th class="oth"></th>
+          </tr>
+        </thead>
+        <tbody id="wh-tbody"></tbody>
+        <tfoot>
+          <tr style="background:#f8fafc;border-top:2px solid #e2e8f0">
+            <td colspan="5" style="padding:10px 14px;font-size:13px;font-weight:600;color:#64748b">Общая себестоимость:</td>
+            <td style="padding:10px 14px;font-size:14px;font-weight:700;color:#1e293b" id="wh-total"></td>
+            <td colspan="3"></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- History log -->
+    <div style="margin-top:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <h3 style="font-size:14px;font-weight:600;margin:0;color:#374151">История движения</h3>
+        <button class="ofbtn" onclick="toggleWhLog()">Показать/скрыть</button>
+      </div>
+      <div id="wh-log" style="display:none;background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+        <table style="width:100%">
+          <thead><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0">
+            <th class="oth">Дата</th><th class="oth">Тип</th><th class="oth">Товар</th>
+            <th class="oth" style="text-align:right">Кол-во</th><th class="oth">Комментарий</th><th class="oth">1С</th>
+          </tr></thead>
+          <tbody id="wh-log-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
@@ -609,6 +692,109 @@ tr:hover td{background:#f8fafc}
   </div>
 </div>
 
+<!-- Warehouse: Add item modal -->
+<div class="overlay hidden" id="m-wh-item">
+  <div class="modal" style="max-width:480px">
+    <div class="mhd"><h3 id="whi-title">Добавить товар</h3><button class="btn-i" onclick="cm('m-wh-item')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <input type="hidden" id="whi-id">
+      <div class="fr">
+        <div class="fg"><label>Наименование *</label><input id="whi-name" class="fc" placeholder="Напр: iPhone 14 - Дисплей"></div>
+        <div class="fg"><label>Артикул</label><input id="whi-sku" class="fc" placeholder="A01-14"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Категория</label>
+          <select id="whi-cat" class="fc"><option>Запчасть</option><option>Аксессуар</option><option>Расходник</option><option>Прочее</option></select>
+        </div>
+        <div class="fg"><label>Цвет</label><input id="whi-color" class="fc" placeholder="-"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Количество *</label><input id="whi-qty" type="number" class="fc" value="1" min="0"></div>
+        <div class="fg"><label>Цена (₽) *</label><input id="whi-price" type="number" class="fc" value="0" min="0"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Источник</label>
+          <select id="whi-src" class="fc"><option value="local">Свой (не в 1С)</option><option value="1c">1С</option></select>
+        </div>
+        <div class="fg"><label>ID в 1С</label><input id="whi-1cid" class="fc" placeholder="Только для 1С товаров"></div>
+      </div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-wh-item')">Отмена</button><button class="btn btn-p" onclick="saveWhItem()">Сохранить</button></div>
+  </div>
+</div>
+
+<!-- Warehouse: Arrival modal -->
+<div class="overlay hidden" id="m-wh-arrival">
+  <div class="modal" style="max-width:480px">
+    <div class="mhd"><h3>📥 Приход товара</h3><button class="btn-i" onclick="cm('m-wh-arrival')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <div class="fg"><label>Товар *</label>
+        <select id="arr-item" class="fc"></select>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Количество *</label><input id="arr-qty" type="number" class="fc" value="1" min="1"></div>
+        <div class="fg"><label>Цена прихода (₽)</label><input id="arr-price" type="number" class="fc" value="0" min="0"></div>
+      </div>
+      <div class="fg"><label>Комментарий</label><input id="arr-comment" class="fc" placeholder="Поставщик, накладная..."></div>
+      <div class="fg" style="margin-top:8px">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer">
+          <input type="checkbox" id="arr-sync1c"> Отправить приход в 1С (только для 1С-товаров)
+        </label>
+      </div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-wh-arrival')">Отмена</button><button class="btn btn-p" onclick="saveArrival()">Оприходовать</button></div>
+  </div>
+</div>
+
+<!-- Warehouse: Defect modal -->
+<div class="overlay hidden" id="m-wh-defect">
+  <div class="modal" style="max-width:480px">
+    <div class="mhd"><h3>🗑 Списание в брак</h3><button class="btn-i" onclick="cm('m-wh-defect')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <div class="fg"><label>Товар *</label><select id="def-item" class="fc"></select></div>
+      <div class="fr">
+        <div class="fg"><label>Количество *</label><input id="def-qty" type="number" class="fc" value="1" min="1"></div>
+        <div class="fg"><label>Причина брака</label><input id="def-reason" class="fc" placeholder="Механическое повреждение..."></div>
+      </div>
+      <div class="fg" style="margin-top:8px">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer">
+          <input type="checkbox" id="def-sync1c"> Отправить списание в 1С (только для 1С-товаров)
+        </label>
+      </div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-wh-defect')">Отмена</button><button class="btn" style="background:#dc2626;color:#fff" onclick="saveDefect()">Списать в брак</button></div>
+  </div>
+</div>
+
+<!-- Warehouse: 1C Integration modal -->
+<div class="overlay hidden" id="m-1c">
+  <div class="modal" style="max-width:520px">
+    <div class="mhd"><h3>Интеграция с 1С</h3><button class="btn-i" onclick="cm('m-1c')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <div class="fg"><label>URL сервера 1С (HTTP-сервис)</label><input id="1c-url" class="fc" placeholder="http://192.168.1.100/base/hs/warehouse/"></div>
+      <div class="fr">
+        <div class="fg"><label>Логин</label><input id="1c-login" class="fc" placeholder="Администратор"></div>
+        <div class="fg"><label>Пароль</label><input id="1c-pass" class="fc" type="password"></div>
+      </div>
+      <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:4px">
+        <p style="font-size:12px;color:#64748b;margin:0 0 8px 0;font-weight:600">Что синхронизируется с 1С:</p>
+        <ul style="font-size:12px;color:#64748b;margin:0;padding-left:16px;line-height:1.8">
+          <li>Приход товаров (если помечены как «1С»)</li>
+          <li>Списание в брак (только 1С-товары)</li>
+          <li>Расход при закрытии заказа (только 1С-товары)</li>
+          <li>Свои товары (источник «Свой») — в 1С <b>не передаются</b></li>
+        </ul>
+      </div>
+      <div id="1c-status" style="margin-top:12px;font-size:13px;display:none"></div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-g" onclick="cm('m-1c')">Закрыть</button>
+      <button class="btn btn-g" onclick="test1c()">Проверить соединение</button>
+      <button class="btn btn-p" onclick="save1cSettings()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <!-- Deal modal -->
 <div class="overlay hidden" id="m-deal">
   <div class="modal">
@@ -723,6 +909,7 @@ function nav(id,el){
   if(id==='clients')   renderClients()
   if(id==='deals')     renderDeals()
   if(id==='tasks')     renderTasks()
+  if(id==='warehouse') renderWarehouse()
 }
 
 // ── Modal helpers ─────────────────────────────────────────────────────────────
@@ -1359,6 +1546,217 @@ function openSettings(){
   const orders=S.get('orders'),org=getOrg()
   document.getElementById('set-preview').textContent=org+'-'+String((orders.length||0)+1).padStart(6,'0')
   om('m-settings')
+}
+
+// ── WAREHOUSE ─────────────────────────────────────────────────────────────────
+function renderWarehouse(){
+  const items=S.get('wh_items')||[]
+  const q=(document.getElementById('wh-search').value||'').toLowerCase()
+  const src=document.getElementById('wh-src').value
+  const cat=document.getElementById('wh-cat').value
+  let filtered=items.filter(it=>{
+    if(q&&!it.name.toLowerCase().includes(q)&&!(it.sku||'').toLowerCase().includes(q)) return false
+    if(src&&it.src!==src) return false
+    if(cat&&it.cat!==cat) return false
+    return true
+  })
+  const tbody=document.getElementById('wh-tbody')
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="9" style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Нет товаров</td></tr>'
+    document.getElementById('wh-total').textContent='0 ₽'
+    return
+  }
+  const srcBadge=s=>s==='1c'?'<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600">1С</span>':'<span style="background:#f1f5f9;color:#64748b;font-size:10px;padding:1px 6px;border-radius:10px">своё</span>'
+  tbody.innerHTML=filtered.map(it=>`<tr style="border-bottom:1px solid #f1f5f9;cursor:default" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background=''">
+    <td style="padding:9px 14px;font-size:13px;font-weight:500">${it.name}</td>
+    <td style="padding:9px 14px;font-size:12px;color:#64748b">${it.sku||'—'}</td>
+    <td style="padding:9px 14px;font-size:12px;color:#64748b">${it.cat||'—'}</td>
+    <td style="padding:9px 14px;font-size:13px;text-align:right;font-weight:500;color:${it.qty<=0?'#dc2626':it.qty<=2?'#f59e0b':'#16a34a'}">${it.qty}</td>
+    <td style="padding:9px 14px;font-size:13px;text-align:right">${Number(it.price||0).toLocaleString('ru')}</td>
+    <td style="padding:9px 14px;font-size:13px;text-align:right;font-weight:500">${(it.qty*Number(it.price||0)).toLocaleString('ru')}</td>
+    <td style="padding:9px 14px">${srcBadge(it.src)}</td>
+    <td style="padding:9px 14px;font-size:12px;color:#dc2626">${it.defect||0}</td>
+    <td style="padding:9px 14px;white-space:nowrap">
+      <button onclick="openEditItemModal(${it.id})" style="background:none;border:none;cursor:pointer;color:#2563eb;font-size:12px;padding:2px 6px">Ред.</button>
+      <button onclick="deleteWhItem(${it.id})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:12px;padding:2px 6px">Удал.</button>
+    </td>
+  </tr>`).join('')
+  const total=filtered.reduce((s,it)=>s+(it.qty*Number(it.price||0)),0)
+  document.getElementById('wh-total').textContent=total.toLocaleString('ru')+' ₽'
+  renderWhLog()
+}
+
+function renderWhLog(){
+  const log=(S.get('wh_log')||[]).slice().reverse().slice(0,50)
+  const items=S.get('wh_items')||[]
+  const name=id=>{const it=items.find(i=>i.id===id);return it?it.name:'?'}
+  const tbody=document.getElementById('wh-log-tbody')
+  if(!log.length){tbody.innerHTML='<tr><td colspan="6" style="padding:16px;text-align:center;color:#94a3b8;font-size:13px">История пуста</td></tr>';return}
+  const typeLabel={arrival:'📥 Приход',defect:'🗑 Брак',write_off:'📤 Расход',manual:'✏️ Правка'}
+  tbody.innerHTML=log.map(l=>`<tr style="border-bottom:1px solid #f1f5f9">
+    <td style="padding:8px 12px;font-size:12px;color:#64748b">${new Date(l.date).toLocaleString('ru')}</td>
+    <td style="padding:8px 12px;font-size:12px">${typeLabel[l.type]||l.type}</td>
+    <td style="padding:8px 12px;font-size:12px">${name(l.item_id)}</td>
+    <td style="padding:8px 12px;font-size:12px;text-align:right;font-weight:500;color:${l.qty>0?'#16a34a':'#dc2626'}">${l.qty>0?'+':''}${l.qty}</td>
+    <td style="padding:8px 12px;font-size:12px;color:#64748b">${l.comment||'—'}</td>
+    <td style="padding:8px 12px;font-size:12px">${l.synced1c?'<span style="color:#16a34a">✓ 1С</span>':'<span style="color:#94a3b8">—</span>'}</td>
+  </tr>`).join('')
+}
+
+function toggleWhLog(){
+  const el=document.getElementById('wh-log')
+  el.style.display=el.style.display==='none'?'block':'none'
+  if(el.style.display==='block') renderWhLog()
+}
+
+function openAddItemModal(){
+  document.getElementById('whi-title').textContent='Добавить товар'
+  document.getElementById('whi-id').value=''
+  document.getElementById('whi-name').value=''
+  document.getElementById('whi-sku').value=''
+  document.getElementById('whi-cat').value='Запчасть'
+  document.getElementById('whi-color').value=''
+  document.getElementById('whi-qty').value='1'
+  document.getElementById('whi-price').value='0'
+  document.getElementById('whi-src').value='local'
+  document.getElementById('whi-1cid').value=''
+  om('m-wh-item')
+}
+
+function openEditItemModal(id){
+  const it=(S.get('wh_items')||[]).find(i=>i.id===id);if(!it)return
+  document.getElementById('whi-title').textContent='Редактировать товар'
+  document.getElementById('whi-id').value=it.id
+  document.getElementById('whi-name').value=it.name
+  document.getElementById('whi-sku').value=it.sku||''
+  document.getElementById('whi-cat').value=it.cat||'Запчасть'
+  document.getElementById('whi-color').value=it.color||''
+  document.getElementById('whi-qty').value=it.qty
+  document.getElementById('whi-price').value=it.price||0
+  document.getElementById('whi-src').value=it.src||'local'
+  document.getElementById('whi-1cid').value=it.id_1c||''
+  om('m-wh-item')
+}
+
+function saveWhItem(){
+  const name=document.getElementById('whi-name').value.trim();if(!name){alert('Наименование обязательно');return}
+  const id=document.getElementById('whi-id').value
+  const items=S.get('wh_items')||[]
+  const obj={name,sku:document.getElementById('whi-sku').value,cat:document.getElementById('whi-cat').value,
+    color:document.getElementById('whi-color').value,qty:+document.getElementById('whi-qty').value||0,
+    price:+document.getElementById('whi-price').value||0,src:document.getElementById('whi-src').value,
+    id_1c:document.getElementById('whi-1cid').value,defect:0}
+  if(id){const i=items.findIndex(it=>it.id==id);if(i>=0){obj.defect=items[i].defect||0;items[i]={...items[i],...obj}}}
+  else{items.push({id:S.nid('wh_items'),...obj,created_at:new Date().toISOString()})}
+  S.set('wh_items',items);cm('m-wh-item');renderWarehouse()
+}
+
+function deleteWhItem(id){
+  if(!confirm('Удалить товар со склада?'))return
+  S.set('wh_items',(S.get('wh_items')||[]).filter(i=>i.id!==id));renderWarehouse()
+}
+
+function openArrivalModal(){
+  const items=S.get('wh_items')||[]
+  const sel=document.getElementById('arr-item')
+  sel.innerHTML=items.map(it=>`<option value="${it.id}">[${it.src==='1c'?'1С':'своё'}] ${it.name}</option>`).join('')
+  document.getElementById('arr-qty').value='1'
+  document.getElementById('arr-price').value='0'
+  document.getElementById('arr-comment').value=''
+  document.getElementById('arr-sync1c').checked=false
+  om('m-wh-arrival')
+}
+
+function saveArrival(){
+  const itemId=+document.getElementById('arr-item').value
+  const qty=+document.getElementById('arr-qty').value
+  const price=+document.getElementById('arr-price').value
+  const comment=document.getElementById('arr-comment').value
+  const sync=document.getElementById('arr-sync1c').checked
+  if(!qty||qty<1){alert('Укажите количество');return}
+  const items=S.get('wh_items')||[]
+  const i=items.findIndex(it=>it.id===itemId);if(i<0)return
+  items[i].qty=(items[i].qty||0)+qty
+  if(price>0) items[i].price=price
+  S.set('wh_items',items)
+  // log
+  const log=S.get('wh_log')||[]
+  const it=items[i]
+  let synced=false
+  if(sync&&it.src==='1c'&&it.id_1c) synced=send1c('arrival',{id_1c:it.id_1c,qty,price,comment})
+  log.push({id:S.nid('wh_log'),type:'arrival',item_id:itemId,qty,price,comment,synced1c:synced,date:new Date().toISOString()})
+  S.set('wh_log',log)
+  cm('m-wh-arrival');renderWarehouse()
+  if(sync&&it.src!=='1c') alert('ℹ️ Товар помечен как «своё» — в 1С не передан')
+}
+
+function openDefectModal(){
+  const items=S.get('wh_items')||[]
+  const sel=document.getElementById('def-item')
+  sel.innerHTML=items.filter(it=>it.qty>0).map(it=>`<option value="${it.id}">[${it.src==='1c'?'1С':'своё'}] ${it.name} (${it.qty} шт.)</option>`).join('')
+  document.getElementById('def-qty').value='1'
+  document.getElementById('def-reason').value=''
+  document.getElementById('def-sync1c').checked=false
+  om('m-wh-defect')
+}
+
+function saveDefect(){
+  const itemId=+document.getElementById('def-item').value
+  const qty=+document.getElementById('def-qty').value
+  const reason=document.getElementById('def-reason').value
+  const sync=document.getElementById('def-sync1c').checked
+  if(!qty||qty<1){alert('Укажите количество');return}
+  const items=S.get('wh_items')||[]
+  const i=items.findIndex(it=>it.id===itemId);if(i<0)return
+  if(items[i].qty<qty){alert('Недостаточно товара на складе');return}
+  items[i].qty-=qty
+  items[i].defect=(items[i].defect||0)+qty
+  S.set('wh_items',items)
+  const log=S.get('wh_log')||[]
+  const it=items[i]
+  let synced=false
+  if(sync&&it.src==='1c'&&it.id_1c) synced=send1c('defect',{id_1c:it.id_1c,qty,reason})
+  log.push({id:S.nid('wh_log'),type:'defect',item_id:itemId,qty:-qty,comment:'Брак: '+reason,synced1c:synced,date:new Date().toISOString()})
+  S.set('wh_log',log)
+  cm('m-wh-defect');renderWarehouse()
+  if(sync&&it.src!=='1c') alert('ℹ️ Товар помечен как «своё» — в 1С не передан')
+}
+
+// ── 1C INTEGRATION ────────────────────────────────────────────────────────────
+function open1cModal(){
+  const cfg=S.get('cfg_1c')||{}
+  document.getElementById('1c-url').value=cfg.url||''
+  document.getElementById('1c-login').value=cfg.login||''
+  document.getElementById('1c-pass').value=cfg.pass||''
+  document.getElementById('1c-status').style.display='none'
+  om('m-1c')
+}
+function save1cSettings(){
+  S.set('cfg_1c',{url:document.getElementById('1c-url').value.trim(),login:document.getElementById('1c-login').value,pass:document.getElementById('1c-pass').value})
+  cm('m-1c');alert('Настройки 1С сохранены')
+}
+async function test1c(){
+  const cfg=S.get('cfg_1c')||{}
+  const st=document.getElementById('1c-status')
+  st.style.display='block';st.textContent='Проверка...'
+  if(!cfg.url){st.style.color='#dc2626';st.textContent='⚠ Укажите URL сервера 1С';return}
+  try{
+    const r=await fetch(cfg.url+'ping',{method:'GET',headers:{'Authorization':'Basic '+btoa((cfg.login||'')+':'+(cfg.pass||''))}})
+    if(r.ok){st.style.color='#16a34a';st.textContent='✓ Соединение успешно'}
+    else{st.style.color='#dc2626';st.textContent='✗ Ошибка: HTTP '+r.status}
+  }catch(e){st.style.color='#dc2626';st.textContent='✗ Нет соединения: '+e.message}
+}
+function send1c(type, data){
+  const cfg=S.get('cfg_1c')||{}
+  if(!cfg.url) return false
+  try{
+    const xhr=new XMLHttpRequest()
+    xhr.open('POST',cfg.url+type,false)
+    xhr.setRequestHeader('Content-Type','application/json')
+    xhr.setRequestHeader('Authorization','Basic '+btoa((cfg.login||'')+':'+(cfg.pass||'')))
+    xhr.send(JSON.stringify(data))
+    return xhr.status>=200&&xhr.status<300
+  }catch(e){return false}
 }
 
 // ── WHOLESALE ─────────────────────────────────────────────────────────────────
