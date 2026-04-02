@@ -195,6 +195,7 @@ tr:hover td{background:#f8fafc}
           <option value="open">Открыт</option>
           <option value="in_work">В работе</option>
           <option value="ready">Готов</option>
+          <option value="awaiting_payment">Ожидает оплаты</option>
           <option value="closed">Закрыт</option>
           <option value="cancelled">Отменён</option>
         </select>
@@ -301,7 +302,7 @@ tr:hover td{background:#f8fafc}
         <div>
           <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Устройство</label><input id="oc-device" class="fc"></div>
           <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Статус заказа</label>
-            <select id="oc-status" class="fc"><option value="open">🔵 Открыт</option><option value="in_work">🟡 В работе</option><option value="ready">🟢 Готов</option><option value="closed">⚫ Закрыт</option><option value="cancelled">🔴 Отменён</option></select>
+            <select id="oc-status" class="fc"><option value="open">🔵 Открыт</option><option value="in_work">🟡 В работе</option><option value="ready">🟢 Готов</option><option value="awaiting_payment">🟠 Ожидает оплаты (пост-оплата)</option><option value="closed">⚫ Закрыт</option><option value="cancelled">🔴 Отменён</option></select>
           </div>
           <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Ориентировочная цена (руб.)</label><input id="oc-price" type="number" class="fc" placeholder="0"></div>
         </div>
@@ -658,10 +659,11 @@ function toggleAllChk(cb){
 }
 
 const STATUS_DOT={
-  open:     {color:'#94a3b8',label:'Новый'},
-  in_work:  {color:'#f59e0b',label:'В работе'},
-  ready:    {color:'#ef4444',label:'Готов'},
-  closed:   {color:'#3b82f6',label:'Закрыт'},
+  open:             {color:'#94a3b8',label:'Новый'},
+  in_work:          {color:'#f59e0b',label:'В работе'},
+  ready:            {color:'#ef4444',label:'Готов'},
+  awaiting_payment: {color:'#f97316',label:'Ожидает оплаты'},
+  closed:           {color:'#3b82f6',label:'Закрыт'},
   cancelled:{color:'#22c55e',label:'Аутоприём'},
 }
 
