@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>zero.height.crm</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f1f5f9;color:#1e293b;display:flex;height:100vh;overflow:hidden}
+#sidebar{width:160px;background:#0f172a;color:#fff;display:flex;flex-direction:column;flex-shrink:0}
+.sb-logo{padding:14px 16px;border-bottom:1px solid #1e293b}
+.sb-logo h1{font-size:13px;font-weight:700}
+.sb-logo p{font-size:10px;color:#64748b;margin-top:2px}
+nav{padding:8px 6px;flex:1}
+nav a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;text-decoration:none;color:#94a3b8;font-size:12px;font-weight:500;cursor:pointer;transition:.15s}
+nav a:hover{background:#1e293b;color:#fff}
+nav a.active{background:#2563eb;color:#fff}
+nav a svg{width:15px;height:15px;flex-shrink:0}
+.sb-ver{padding:10px 16px;font-size:10px;color:#475569;border-top:1px solid #1e293b}
+#main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}.page.active{display:block}
+h1{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:16px}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #f1f5f9}
+.stat-card .lbl{font-size:12px;color:#64748b}.stat-card .val{font-size:24px;font-weight:700;margin-top:4px}.stat-card .sub{font-size:11px;color:#94a3b8;margin-top:2px}
+.stat-card .ico{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;float:right;margin-top:-2px}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #f1f5f9;overflow:hidden;margin-bottom:16px}
+.card-hd{padding:14px 16px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:8px}
+.card-hd h2{font-size:14px;font-weight:600;flex:1}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:10px 16px;color:#64748b;font-weight:500;background:#f8fafc;border-bottom:1px solid #f1f5f9}
+td{padding:10px 16px;border-bottom:1px solid #f8fafc}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.bg{background:#dcfce7;color:#16a34a}.bb{background:#dbeafe;color:#2563eb}.by{background:#fef9c3;color:#ca8a04}
+.br{background:#fee2e2;color:#dc2626}.bgr{background:#f1f5f9;color:#64748b}.bv{background:#ede9fe;color:#7c3aed}.ba{background:#fef3c7;color:#d97706}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;transition:.15s}
+.btn-p{background:#2563eb;color:#fff}.btn-p:hover{background:#1d4ed8}
+.btn-g{background:transparent;color:#64748b;border:1px solid #e2e8f0}.btn-g:hover{background:#f8fafc}
+.btn-i{padding:5px;background:transparent;border:none;cursor:pointer;color:#94a3b8;border-radius:4px}.btn-i:hover{color:#2563eb}
+.btn-i.d:hover{color:#dc2626}
+.filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{padding:7px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none}
+.filters input:focus,.filters select:focus{border-color:#2563eb;box-shadow:0 0 0 2px #dbeafe}
+.sw{position:relative}.sw input{padding-left:32px}
+.sw svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:#94a3b8}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:16px}
+.overlay.hidden{display:none}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #f1f5f9}
+.mhd h3{font-size:16px;font-weight:600}
+.mbd{padding:20px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:5px}
+.fg input,.fg select,.fg textarea,.fg .fc{width:100%;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#2563eb;box-shadow:0 0 0 2px #dbeafe}
+.fg textarea{height:80px;resize:none}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mft{display:flex;justify-content:flex-end;gap:8px;padding:14px 20px;border-top:1px solid #f1f5f9}
+.kanban{display:flex;gap:12px;overflow-x:auto;padding-bottom:16px}
+.kcol{flex-shrink:0;width:210px}
+.khd{padding:8px 12px;border-radius:8px;border:1px solid;margin-bottom:8px;display:flex;justify-content:space-between;font-size:12px;font-weight:600}
+.kcards{display:flex;flex-direction:column;gap:8px}
+.kcard{background:#fff;border-radius:8px;border:1px solid #e2e8f0;padding:10px 12px;box-shadow:0 1px 2px rgba(0,0,0,.04);cursor:pointer}
+.kcard:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.kcard .kt{font-size:13px;font-weight:500;color:#1e293b}
+.kcard .kc{font-size:11px;color:#64748b;margin-top:2px}
+.kcard .ka{font-size:12px;color:#16a34a;font-weight:600;margin-top:6px}
+.ti{display:flex;align-items:flex-start;gap:10px;padding:10px 16px;border-bottom:1px solid #f8fafc}
+.ti:last-child{border-bottom:none}
+.tc{width:18px;height:18px;border-radius:50%;border:2px solid #cbd5e1;cursor:pointer;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.tc.done{background:#22c55e;border-color:#22c55e}
+.tc.done::after{content:'✓';color:#fff;font-size:10px;font-weight:700}
+.ttl{font-size:13px;font-weight:500;flex:1}.ttl.done{text-decoration:line-through;color:#94a3b8}
+.tmt{font-size:11px;color:#94a3b8;margin-top:2px}.tmt .ov{color:#dc2626;font-weight:500}
+.cw{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #f1f5f9;margin-bottom:16px}
+.cw h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.bc{display:flex;align-items:flex-end;gap:8px;height:130px}
+.bi{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.br2{width:100%;border-radius:4px 4px 0 0;transition:.3s;min-height:4px}
+.bl{font-size:10px;color:#64748b;text-align:center}.bv2{font-size:10px;color:#64748b}
+.tcol{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.cr{cursor:pointer}
+.cx{display:none;background:#f8fafc;border-top:1px solid #f1f5f9}
+.cx.open{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;padding:14px 16px}
+.xs h4{font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;margin-bottom:8px}
+.xs p{font-size:12px;color:#374151;margin-bottom:4px}
+.ii{display:flex;gap:6px;margin-bottom:8px}
+.ii input{flex:1;border:1px solid #e2e8f0;border-radius:6px;padding:5px 8px;font-size:12px;outline:none}
+.ii button{padding:5px 10px;background:#2563eb;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px}
+/* Order page */
+#page-order{padding:0}
+.op-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:10px 20px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.op-num{font-size:14px;font-weight:600;flex:1;min-width:0}
+.op-body{padding:20px}
+.fc{width:100%;border:1px solid #e2e8f0;border-radius:7px;padding:7px 10px;font-size:13px;outline:none;font-family:inherit;background:#fff}
+.fc:focus{border-color:#2563eb;box-shadow:0 0 0 2px #dbeafe}
+.ot{padding:8px 14px;background:none;border:none;border-bottom:2px solid transparent;font-size:13px;font-weight:500;color:#64748b;cursor:pointer;margin-bottom:-2px}
+.ot.active{color:#2563eb;border-bottom-color:#2563eb}
+.star{font-size:26px;color:#d1d5db;cursor:pointer}.star.on{color:#f59e0b}
+.sum-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;font-size:13px}
+.sum-row{display:flex;justify-content:space-between;margin-bottom:6px}
+.sum-row:last-child{margin-bottom:0;padding-top:6px;border-top:1px solid #e2e8f0}
+@media(max-width:700px){.tcol{grid-template-columns:1fr}.fr{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div id="sidebar">
+  <div class="sb-logo">
+    <h1>zero.height.crm</h1>
+    <p>Управление клиентами</p>
+  </div>
+  <nav>
+    <a class="active" onclick="nav('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Дашборд
+    </a>
+    <a onclick="nav('clients',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Клиенты
+    </a>
+    <a id="nav-deals" onclick="nav('deals',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Заказы
+    </a>
+    <a onclick="nav('tasks',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Задачи
+    </a>
+  </nav>
+  <div class="sb-ver">v1.0.0</div>
+</div>
+
+<div id="main">
+
+  <!-- DASHBOARD -->
+  <div id="page-dashboard" class="page active">
+    <h1>Дашборд</h1>
+    <div class="stat-grid" id="dash-stats"></div>
+    <div class="tcol">
+      <div class="cw"><h3>Воронка заказов</h3><div class="bc" id="funnel-chart"></div></div>
+      <div class="cw"><h3>Задачи по приоритету</h3><div class="bc" id="priority-chart"></div></div>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div id="page-clients" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h1 style="margin:0">Клиенты</h1>
+      <button class="btn btn-p" onclick="openClientModal()">+ Добавить</button>
+    </div>
+    <div class="filters">
+      <div class="sw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="client-search" placeholder="Поиск..." oninput="renderClients()">
+      </div>
+      <select id="client-sf" onchange="renderClients()">
+        <option value="">Все статусы</option>
+        <option value="lead">Лид</option>
+        <option value="active">Активный</option>
+        <option value="inactive">Неактивный</option>
+      </select>
+    </div>
+    <div class="card">
+      <table><thead><tr><th>Имя</th><th>Компания</th><th>Телефон</th><th>Статус</th><th></th></tr></thead>
+      <tbody id="clients-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- DEALS / ORDERS -->
+  <div id="page-deals" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <h1 style="margin:0">Заказы</h1>
+        <p id="pipeline-val" style="font-size:13px;color:#64748b;margin-top:2px"></p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="display:flex;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
+          <button id="vk" class="btn btn-p" style="border-radius:0;padding:7px 12px;font-size:12px" onclick="setView('kanban')">Канбан</button>
+          <button id="vl" class="btn btn-g" style="border-radius:0;padding:7px 12px;font-size:12px;border:none" onclick="setView('list')">Список</button>
+        </div>
+        <button class="btn btn-g" onclick="openQuickSale()">⚡ Быстрая продажа</button>
+        <button class="btn btn-p" onclick="openDealModal()">+ Добавить</button>
+      </div>
+    </div>
+    <div id="deals-kanban" class="kanban"></div>
+    <div id="deals-list" style="display:none" class="card">
+      <table><thead><tr><th>Название</th><th>Клиент</th><th>Этап</th><th>Сумма</th><th></th></tr></thead>
+      <tbody id="deals-tbody"></tbody></table>
+    </div>
+  </div>
+
+  <!-- TASKS -->
+  <div id="page-tasks" class="page">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <h1 style="margin:0">Задачи</h1>
+      <button class="btn btn-p" onclick="openTaskModal()">+ Добавить</button>
+    </div>
+    <div class="filters">
+      <select id="tsf" onchange="renderTasks()"><option value="">Все статусы</option><option value="pending">Ожидает</option><option value="in_progress">В работе</option><option value="completed">Выполнена</option></select>
+      <select id="tpf" onchange="renderTasks()"><option value="">Все приоритеты</option><option value="high">Высокий</option><option value="medium">Средний</option><option value="low">Низкий</option></select>
+    </div>
+    <div class="card">
+      <div class="card-hd"><h2>Активные задачи</h2><span id="atc" style="font-size:12px;color:#94a3b8"></span></div>
+      <div id="tasks-active"></div>
+    </div>
+    <div class="card" id="tdcard" style="display:none">
+      <div class="card-hd"><h2 style="color:#94a3b8">Завершённые</h2><span id="dtc" style="font-size:12px;color:#94a3b8"></span></div>
+      <div id="tasks-done"></div>
+    </div>
+  </div>
+
+  <!-- ORDER CARD PAGE -->
+  <div id="page-order" class="page">
+    <div class="op-bar">
+      <button onclick="closeOrder()" style="background:none;border:none;cursor:pointer;color:#64748b;padding:4px 6px;border-radius:6px;display:flex;align-items:center;gap:4px;font-size:13px">
+        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Назад
+      </button>
+      <span id="oc-num" class="op-num"></span>
+      <button onclick="saveOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Сохранить
+      </button>
+      <button class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 12px">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Оплата
+      </button>
+      <button onclick="deleteOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px;color:#dc2626;border-color:#fecaca">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Удалить
+      </button>
+      <button class="btn btn-g" style="font-size:12px;padding:6px 12px">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        История
+      </button>
+      <button onclick="printOrder()" class="btn btn-g" style="font-size:12px;padding:6px 12px">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Печать
+      </button>
+    </div>
+    <div class="op-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
+        <div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label><input id="oc-client" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Принимающий сотрудник СЦ</label><input id="oc-emp" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Источник</label>
+            <select id="oc-src" class="fc"><option>Постоянный клиент</option><option>Новый клиент</option><option>Рекомендация</option><option>Соцсети</option><option>Сайт</option></select>
+          </div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Кто закрыл заказ</label><input id="oc-closer" class="fc"></div>
+        </div>
+        <div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Устройство</label><input id="oc-device" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Статус заказа</label>
+            <select id="oc-status" class="fc"><option value="open">🔵 Открыт</option><option value="in_work">🟡 В работе</option><option value="ready">🟢 Готов</option><option value="closed">⚫ Закрыт</option><option value="cancelled">🔴 Отменён</option></select>
+          </div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Ориентировочная цена (руб.)</label><input id="oc-price" type="number" class="fc" placeholder="0"></div>
+        </div>
+        <div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Модель</label><input id="oc-model" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Цвет устройства</label><input id="oc-color" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Ориентировочная готовность</label><input id="oc-ready" type="datetime-local" class="fc"></div>
+          <div class="sum-box">
+            <div class="sum-row"><span style="color:#64748b">Сумма работ:</span><strong id="oc-total">0 руб.</strong></div>
+            <div class="sum-row"><span style="color:#64748b">Принято авансом:</span><span id="oc-adv-show">0 руб.</span></div>
+            <div class="sum-row"><span style="color:#64748b">Итого бонусов:</span><span id="oc-bonus" style="color:#16a34a;font-weight:600">0 руб.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <button onclick="addWork('Работа')" class="btn btn-g" style="font-size:12px">+ Добавить работу <span style="color:#94a3b8;font-size:11px">+10%</span></button>
+        <button onclick="addWork('Чистка')" class="btn btn-g" style="font-size:12px">+ Добавить чистку <span style="color:#94a3b8;font-size:11px">+7%</span></button>
+        <button onclick="addWork('Бронирование')" class="btn btn-g" style="font-size:12px">+ Добавить бронирование <span style="color:#94a3b8;font-size:11px">+10%</span></button>
+        <button onclick="addWork('Аксессуар')" class="btn btn-g" style="font-size:12px">+ Добавить аксессуар <span style="color:#94a3b8;font-size:11px">+10%</span></button>
+      </div>
+
+      <div style="display:flex;gap:2px;border-bottom:2px solid #e2e8f0;margin-bottom:16px">
+        <button class="ot active" onclick="otab(this,'ot-main')">О заказе</button>
+        <button class="ot" onclick="otab(this,'ot-device')">Об устройстве</button>
+        <button class="ot" onclick="otab(this,'ot-works')">Работы</button>
+        <button class="ot" onclick="otab(this,'ot-warranty')">Гарантия</button>
+        <button class="ot" onclick="otab(this,'ot-rating')">Оценка</button>
+      </div>
+
+      <div id="ot-main">
+        <div class="fr" style="max-width:700px">
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Комментарий</label><textarea id="oc-comment" class="fc" style="height:90px;resize:vertical"></textarea></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Аванс (₽)</label><input id="oc-adv" type="number" class="fc" placeholder="0" oninput="updAdv(this.value)"></div>
+        </div>
+      </div>
+
+      <div id="ot-device" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;max-width:800px">
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Серийный номер</label><input id="oc-serial" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">IMEI</label><input id="oc-imei" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Состояние</label><select id="oc-cond" class="fc"><option>Хорошее</option><option>Удовлетворительное</option><option>Плохое</option></select></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Неисправность</label><input id="oc-problem" class="fc"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Комплектация</label><input id="oc-kit" class="fc" placeholder="Зарядка, чехол..."></div>
+        </div>
+      </div>
+
+      <div id="ot-works" style="display:none">
+        <p style="font-size:12px;color:#f59e0b;margin-bottom:12px">Если в заказ внесены данные клиента, необходимо подписать заявление о присоединении к оферте.</p>
+        <div style="overflow-x:auto">
+          <table style="min-width:860px">
+            <thead><tr style="background:#f8fafc">
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Работа</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right">Цена (руб)</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Бонус</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Артикул</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Запчасть</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b;text-align:right">Цена зап. (руб)</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Гарантия</th>
+              <th style="padding:9px 12px;font-size:12px;font-weight:500;color:#64748b">Исполнитель</th>
+              <th></th>
+            </tr></thead>
+            <tbody id="works-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="ot-warranty" style="display:none">
+        <div class="fr" style="max-width:600px">
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Гарантия (дни)</label><input id="oc-war" type="number" class="fc" placeholder="14"></div>
+          <div class="fg"><label style="font-size:12px;color:#64748b;font-weight:400">Дата окончания</label><input id="oc-war-end" type="date" class="fc"></div>
+          <div class="fg" style="grid-column:1/-1"><label style="font-size:12px;color:#64748b;font-weight:400">Условия гарантии</label><textarea id="oc-war-note" class="fc" style="height:80px;resize:vertical"></textarea></div>
+        </div>
+      </div>
+
+      <div id="ot-rating" style="display:none">
+        <p style="font-size:13px;color:#64748b;margin-bottom:10px">Оценка клиента</p>
+        <div style="display:flex;gap:6px;margin-bottom:14px" id="stars-wrap">
+          <span class="star" onclick="rate(1)">★</span><span class="star" onclick="rate(2)">★</span>
+          <span class="star" onclick="rate(3)">★</span><span class="star" onclick="rate(4)">★</span><span class="star" onclick="rate(5)">★</span>
+        </div>
+        <div class="fg" style="max-width:400px"><label style="font-size:12px;color:#64748b;font-weight:400">Отзыв</label><textarea id="oc-review" class="fc" style="height:80px;resize:vertical"></textarea></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- MODALS -->
+
+<!-- Quick sale -->
+<div class="overlay hidden" id="m-quick">
+  <div class="modal" style="max-width:420px">
+    <div class="mhd"><div><h3>Быстрая продажа</h3><p style="font-size:11px;color:#64748b;margin-top:2px">Розничный покупатель · Устройство: Аксессуары</p></div>
+      <button class="btn-i" onclick="cm('m-quick')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mbd">
+      <div class="fg"><label>Клиент</label><input id="qs-client" value="Розничный покупатель"></div>
+      <div class="fr">
+        <div class="fg"><label>Модель аксессуара</label><input id="qs-model" placeholder="Напр: Чехол iPhone 14"></div>
+        <div class="fg"><label>Цвет</label><input id="qs-color" placeholder="Напр: Чёрный"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label>Принимающий сотрудник</label><input id="qs-emp" placeholder="ФИО"></div>
+        <div class="fg"><label>Ориент. цена (₽)</label><input id="qs-price" type="number" placeholder="0"></div>
+      </div>
+      <div class="fg"><label>Источник</label>
+        <select id="qs-src"><option>Постоянный клиент</option><option>Новый клиент</option><option>Рекомендация</option><option>Соцсети</option><option>Сайт</option></select>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-g" onclick="cm('m-quick')">Отмена</button>
+      <button class="btn btn-p" onclick="doQuickSale()">✓ Оформить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Client modal -->
+<div class="overlay hidden" id="m-client">
+  <div class="modal">
+    <div class="mhd"><h3 id="cm-title">Новый клиент</h3><button class="btn-i" onclick="cm('m-client')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <input type="hidden" id="ci">
+      <div class="fg"><label>Имя *</label><input id="cn"></div>
+      <div class="fr"><div class="fg"><label>Email</label><input id="ce" type="email"></div><div class="fg"><label>Телефон</label><input id="cp"></div></div>
+      <div class="fr"><div class="fg"><label>Компания</label><input id="cc"></div><div class="fg"><label>Статус</label><select id="cs"><option value="lead">Лид</option><option value="active">Активный</option><option value="inactive">Неактивный</option></select></div></div>
+      <div class="fg"><label>Заметки</label><textarea id="cno"></textarea></div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-client')">Отмена</button><button class="btn btn-p" onclick="saveClient()">Сохранить</button></div>
+  </div>
+</div>
+
+<!-- Deal modal -->
+<div class="overlay hidden" id="m-deal">
+  <div class="modal">
+    <div class="mhd"><h3 id="dm-title">Новый заказ</h3><button class="btn-i" onclick="cm('m-deal')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <input type="hidden" id="di">
+      <div class="fg"><label>Название *</label><input id="dt"></div>
+      <div class="fr"><div class="fg"><label>Клиент</label><select id="dc"></select></div><div class="fg"><label>Сумма (₽)</label><input id="da" type="number" placeholder="0"></div></div>
+      <div class="fr">
+        <div class="fg"><label>Этап</label><select id="dstage"><option value="new">Новая</option><option value="qualification">Квалификация</option><option value="proposal">КП отправлено</option><option value="negotiation">Переговоры</option><option value="won">Выиграна</option><option value="lost">Проиграна</option></select></div>
+        <div class="fg"><label>Статус</label><select id="dstat"><option value="open">Открыта</option><option value="closed">Закрыта</option></select></div>
+      </div>
+      <div class="fg"><label>Заметки</label><textarea id="dn"></textarea></div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-deal')">Отмена</button><button class="btn btn-p" onclick="saveDeal()">Сохранить</button></div>
+  </div>
+</div>
+
+<!-- Task modal -->
+<div class="overlay hidden" id="m-task">
+  <div class="modal">
+    <div class="mhd"><h3 id="tm-title">Новая задача</h3><button class="btn-i" onclick="cm('m-task')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <input type="hidden" id="tki">
+      <div class="fg"><label>Название *</label><input id="tkt"></div>
+      <div class="fr"><div class="fg"><label>Клиент</label><select id="tkc"></select></div><div class="fg"><label>Заказ</label><select id="tkd"></select></div></div>
+      <div class="fr"><div class="fg"><label>Приоритет</label><select id="tkp"><option value="high">Высокий</option><option value="medium" selected>Средний</option><option value="low">Низкий</option></select></div><div class="fg"><label>Статус</label><select id="tks"><option value="pending">Ожидает</option><option value="in_progress">В работе</option><option value="completed">Выполнена</option></select></div></div>
+      <div class="fg"><label>Срок</label><input id="tkdue" type="datetime-local"></div>
+      <div class="fg"><label>Описание</label><textarea id="tkdesc"></textarea></div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-task')">Отмена</button><button class="btn btn-p" onclick="saveTask()">Сохранить</button></div>
+  </div>
+</div>
+
+<!-- Add work modal -->
+<div class="overlay hidden" id="m-work">
+  <div class="modal" style="max-width:460px">
+    <div class="mhd"><h3 id="wm-title">Добавить работу</h3><button class="btn-i" onclick="cm('m-work')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <div class="mbd">
+      <div class="fg"><label>Наименование *</label><input id="wn"></div>
+      <div class="fr"><div class="fg"><label>Цена услуги (₽)</label><input id="wp" type="number" placeholder="0"></div><div class="fg"><label>Гарантия (дни)</label><input id="ww" type="number" placeholder="14"></div></div>
+      <div class="fr"><div class="fg"><label>Запчасть</label><input id="wpart"></div><div class="fg"><label>Цена запчасти (₽)</label><input id="wpp" type="number" placeholder="0"></div></div>
+      <div class="fr"><div class="fg"><label>Артикул</label><input id="wsku"></div><div class="fg"><label>Исполнитель</label><input id="wexec"></div></div>
+    </div>
+    <div class="mft"><button class="btn btn-g" onclick="cm('m-work')">Отмена</button><button class="btn btn-p" onclick="saveWork()">Добавить</button></div>
+  </div>
+</div>
+
+<script>
+// ── Storage ──────────────────────────────────────────────────────────────────
+const S={
+  get(k){return JSON.parse(localStorage.getItem(k)||'[]')},
+  set(k,v){localStorage.setItem(k,JSON.stringify(v))},
+  nid(k){const a=S.get(k);return a.length?Math.max(...a.map(x=>x.id))+1:1}
+}
+
+// ── Seed ─────────────────────────────────────────────────────────────────────
+if(!localStorage.getItem('seeded')){
+  const d1=new Date();d1.setDate(d1.getDate()+1)
+  const d2=new Date();d2.setDate(d2.getDate()+7)
+  const d3=new Date();d3.setDate(d3.getDate()-1)
+  S.set('clients',[
+    {id:1,name:'Иван Петров',email:'ivan@example.com',phone:'+7 900 123-45-67',company:'ООО Ромашка',status:'active',notes:'Крупный клиент',created_at:new Date().toISOString(),interactions:[]},
+    {id:2,name:'Анна Смирнова',email:'anna@example.com',phone:'+7 910 987-65-43',company:'ИП Смирнова',status:'active',notes:'',created_at:new Date().toISOString(),interactions:[]},
+    {id:3,name:'Сергей Козлов',email:'sergey@example.com',phone:'+7 920 555-00-11',company:'Козлов и Ко',status:'lead',notes:'',created_at:new Date().toISOString(),interactions:[]},
+  ])
+  S.set('deals',[
+    {id:1,client_id:1,title:'Поставка оборудования',amount:150000,stage:'negotiation',status:'open',notes:'',created_at:new Date().toISOString()},
+    {id:2,client_id:1,title:'Техническое обслуживание',amount:45000,stage:'won',status:'closed',notes:'',created_at:new Date().toISOString()},
+    {id:3,client_id:2,title:'Консультация',amount:25000,stage:'proposal',status:'open',notes:'',created_at:new Date().toISOString()},
+    {id:4,client_id:3,title:'Разработка сайта',amount:80000,stage:'new',status:'open',notes:'',created_at:new Date().toISOString()},
+  ])
+  S.set('tasks',[
+    {id:1,client_id:1,deal_id:1,title:'Позвонить для уточнения деталей',desc:'',status:'pending',priority:'high',due:d1.toISOString(),created_at:new Date().toISOString()},
+    {id:2,client_id:2,deal_id:3,title:'Отправить коммерческое предложение',desc:'',status:'pending',priority:'medium',due:d2.toISOString(),created_at:new Date().toISOString()},
+    {id:3,client_id:3,deal_id:null,title:'Провести встречу',desc:'',status:'completed',priority:'low',due:d3.toISOString(),created_at:new Date().toISOString()},
+  ])
+  S.set('orders',[])
+  localStorage.setItem('seeded','1')
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const SM={new:{l:'Новая',c:'bgr'},qualification:{l:'Квалификация',c:'bb'},proposal:{l:'КП отправлено',c:'bv'},negotiation:{l:'Переговоры',c:'ba'},won:{l:'Выиграна',c:'bg'},lost:{l:'Проиграна',c:'br'}}
+const PM={high:{l:'Высокий',c:'br'},medium:{l:'Средний',c:'by'},low:{l:'Низкий',c:'bg'}}
+const CLM={active:{l:'Активный',c:'bg'},lead:{l:'Лид',c:'bb'},inactive:{l:'Неактивный',c:'bgr'}}
+const SHM={new:'background:#f1f5f9;color:#475569;border-color:#e2e8f0',qualification:'background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe',proposal:'background:#ede9fe;color:#6d28d9;border-color:#ddd6fe',negotiation:'background:#fef3c7;color:#b45309;border-color:#fde68a',won:'background:#dcfce7;color:#15803d;border-color:#bbf7d0',lost:'background:#fee2e2;color:#b91c1c;border-color:#fecaca'}
+function fmt(n){return n?Number(n).toLocaleString('ru')+' ₽':'—'}
+function fdt(d){if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
+function eico(p,s=14){return `<svg style="width:${s}px;height:${s}px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p}</svg>`}
+const EICO=eico('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>')
+const DICO=eico('<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>')
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function nav(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'))
+  document.getElementById('page-'+id).classList.add('active')
+  if(el) el.classList.add('active')
+  if(id==='dashboard') renderDash()
+  if(id==='clients')   renderClients()
+  if(id==='deals')     renderDeals()
+  if(id==='tasks')     renderTasks()
+}
+
+// ── Modal helpers ─────────────────────────────────────────────────────────────
+function cm(id){document.getElementById(id).classList.add('hidden')}
+function om(id){document.getElementById(id).classList.remove('hidden')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay:not(.hidden)').forEach(o=>o.classList.add('hidden'))})
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden')}))
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDash(){
+  const clients=S.get('clients'),deals=S.get('deals'),tasks=S.get('tasks'),orders=S.get('orders')
+  const allDeals=[...deals,...orders.map(o=>({...o,title:o.device||o.client||'Заказ',amount:o.total||o.est_price||0,stage:'won',status:'closed'}))]
+  const stats=[
+    {l:'Всего клиентов',v:clients.length,s:clients.filter(c=>c.status==='active').length+' активных',bg:'#3b82f6'},
+    {l:'Открытых заказов',v:deals.filter(d=>d.status==='open').length,s:deals.length+' всего',bg:'#8b5cf6'},
+    {l:'Выручка',v:fmt(deals.filter(d=>d.stage==='won').reduce((s,d)=>s+(+d.amount||0),0)),s:'закрытые',bg:'#22c55e'},
+    {l:'Воронка',v:fmt(deals.filter(d=>d.status==='open').reduce((s,d)=>s+(+d.amount||0),0)),s:'открытые',bg:'#f59e0b'},
+    {l:'Задач',v:tasks.filter(t=>t.status==='pending').length,s:'ожидают',bg:'#06b6d4'},
+    {l:'Просрочено',v:tasks.filter(t=>t.status==='pending'&&t.due&&new Date(t.due)<new Date()).length,s:'нужно внимание',bg:'#ef4444'},
+  ]
+  document.getElementById('dash-stats').innerHTML=stats.map(s=>`<div class="stat-card"><div class="ico" style="background:${s.bg}"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="12" r="6"/></svg></div><div class="lbl">${s.l}</div><div class="val">${s.v}</div><div class="sub">${s.s}</div></div>`).join('')
+  const sc=Object.keys(SM).map(k=>deals.filter(d=>d.stage===k).length),mx=Math.max(...sc,1)
+  document.getElementById('funnel-chart').innerHTML=Object.keys(SM).map((k,i)=>`<div class="bi"><div class="bv2">${sc[i]}</div><div class="br2" style="height:${Math.max(sc[i]/mx*100,4)}px;background:#3b82f6;opacity:${0.4+0.6*i/6}"></div><div class="bl">${SM[k].l.split(' ')[0]}</div></div>`).join('')
+  const pc=['high','medium','low'].map(p=>tasks.filter(t=>t.priority===p&&t.status!=='completed').length),mpx=Math.max(...pc,1)
+  const pc2=['#ef4444','#f59e0b','#22c55e']
+  document.getElementById('priority-chart').innerHTML=['high','medium','low'].map((p,i)=>`<div class="bi"><div class="bv2">${pc[i]}</div><div class="br2" style="height:${Math.max(pc[i]/mpx*100,4)}px;background:${pc2[i]}"></div><div class="bl">${PM[p].l}</div></div>`).join('')
+}
+
+// ── CLIENTS ───────────────────────────────────────────────────────────────────
+let expandC=null
+function renderClients(){
+  let cl=S.get('clients')
+  const q=document.getElementById('client-search').value.toLowerCase()
+  const sf=document.getElementById('client-sf').value
+  if(q) cl=cl.filter(c=>(c.name+c.email+c.company).toLowerCase().includes(q))
+  if(sf) cl=cl.filter(c=>c.status===sf)
+  const tb=document.getElementById('clients-tbody')
+  if(!cl.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:32px">Клиенты не найдены</td></tr>';return}
+  tb.innerHTML=cl.map(c=>{
+    const m=CLM[c.status]||CLM.inactive
+    return `<tr class="cr" onclick="toggleC(${c.id})">
+      <td><strong>${c.name}</strong></td><td>${c.company||'—'}</td><td>${c.phone||'—'}</td>
+      <td><span class="badge ${m.c}">${m.l}</span></td>
+      <td style="white-space:nowrap" onclick="event.stopPropagation()">
+        <button class="btn-i" onclick="openClientModal(${c.id})">${EICO}</button>
+        <button class="btn-i d" onclick="delClient(${c.id})">${DICO}</button>
+      </td></tr>
+    <tr><td colspan="5" style="padding:0"><div class="cx ${expandC===c.id?'open':''}" id="cx-${c.id}">${renderCX(c)}</div></td></tr>`
+  }).join('')
+}
+function renderCX(c){
+  const deals=S.get('deals').filter(d=>d.client_id===c.id)
+  const tasks=S.get('tasks').filter(t=>t.client_id===c.id)
+  return `<div class="xs"><h4>Заказы (${deals.length})</h4>${deals.map(d=>`<p>${d.title} — <b>${fmt(d.amount)}</b></p>`).join('')||'<p style="color:#94a3b8">Нет</p>'}</div>
+  <div class="xs"><h4>Задачи (${tasks.length})</h4>${tasks.map(t=>`<p>• ${t.title}</p>`).join('')||'<p style="color:#94a3b8">Нет</p>'}</div>
+  <div class="xs"><h4>История</h4><div class="ii"><input id="ii-${c.id}" placeholder="Добавить заметку..." onkeydown="if(event.key==='Enter')addInt(${c.id})"><button onclick="addInt(${c.id})">+</button></div>${(c.interactions||[]).slice().reverse().slice(0,5).map(i=>`<p><span style="color:#94a3b8">${fdt(i.date)} — </span>${i.text}</p>`).join('')||'<p style="color:#94a3b8">Нет записей</p>'}</div>`
+}
+function toggleC(id){expandC=expandC===id?null:id;renderClients()}
+function addInt(cid){
+  const inp=document.getElementById('ii-'+cid);if(!inp||!inp.value.trim())return
+  const cl=S.get('clients'),c=cl.find(c=>c.id===cid);if(!c)return
+  if(!c.interactions)c.interactions=[]
+  c.interactions.push({text:inp.value.trim(),date:new Date().toISOString()})
+  S.set('clients',cl);inp.value='';renderClients()
+}
+function openClientModal(id){
+  const cl=S.get('clients'),c=id?cl.find(c=>c.id===id):null
+  document.getElementById('cm-title').textContent=c?'Редактировать клиента':'Новый клиент'
+  document.getElementById('ci').value=c?c.id:''
+  document.getElementById('cn').value=c?c.name:''
+  document.getElementById('ce').value=c?c.email||'':''
+  document.getElementById('cp').value=c?c.phone||'':''
+  document.getElementById('cc').value=c?c.company||'':''
+  document.getElementById('cs').value=c?c.status:'lead'
+  document.getElementById('cno').value=c?c.notes||'':''
+  om('m-client')
+}
+function saveClient(){
+  const name=document.getElementById('cn').value.trim();if(!name){alert('Имя обязательно');return}
+  const id=document.getElementById('ci').value,cl=S.get('clients')
+  const obj={name,email:document.getElementById('ce').value,phone:document.getElementById('cp').value,company:document.getElementById('cc').value,status:document.getElementById('cs').value,notes:document.getElementById('cno').value}
+  if(id){const i=cl.findIndex(c=>c.id==id);cl[i]={...cl[i],...obj}}else cl.push({id:S.nid('clients'),...obj,created_at:new Date().toISOString(),interactions:[]})
+  S.set('clients',cl);cm('m-client');renderClients()
+}
+function delClient(id){
+  if(!confirm('Удалить клиента?'))return
+  S.set('clients',S.get('clients').filter(c=>c.id!==id))
+  S.set('deals',S.get('deals').filter(d=>d.client_id!==id))
+  S.set('tasks',S.get('tasks').filter(t=>t.client_id!==id))
+  if(expandC===id)expandC=null;renderClients()
+}
+
+// ── DEALS ─────────────────────────────────────────────────────────────────────
+let dview='kanban'
+function setView(v){
+  dview=v
+  document.getElementById('vk').className=v==='kanban'?'btn btn-p':'btn btn-g'
+  document.getElementById('vk').style.cssText='border-radius:0;padding:7px 12px;font-size:12px'
+  document.getElementById('vl').className=v==='list'?'btn btn-p':'btn btn-g'
+  document.getElementById('vl').style.cssText='border-radius:0;padding:7px 12px;font-size:12px;border:none'
+  document.getElementById('deals-kanban').style.display=v==='kanban'?'flex':'none'
+  document.getElementById('deals-list').style.display=v==='list'?'block':'none'
+  renderDeals()
+}
+function renderDeals(){
+  const deals=S.get('deals'),clients=S.get('clients')
+  const cn=id=>{const c=clients.find(c=>c.id==id);return c?c.name:''}
+  const pl=deals.filter(d=>d.status==='open').reduce((s,d)=>s+(+d.amount||0),0)
+  document.getElementById('pipeline-val').textContent='Воронка: '+fmt(pl)
+  if(dview==='kanban'){
+    document.getElementById('deals-kanban').innerHTML=Object.keys(SM).map(s=>{
+      const sd=deals.filter(d=>d.stage===s),tot=sd.reduce((sum,d)=>sum+(+d.amount||0),0)
+      return `<div class="kcol"><div class="khd" style="${SHM[s]}">${SM[s].l}<span>${sd.length}</span></div>${tot?`<p style="font-size:10px;color:#94a3b8;padding:0 4px;margin-bottom:6px">${fmt(tot)}</p>`:''}<div class="kcards">${sd.map(d=>`<div class="kcard"><div style="display:flex;justify-content:space-between"><span class="kt">${d.title}</span><span style="display:flex;gap:2px"><button class="btn-i" onclick="event.stopPropagation();openDealModal(${d.id})" style="padding:2px">${EICO}</button><button class="btn-i d" onclick="event.stopPropagation();delDeal(${d.id})" style="padding:2px">${DICO}</button></span></div><div class="kc">${d.client_id?cn(d.client_id):'<span style="color:#f59e0b;font-weight:500">Розничный покупатель</span>'}</div>${d.amount?`<div class="ka">${fmt(d.amount)}</div>`:''}</div>`).join('')}</div></div>`
+    }).join('')
+  } else {
+    document.getElementById('deals-tbody').innerHTML=deals.length?deals.map(d=>{
+      const m=SM[d.stage]||SM.new
+      return `<tr><td><strong>${d.title}</strong></td><td>${d.client_id?cn(d.client_id):'<span style="color:#f59e0b;font-weight:500">Розничный покупатель</span>'}</td><td><span class="badge ${m.c}">${m.l}</span></td><td style="color:#16a34a;font-weight:600">${fmt(d.amount)}</td><td style="white-space:nowrap"><button class="btn-i" onclick="openDealModal(${d.id})">${EICO}</button><button class="btn-i d" onclick="delDeal(${d.id})">${DICO}</button></td></tr>`
+    }).join(''):'<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:32px">Заказы не найдены</td></tr>'
+  }
+}
+function openDealModal(id){
+  const deals=S.get('deals'),clients=S.get('clients'),d=id?deals.find(d=>d.id===id):null
+  document.getElementById('dm-title').textContent=d?'Редактировать заказ':'Новый заказ'
+  document.getElementById('di').value=d?d.id:''
+  document.getElementById('dt').value=d?d.title:''
+  document.getElementById('da').value=d?d.amount||'':''
+  document.getElementById('dstage').value=d?d.stage:'new'
+  document.getElementById('dstat').value=d?d.status:'open'
+  document.getElementById('dn').value=d?d.notes||'':''
+  const cs=document.getElementById('dc')
+  cs.innerHTML='<option value="">— не выбран —</option>'+clients.map(c=>`<option value="${c.id}" ${d&&d.client_id==c.id?'selected':''}>${c.name}</option>`).join('')
+  om('m-deal')
+}
+function saveDeal(){
+  const title=document.getElementById('dt').value.trim();if(!title){alert('Название обязательно');return}
+  const id=document.getElementById('di').value,deals=S.get('deals')
+  const obj={title,client_id:document.getElementById('dc').value||null,amount:document.getElementById('da').value||0,stage:document.getElementById('dstage').value,status:document.getElementById('dstat').value,notes:document.getElementById('dn').value}
+  if(id){const i=deals.findIndex(d=>d.id==id);deals[i]={...deals[i],...obj}}else deals.push({id:S.nid('deals'),...obj,created_at:new Date().toISOString()})
+  S.set('deals',deals);cm('m-deal');renderDeals()
+}
+function delDeal(id){
+  if(!confirm('Удалить заказ?'))return
+  S.set('deals',S.get('deals').filter(d=>d.id!==id));renderDeals()
+}
+
+// ── QUICK SALE ─────────────────────────────────────────────────────────────────
+function openQuickSale(){
+  document.getElementById('qs-client').value='Розничный покупатель'
+  document.getElementById('qs-model').value=''
+  document.getElementById('qs-color').value=''
+  document.getElementById('qs-emp').value=''
+  document.getElementById('qs-price').value=''
+  om('m-quick')
+}
+function doQuickSale(){
+  cm('m-quick')
+  const now=new Date()
+  const num=String(now.getFullYear()).slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+'-'+String(Math.floor(Math.random()*90000)+10000)
+  openOrder({
+    id:null, number:num,
+    client: document.getElementById('qs-client').value,
+    device: 'Аксессуары',
+    model:  document.getElementById('qs-model').value,
+    color:  document.getElementById('qs-color').value,
+    emp:    document.getElementById('qs-emp').value,
+    src:    document.getElementById('qs-src').value,
+    price:  document.getElementById('qs-price').value,
+    status:'open', works:[], created_at:now.toISOString()
+  })
+}
+
+// ── ORDER PAGE ────────────────────────────────────────────────────────────────
+let CUR=null
+function openOrder(o){
+  CUR=JSON.parse(JSON.stringify(o)) // deep copy
+  const dt=new Date(o.created_at)
+  document.getElementById('oc-num').textContent=(o.number||('№'+o.id))+' от '+dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
+  document.getElementById('oc-client').value=o.client||''
+  document.getElementById('oc-emp').value=o.emp||''
+  document.getElementById('oc-src').value=o.src||'Постоянный клиент'
+  document.getElementById('oc-closer').value=o.closer||''
+  document.getElementById('oc-device').value=o.device||''
+  document.getElementById('oc-model').value=o.model||''
+  document.getElementById('oc-color').value=o.color||''
+  document.getElementById('oc-status').value=o.status||'open'
+  document.getElementById('oc-price').value=o.price||''
+  document.getElementById('oc-ready').value=o.ready||''
+  document.getElementById('oc-comment').value=o.comment||''
+  document.getElementById('oc-adv').value=o.adv||''
+  document.getElementById('oc-serial').value=o.serial||''
+  document.getElementById('oc-imei').value=o.imei||''
+  document.getElementById('oc-problem').value=o.problem||''
+  document.getElementById('oc-kit').value=o.kit||''
+  document.getElementById('oc-war').value=o.war||''
+  document.getElementById('oc-war-end').value=o.war_end||''
+  document.getElementById('oc-war-note').value=o.war_note||''
+  document.getElementById('oc-review').value=o.review||''
+  updAdv(o.adv||0)
+  renderWorks()
+  otab(document.querySelector('.ot'),'ot-main')
+  // switch page
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'))
+  document.getElementById('page-order').classList.add('active')
+  document.getElementById('main').scrollTop=0
+}
+function closeOrder(){
+  nav('deals', document.getElementById('nav-deals'))
+}
+function collectOrder(){
+  return {
+    ...CUR,
+    client: document.getElementById('oc-client').value,
+    emp:    document.getElementById('oc-emp').value,
+    src:    document.getElementById('oc-src').value,
+    closer: document.getElementById('oc-closer').value,
+    device: document.getElementById('oc-device').value,
+    model:  document.getElementById('oc-model').value,
+    color:  document.getElementById('oc-color').value,
+    status: document.getElementById('oc-status').value,
+    price:  document.getElementById('oc-price').value,
+    ready:  document.getElementById('oc-ready').value,
+    comment:document.getElementById('oc-comment').value,
+    adv:    document.getElementById('oc-adv').value,
+    serial: document.getElementById('oc-serial').value,
+    imei:   document.getElementById('oc-imei').value,
+    problem:document.getElementById('oc-problem').value,
+    kit:    document.getElementById('oc-kit').value,
+    war:    document.getElementById('oc-war').value,
+    war_end:document.getElementById('oc-war-end').value,
+    war_note:document.getElementById('oc-war-note').value,
+    review: document.getElementById('oc-review').value,
+    total:  calcTotal(),
+  }
+}
+function saveOrder(){
+  const data=collectOrder()
+  const orders=S.get('orders')
+  if(data.id){const i=orders.findIndex(o=>o.id===data.id);if(i>=0)orders[i]=data;else orders.push(data)}
+  else{data.id=S.nid('orders');orders.push(data)}
+  S.set('orders',orders)
+  CUR=data
+  // save to deals list so it appears in kanban/list
+  const deals=S.get('deals')
+  const existing=deals.findIndex(d=>d.order_id===data.id)
+  const dealObj={client_id:null,title:(data.device||'Заказ')+' '+data.model,amount:data.total||data.price||0,stage:'won',status:'closed',retail:true,order_id:data.id,created_at:data.created_at,notes:data.comment||''}
+  if(existing>=0)deals[existing]={...deals[existing],...dealObj}
+  else deals.push({id:S.nid('deals'),...dealObj})
+  S.set('deals',deals)
+  // show saved indicator
+  const btn=document.querySelector('.op-bar .btn-g')
+  const orig=btn.textContent;btn.textContent='✓ Сохранено';btn.style.color='#16a34a'
+  setTimeout(()=>{btn.innerHTML='<svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить';btn.style.color=''},2000)
+}
+function deleteOrder(){
+  if(!confirm('Удалить заказ?'))return
+  if(CUR.id){
+    S.set('orders',S.get('orders').filter(o=>o.id!==CUR.id))
+    S.set('deals',S.get('deals').filter(d=>d.order_id!==CUR.id))
+  }
+  closeOrder()
+}
+function printOrder(){window.print()}
+
+function calcTotal(){return(CUR.works||[]).reduce((s,w)=>s+(+w.p||0)+(+w.pp||0),0)}
+function updAdv(v){document.getElementById('oc-adv-show').textContent=(v||0)+' руб.';renderSummary()}
+function renderSummary(){
+  const t=calcTotal(),b=Math.round(t*0.1)
+  document.getElementById('oc-total').textContent=t+' руб.'
+  document.getElementById('oc-bonus').textContent=b+' руб.'
+}
+function renderWorks(){
+  const works=CUR?CUR.works||[]:[]
+  const tb=document.getElementById('works-tbody')
+  if(!works.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:32px;font-size:13px">Работы не добавлены</td></tr>'}
+  else tb.innerHTML=works.map((w,i)=>`<tr><td style="font-size:13px">${w.n}</td><td style="text-align:right;font-size:13px">${w.p||0}</td><td style="font-size:12px;color:#16a34a">${Math.round((w.p||0)*0.1)} ₽</td><td style="font-size:12px;color:#64748b">${w.sku||'—'}</td><td style="font-size:13px">${w.part||'—'}</td><td style="text-align:right;font-size:13px">${w.pp||0}</td><td style="font-size:13px">${w.war||'—'}</td><td style="font-size:13px">${w.exec||'—'}</td><td><button class="btn-i d" onclick="delWork(${i})">${DICO}</button></td></tr>`).join('')
+  renderSummary()
+}
+function delWork(i){CUR.works.splice(i,1);renderWorks()}
+
+let wtype=''
+function addWork(t){
+  wtype=t
+  document.getElementById('wm-title').textContent='Добавить: '+t
+  document.getElementById('wn').value=''
+  document.getElementById('wp').value=''
+  document.getElementById('ww').value='14'
+  document.getElementById('wpart').value=''
+  document.getElementById('wpp').value=''
+  document.getElementById('wsku').value=''
+  document.getElementById('wexec').value=document.getElementById('oc-emp').value||''
+  om('m-work')
+  setTimeout(()=>document.getElementById('wn').focus(),50)
+}
+function saveWork(){
+  const n=document.getElementById('wn').value.trim();if(!n){alert('Укажите название');return}
+  if(!CUR.works)CUR.works=[]
+  CUR.works.push({type:wtype,n,p:document.getElementById('wp').value||0,war:document.getElementById('ww').value||14,part:document.getElementById('wpart').value,pp:document.getElementById('wpp').value||0,sku:document.getElementById('wsku').value,exec:document.getElementById('wexec').value})
+  cm('m-work');renderWorks()
+  // switch to works tab
+  document.querySelectorAll('.ot').forEach(t=>{if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes('ot-works'))otab(t,'ot-works')})
+}
+
+function otab(el,id){
+  document.querySelectorAll('.ot').forEach(t=>t.classList.remove('active'))
+  document.querySelectorAll('#page-order [id^="ot-"]').forEach(t=>t.style.display='none')
+  el.classList.add('active')
+  document.getElementById(id).style.display='block'
+}
+function rate(n){
+  if(CUR)CUR.rating=n
+  document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<n))
+}
+
+// ── TASKS ─────────────────────────────────────────────────────────────────────
+function renderTasks(){
+  let tasks=S.get('tasks')
+  const sf=document.getElementById('tsf').value,pf=document.getElementById('tpf').value
+  if(sf) tasks=tasks.filter(t=>t.status===sf)
+  if(pf) tasks=tasks.filter(t=>t.priority===pf)
+  const cl=S.get('clients'),deals=S.get('deals')
+  const cn=id=>{const c=cl.find(c=>c.id==id);return c?c.name:''}
+  const dn=id=>{const d=deals.find(d=>d.id==id);return d?d.title:''}
+  const now=new Date()
+  const row=t=>{
+    const ov=t.status==='pending'&&t.due&&new Date(t.due)<now
+    const pm=PM[t.priority]||PM.medium,done=t.status==='completed'
+    return `<div class="ti"><div class="tc ${done?'done':''}" onclick="toggleTask(${t.id})"></div>
+      <div style="flex:1;min-width:0"><div class="ttl ${done?'done':''}">${t.title}</div>
+      <div class="tmt">${t.client_id?cn(t.client_id):''}${t.deal_id?' · '+dn(t.deal_id):''}${t.due?` <span class="${ov?'ov':''}">${ov?'⚠ просрочено: ':''}${fdt(t.due)}</span>`:''}</div></div>
+      <span class="badge ${pm.c}" style="white-space:nowrap;margin-right:4px">${pm.l}</span>
+      <button class="btn-i" onclick="openTaskModal(${t.id})">${EICO}</button>
+      <button class="btn-i d" onclick="delTask(${t.id})">${DICO}</button></div>`
+  }
+  const act=tasks.filter(t=>t.status!=='completed'&&t.status!=='cancelled')
+  const done=tasks.filter(t=>t.status==='completed'||t.status==='cancelled')
+  document.getElementById('atc').textContent=act.length
+  document.getElementById('dtc').textContent=done.length
+  document.getElementById('tasks-active').innerHTML=act.length?act.map(row).join(''):'<p style="text-align:center;color:#94a3b8;padding:32px;font-size:13px">Нет активных задач</p>'
+  document.getElementById('tdcard').style.display=done.length?'':'none'
+  document.getElementById('tasks-done').innerHTML=done.map(row).join('')
+}
+function toggleTask(id){
+  const t=S.get('tasks'),task=t.find(t=>t.id===id);if(!task)return
+  task.status=task.status==='completed'?'pending':'completed'
+  S.set('tasks',t);renderTasks()
+}
+function openTaskModal(id){
+  const tasks=S.get('tasks'),cl=S.get('clients'),deals=S.get('deals'),t=id?tasks.find(t=>t.id===id):null
+  document.getElementById('tm-title').textContent=t?'Редактировать задачу':'Новая задача'
+  document.getElementById('tki').value=t?t.id:''
+  document.getElementById('tkt').value=t?t.title:''
+  document.getElementById('tkp').value=t?t.priority:'medium'
+  document.getElementById('tks').value=t?t.status:'pending'
+  document.getElementById('tkdue').value=t&&t.due?new Date(t.due).toISOString().slice(0,16):''
+  document.getElementById('tkdesc').value=t?t.desc||'':''
+  const cs=document.getElementById('tkc')
+  cs.innerHTML='<option value="">— не выбран —</option>'+cl.map(c=>`<option value="${c.id}" ${t&&t.client_id==c.id?'selected':''}>${c.name}</option>`).join('')
+  const ds=document.getElementById('tkd')
+  ds.innerHTML='<option value="">— не выбрана —</option>'+deals.map(d=>`<option value="${d.id}" ${t&&t.deal_id==d.id?'selected':''}>${d.title}</option>`).join('')
+  om('m-task')
+}
+function saveTask(){
+  const title=document.getElementById('tkt').value.trim();if(!title){alert('Название обязательно');return}
+  const id=document.getElementById('tki').value,tasks=S.get('tasks')
+  const obj={title,client_id:document.getElementById('tkc').value||null,deal_id:document.getElementById('tkd').value||null,priority:document.getElementById('tkp').value,status:document.getElementById('tks').value,due:document.getElementById('tkdue').value||null,desc:document.getElementById('tkdesc').value}
+  if(id){const i=tasks.findIndex(t=>t.id==id);tasks[i]={...tasks[i],...obj}}else tasks.push({id:S.nid('tasks'),...obj,created_at:new Date().toISOString()})
+  S.set('tasks',tasks);cm('m-task');renderTasks()
+}
+function delTask(id){
+  if(!confirm('Удалить задачу?'))return
+  S.set('tasks',S.get('tasks').filter(t=>t.id!==id));renderTasks()
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+renderDash()
+</script>
+</body>
+</html>
