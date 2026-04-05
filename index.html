@@ -3642,7 +3642,7 @@ function renderWholesaleItems(){
         </div>
         ${it.sku?`<div style="font-size:10px;color:#94a3b8;margin-top:2px">Арт: ${it.sku}</div>`:''}
       </td>
-      <td style="padding:8px 12px"><input class="fc" type="number" min="1" value="${it.qty||1}" oninput="WCUR.items[${i}].qty=+this.value;renderWholesaleTotal()" style="text-align:right;width:70px"></td>
+      <td style="padding:8px 12px"><input class="fc" type="number" min="1" ${whIt?'max="'+whIt.qty+'"':''} value="${it.qty||1}" oninput="wcQtyInput(this,${i},${whIt?whIt.qty:9999})" style="text-align:right;width:70px;${whIt&&(it.qty||1)>whIt.qty?'border-color:#ef4444;background:#fff5f5':''}"></td>
       <td style="padding:8px 12px"><input class="fc" type="number" min="0" value="${it.price||0}" oninput="WCUR.items[${i}].price=+this.value;renderWholesaleTotal()" style="text-align:right;width:90px"></td>
       <td style="padding:8px 12px;text-align:right;font-weight:600;color:var(--text)">${((it.qty||1)*(it.price||0)).toLocaleString('ru')} ₽</td>
       <td style="padding:8px;text-align:center"><button onclick="removeWholesaleItem(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:18px;line-height:1" title="Удалить">×</button></td>
@@ -3651,6 +3651,24 @@ function renderWholesaleItems(){
   renderWholesaleTotal()
 }
 
+function wcQtyInput(inp,idx,maxQty){
+  let v=+inp.value||1
+  if(v<1) v=1
+  if(v>maxQty){
+    v=maxQty
+    inp.value=v
+    inp.style.borderColor='#ef4444'
+    inp.title='Максимум: '+maxQty+' шт. (больше нет на складе)'
+    // Красная рамка исчезнет через 1.5с
+    clearTimeout(inp._errTimer)
+    inp._errTimer=setTimeout(()=>{inp.style.borderColor='';inp.title=''},1500)
+  } else {
+    inp.style.borderColor=''
+    inp.title=''
+  }
+  WCUR.items[idx].qty=v
+  renderWholesaleTotal()
+}
 function renderWholesaleTotal(){
   const total=(WCUR.items||[]).reduce((s,it)=>s+(it.qty||1)*(it.price||0),0)
   document.getElementById('wc-total').textContent=total.toLocaleString('ru')+' ₽'
@@ -3701,34 +3719,57 @@ function renderWhPicker(q){
     el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Ничего не найдено</div>'
     return
   }
-  const srcBadge=s=>s==='1c'
-    ?'<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;margin-left:4px">1С</span>'
-    :''
-  el.innerHTML=filtered.map(it=>{
-    const alreadyQty=(WCUR&&WCUR.items||[]).filter(x=>x.wh_item_id===it.id).reduce((s,x)=>s+(+x.qty||1),0)
-    const stockColor=it.qty<=0?'#dc2626':it.qty<=2?'#f59e0b':'#16a34a'
-    return `<div onclick="addFromWhItem(${it.id})" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .1s" onmouseenter="this.style.background='#f5f3ff'" onmouseleave="this.style.background=''">
-      <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}${srcBadge(it.src)}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px">${it.sku?'Арт: '+it.sku:''}${it.barcode?' · '+it.barcode:''}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-size:13px;font-weight:700;color:${stockColor}">В наличии: ${it.qty} шт.</div>
-        <div style="font-size:12px;color:var(--text3)">${(it.sale_price||it.price||0).toLocaleString('ru')} ₽</div>
-      </div>
-      ${alreadyQty?`<div style="background:#ede9fe;color:#6d28d9;font-size:11px;font-weight:600;border-radius:8px;padding:2px 8px;flex-shrink:0">+${alreadyQty} в заказе</div>`:'<div style="width:60px;flex-shrink:0"></div>'}
-    </div>`
-  }).join('')
+  // Разделить на 1С и свои
+  const from1c=filtered.filter(it=>it.src==='1c')
+  const fromLocal=filtered.filter(it=>it.src!=='1c')
+  const renderGroup=(list,groupLabel,groupColor)=>{
+    if(!list.length) return ''
+    return `<div style="padding:6px 14px 4px;font-size:11px;font-weight:700;color:${groupColor};text-transform:uppercase;letter-spacing:.5px;background:#fafafa;border-bottom:1px solid var(--border)">${groupLabel}</div>`+
+    list.map(it=>{
+      const alreadyQty=(WCUR&&WCUR.items||[]).filter(x=>x.wh_item_id===it.id).reduce((s,x)=>s+(+x.qty||1),0)
+      const available=Math.max(0,it.qty-alreadyQty)
+      const stockColor=it.qty<=0?'#dc2626':it.qty<=2?'#f59e0b':'#16a34a'
+      const isOut=it.qty<=0
+      return `<div onclick="${isOut?'alert(\'Товар отсутствует на складе\')':'addFromWhItem('+it.id+')'}"
+        style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #f1f5f9;cursor:${isOut?'not-allowed':'pointer'};opacity:${isOut?'.45':'1'};transition:background .1s"
+        onmouseenter="if(${!isOut})this.style.background='#f5f3ff'" onmouseleave="this.style.background=''">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${it.sku?'Арт: <b>'+it.sku+'</b>':''}${it.barcode?' · '+it.barcode:''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;min-width:90px">
+          <div style="font-size:13px;font-weight:700;color:${stockColor}">${isOut?'Нет':'В наличии: '+it.qty+' шт.'}</div>
+          <div style="font-size:12px;color:var(--text3)">${(it.sale_price||it.price||0).toLocaleString('ru')} ₽</div>
+        </div>
+        ${alreadyQty
+          ?`<div style="background:#ede9fe;color:#6d28d9;font-size:11px;font-weight:600;border-radius:8px;padding:2px 8px;flex-shrink:0;text-align:center">${alreadyQty} в заказе<br><span style="font-weight:400;font-size:10px">доступно: ${available}</span></div>`
+          :'<div style="width:70px;flex-shrink:0"></div>'}
+      </div>`
+    }).join('')
+  }
+  el.innerHTML=
+    renderGroup(from1c,'📘 Из 1С','#1d4ed8')+
+    renderGroup(fromLocal,'🏪 Собственный склад','#15803d')
 }
 
 function addFromWhItem(id){
   const it=(S.get('wh_items')||[]).find(i=>i.id===id)
   if(!it) return
+  // Нельзя добавить товар которого нет
+  if(it.qty<=0){
+    alert('❌ Товар «'+it.name+'» отсутствует на складе')
+    return
+  }
   if(!WCUR.items) WCUR.items=[]
-  // Если уже есть — увеличим qty
   const exist=WCUR.items.find(x=>x.wh_item_id===it.id)
   if(exist){
-    exist.qty=(+exist.qty||1)+1
+    // Проверяем лимит: qty в заказе не может превысить остаток на складе
+    const newQty=(+exist.qty||1)+1
+    if(newQty>it.qty){
+      alert('⚠️ Нельзя добавить больше чем есть на складе.\nДоступно: '+it.qty+' шт., в заказе уже: '+exist.qty+' шт.')
+      return
+    }
+    exist.qty=newQty
   } else {
     WCUR.items.push({
       wh_item_id: it.id,
@@ -3736,11 +3777,10 @@ function addFromWhItem(id){
       sku:   it.sku||'',
       qty:   1,
       price: it.sale_price||it.price||0,
-      src:   it.src||'local'
+      src:   it.src||'local'   // 'local' или '1c'
     })
   }
   renderWholesaleItems()
-  // Обновим счётчик в пикере
   renderWhPicker(document.getElementById('wh-picker-q').value)
 }
 
@@ -3828,10 +3868,30 @@ function markShipped(){
   const wLabel=warehouseLabel[warehouse]||warehouse
   const orderNum=WCUR.number||('ОПТ-'+WCUR.id)
 
-  if(!confirm('Подтвердить выгрузку товаров?\nСклад: '+wLabel+'\nПозиций: '+items.length+'\n\nТовары будут списаны со склада автоматически.')) return
-
-  // — Списание со склада —
+  // — Предварительная проверка наличия (чтобы не уйти в минус) —
   const whItems=S.get('wh_items')||[]
+  const insufficient=[]
+  items.forEach(item=>{
+    if(!(item.name||'').trim()) return
+    const qty=+item.qty||1
+    let idx=-1
+    if(item.wh_item_id) idx=whItems.findIndex(it=>it.id===item.wh_item_id)
+    if(idx<0) idx=whItems.findIndex(it=>it.name.trim().toLowerCase()===(item.name||'').trim().toLowerCase())
+    if(idx>=0&&whItems[idx].qty<qty){
+      insufficient.push({name:item.name,need:qty,have:whItems[idx].qty,src:whItems[idx].src})
+    }
+  })
+  if(insufficient.length){
+    let warn='⚠️ Недостаточно товара на складе:\n\n'
+    insufficient.forEach(x=>{ warn+='  • '+x.name+': нужно '+x.need+' шт., есть '+x.have+' шт.'+(x.src==='1c'?' [1С]':'')+'\n' })
+    warn+='\nВыгрузку нельзя провести — пополните склад или уменьшите количество в заказе.'
+    alert(warn)
+    return
+  }
+
+  if(!confirm('Подтвердить выгрузку товаров?\nСклад: '+wLabel+'\nПозиций: '+items.length+'\n\nТовары будут списаны со склада.')) return
+
+  // — Списание со склада (раздельно: 1С и своё) —
   const log=S.get('wh_log')||[]
   const deducted=[]
   const notFound=[]
@@ -3840,20 +3900,27 @@ function markShipped(){
     const name=(item.name||'').trim()
     if(!name) return
     const qty=+item.qty||1
-    // Ищем сначала по wh_item_id (точный), потом по имени
     let idx=-1
     if(item.wh_item_id) idx=whItems.findIndex(it=>it.id===item.wh_item_id)
     if(idx<0) idx=whItems.findIndex(it=>it.name.trim().toLowerCase()===name.toLowerCase())
     if(idx>=0){
-      const before=whItems[idx].qty
-      whItems[idx].qty=Math.max(0,whItems[idx].qty-qty)
+      const whIt=whItems[idx]
+      const before=whIt.qty
+      // Гарантированно не уходим в минус
+      const actualDeduct=Math.min(qty, before)
+      whIt.qty=before-actualDeduct
       log.push({
-        id:S.nid('wh_log'), type:'write_off',
-        item_id:whItems[idx].id, qty:-qty,
-        warehouse, comment:'Выгрузка по '+orderNum+' ('+wLabel+')',
-        synced1c:whItems[idx].src==='1c'?false:false, date:new Date().toISOString()
+        id:S.nid('wh_log'),
+        type:'write_off',
+        item_id:whIt.id,
+        qty:-actualDeduct,
+        warehouse,
+        src:whIt.src||'local',          // '1c' или 'local'
+        comment:'Выгрузка '+orderNum+' ('+wLabel+')',
+        synced1c: whIt.src==='1c',      // 1С — нужна синхронизация
+        date:new Date().toISOString()
       })
-      deducted.push({name,qty,before,after:whItems[idx].qty,src:whItems[idx].src||'local'})
+      deducted.push({name,qty:actualDeduct,before,after:whIt.qty,src:whIt.src||'local'})
     } else {
       notFound.push({name,qty})
     }
@@ -3861,7 +3928,6 @@ function markShipped(){
   S.set('wh_items',whItems)
   S.set('wh_log',log)
 
-  // — Фиксация выгрузки (статус НЕ меняем, если не оплачен) —
   WCUR.shipped=true
   WCUR.shipped_at=new Date().toISOString()
   WCUR.shipped_warehouse=warehouse
@@ -3871,18 +3937,21 @@ function markShipped(){
   saveWholesale()
   _renderShippedBar()
 
-  // — Итоговый отчёт —
+  // — Отчёт —
+  const from1c=deducted.filter(d=>d.src==='1c')
+  const fromLocal=deducted.filter(d=>d.src!=='1c')
   let msg='✅ Выгрузка зафиксирована\n'+new Date(WCUR.shipped_at).toLocaleString('ru')+'\nСклад: '+wLabel+'\n'
-  if(deducted.length){
-    msg+='\n📦 Списано ('+deducted.length+' поз.):\n'
-    deducted.forEach(d=>{
-      msg+='  • '+d.name+': −'+d.qty+' шт. (остаток: '+d.after+')'+(d.src==='1c'?' [1С]':'')+'\n'
-    })
+  if(from1c.length){
+    msg+='\n📘 Списано из 1С ('+from1c.length+' поз.):\n'
+    from1c.forEach(d=>{ msg+='  • '+d.name+': −'+d.qty+' шт. (остаток: '+d.after+')\n' })
+  }
+  if(fromLocal.length){
+    msg+='\n🏪 Списано со склада ('+fromLocal.length+' поз.):\n'
+    fromLocal.forEach(d=>{ msg+='  • '+d.name+': −'+d.qty+' шт. (остаток: '+d.after+')\n' })
   }
   if(notFound.length){
-    msg+='\n⚠️ Не найдено на складе ('+notFound.length+' поз.):\n'
+    msg+='\n⚠️ Не найдено ни в 1С ни на складе ('+notFound.length+' поз.):\n'
     notFound.forEach(d=>{ msg+='  • '+d.name+': '+d.qty+' шт.\n' })
-    msg+='\nЭти позиции нужно списать вручную.'
   }
   alert(msg)
 }
@@ -3902,7 +3971,12 @@ function _renderShippedBar(){
   let html=''
   if(ded.length){
     html+='<span style="font-weight:600">Списано:</span> '
-    html+=ded.map(d=>'<span style="background:#bbf7d0;border-radius:4px;padding:1px 6px">'+d.name+' ×'+d.qty+(d.src==='1c'?' <b>[1С]</b>':'')+'</span>').join(' ')
+    html+=ded.map(d=>{
+      const srcTag=d.src==='1c'
+        ?'<span style="background:#dbeafe;color:#1d4ed8;font-size:9px;padding:0 4px;border-radius:4px;font-weight:700;margin-left:2px">1С</span>'
+        :'<span style="background:#dcfce7;color:#15803d;font-size:9px;padding:0 4px;border-radius:4px;font-weight:700;margin-left:2px">склад</span>'
+      return '<span style="background:#bbf7d0;border-radius:4px;padding:1px 7px;display:inline-flex;align-items:center;gap:2px">'+d.name+' ×'+d.qty+srcTag+'</span>'
+    }).join(' ')
   }
   if(nf.length){
     if(html) html+='<br>'
