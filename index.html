@@ -3755,33 +3755,15 @@ function renderWhPicker(q){
 function addFromWhItem(id){
   const it=(S.get('wh_items')||[]).find(i=>i.id===id)
   if(!it) return
-  // Нельзя добавить товар которого нет
   if(it.qty<=0){
     alert('❌ Товар «'+it.name+'» отсутствует на складе')
     return
   }
-  if(!WCUR.items) WCUR.items=[]
-  const exist=WCUR.items.find(x=>x.wh_item_id===it.id)
-  if(exist){
-    // Проверяем лимит: qty в заказе не может превысить остаток на складе
-    const newQty=(+exist.qty||1)+1
-    if(newQty>it.qty){
-      alert('⚠️ Нельзя добавить больше чем есть на складе.\nДоступно: '+it.qty+' шт., в заказе уже: '+exist.qty+' шт.')
-      return
-    }
-    exist.qty=newQty
-  } else {
-    WCUR.items.push({
-      wh_item_id: it.id,
-      name:  it.name,
-      sku:   it.sku||'',
-      qty:   1,
-      price: it.sale_price||it.price||0,
-      src:   it.src||'local'   // 'local' или '1c'
-    })
+  const result=addFromWhItemSilent(id)
+  if(result==='limit'){
+    const exist=WCUR.items.find(x=>x.wh_item_id===id)
+    alert('⚠️ Достигнут лимит склада.\nДоступно: '+it.qty+' шт.'+(exist?', в заказе: '+exist.qty+' шт.':''))
   }
-  renderWholesaleItems()
-  renderWhPicker(document.getElementById('wh-picker-q').value)
 }
 
 // ── СКАНИРОВАНИЕ ──────────────────────────────────────────────────────────────
@@ -3789,40 +3771,97 @@ let _wScanTimer=null
 function wScanLive(val){
   clearTimeout(_wScanTimer)
   if(!val) return
-  // При вставке штрихкода сканером (быстрый ввод длинной строки) — автодобавляем
-  _wScanTimer=setTimeout(()=>{
-    if(val.length>=8) wScanEnter(val,true)
-  },400)
+  // Сканер пикает быстро — срабатываем через 80мс без минимума длины
+  _wScanTimer=setTimeout(()=>{ wScanEnter(val,true) },80)
 }
 
 function wScanEnter(val,silent){
   val=(val||'').trim()
   if(!val) return
+  const inp=document.getElementById('wc-scan-input')
   const items=S.get('wh_items')||[]
-  // Точное совпадение: штрихкод или артикул
-  let found=items.find(it=>(it.barcode||'')=== val)
+  // Точное совпадение: штрихкод → артикул
+  let found=items.find(it=>(it.barcode||'')===val)
   if(!found) found=items.find(it=>(it.sku||'').toLowerCase()===val.toLowerCase())
   if(!found){
-    // Частичное совпадение по названию
     const matches=items.filter(it=>(it.name||'').toLowerCase().includes(val.toLowerCase()))
     if(matches.length===1) found=matches[0]
     else if(matches.length>1){
+      if(inp) inp.value=''
       openWhPicker(val)
-      document.getElementById('wc-scan-input').value=''
       return
     }
   }
   if(found){
-    addFromWhItem(found.id)
-    document.getElementById('wc-scan-input').value=''
-    // Мигнём строкой
-    const tds=document.querySelectorAll('#wc-items-tbody tr:last-child td')
-    tds.forEach(td=>{td.style.background='#d1fae5';setTimeout(()=>td.style.background='',700)})
-    if(!silent) document.getElementById('wc-scan-input').focus()
+    if(inp) inp.value=''
+    // Добавляем/увеличиваем без alert — тихо
+    const result=addFromWhItemSilent(found.id)
+    // Подсвечиваем строку товара в таблице
+    _flashItemRow(found.id, result==='limit'?'#fee2e2':'#d1fae5')
+    if(!silent&&inp) inp.focus()
+    // Показываем тост вместо alert при достижении лимита
+    if(result==='limit'){
+      _showScanToast('⚠ Достигнут лимит склада: '+found.name,'#f59e0b')
+    } else {
+      const cur=WCUR.items.find(x=>x.wh_item_id===found.id)
+      _showScanToast('+ '+found.name+(cur?' × '+cur.qty:''),'#10b981')
+    }
   } else {
+    if(inp) inp.value=''
     if(!silent) openWhPicker(val)
-    document.getElementById('wc-scan-input').value=''
+    else _showScanToast('⚠ Не найдено: '+val,'#ef4444')
   }
+}
+
+// Тихое добавление (без alert) — возвращает 'ok' | 'limit' | 'zero'
+function addFromWhItemSilent(id){
+  const it=(S.get('wh_items')||[]).find(i=>i.id===id)
+  if(!it) return 'zero'
+  if(it.qty<=0) return 'zero'
+  if(!WCUR.items) WCUR.items=[]
+  const exist=WCUR.items.find(x=>x.wh_item_id===it.id)
+  if(exist){
+    if((+exist.qty||1)>=it.qty) return 'limit'
+    exist.qty=(+exist.qty||1)+1
+  } else {
+    WCUR.items.push({wh_item_id:it.id,name:it.name,sku:it.sku||'',qty:1,price:it.sale_price||it.price||0,src:it.src||'local'})
+  }
+  renderWholesaleItems()
+  if(document.getElementById('m-wh-picker')&&!document.getElementById('m-wh-picker').classList.contains('hidden')){
+    renderWhPicker(document.getElementById('wh-picker-q').value)
+  }
+  return 'ok'
+}
+
+// Мигание строки по wh_item_id
+function _flashItemRow(whItemId, color){
+  const rows=document.querySelectorAll('#wc-items-tbody tr')
+  rows.forEach(tr=>{
+    // Ищем скрытый data или совпадение по имени в input
+    const inp=tr.querySelector('input.fc')
+    if(!inp) return
+    const itemIdx=parseInt(tr.querySelector('[oninput*="WCUR.items["]')?.getAttribute('oninput')?.match(/\[(\d+)\]/)?.[1]??'-1')
+    if(itemIdx>=0&&WCUR.items[itemIdx]&&WCUR.items[itemIdx].wh_item_id===whItemId){
+      Array.from(tr.cells).forEach(td=>{td.style.background=color;setTimeout(()=>td.style.background='',600)})
+    }
+  })
+}
+
+// Тост-уведомление внизу экрана
+let _toastTimer=null
+function _showScanToast(msg, color){
+  let t=document.getElementById('_scan-toast')
+  if(!t){
+    t=document.createElement('div')
+    t.id='_scan-toast'
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:10px 22px;border-radius:10px;font-size:14px;font-weight:600;color:#fff;z-index:9999;pointer-events:none;transition:opacity .3s;box-shadow:0 4px 16px rgba(0,0,0,.2)'
+    document.body.appendChild(t)
+  }
+  t.textContent=msg
+  t.style.background=color
+  t.style.opacity='1'
+  clearTimeout(_toastTimer)
+  _toastTimer=setTimeout(()=>t.style.opacity='0',1800)
 }
 
 function collectWholesale(){
