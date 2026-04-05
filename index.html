@@ -888,7 +888,7 @@ tr:hover td{background:#fafafa}
         <div>
           <div class="fg">
             <label style="font-size:12px;color:#64748b;font-weight:400">Статус</label>
-            <select id="wc-status" class="fc">
+            <select id="wc-status" class="fc" onchange="wcStatusChange(this)">
               <option value="awaiting_payment">🟠 Ожидает оплаты</option>
               <option value="paid">🟢 Оплачен</option>
               <option value="closed">⚫ Закрыт</option>
@@ -904,7 +904,21 @@ tr:hover td{background:#fafafa}
       <!-- Items -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <h3 style="font-size:14px;font-weight:600;margin:0">Товары</h3>
-        <button onclick="addWholesaleItem()" class="btn btn-p" style="font-size:12px;padding:6px 14px">+ Добавить товар</button>
+        <div style="display:flex;gap:6px">
+          <button onclick="openWhPicker()" class="btn btn-p" style="font-size:12px;padding:6px 12px">
+            <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="4" height="18"/><rect x="9" y="3" width="2" height="18"/><rect x="13" y="3" width="4" height="18"/><rect x="19" y="3" width="2" height="18"/></svg>
+            Со склада
+          </button>
+          <button onclick="addWholesaleItem()" class="btn btn-g" style="font-size:12px;padding:6px 12px;color:#475569">+ Вручную</button>
+        </div>
+      </div>
+      <!-- Scan bar -->
+      <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center">
+        <div class="sw" style="flex:1;background:#fff;border:1px solid var(--border);border-radius:9px">
+          <svg style="width:14px;height:14px;color:#94a3b8;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="4" height="18"/><rect x="9" y="3" width="2" height="18"/><rect x="13" y="3" width="4" height="18"/><rect x="19" y="3" width="2" height="18"/></svg>
+          <input id="wc-scan-input" placeholder="Сканировать штрихкод или ввести артикул → Enter" style="border:none;background:transparent;outline:none;font-size:13px;width:100%;color:var(--text)" oninput="wScanLive(this.value)" onkeydown="if(event.key==='Enter'){wScanEnter(this.value);this.value='';event.preventDefault()}">
+        </div>
+        <span style="font-size:11px;color:var(--text3);white-space:nowrap">Enter — добавить</span>
       </div>
       <div style="overflow-x:auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:16px">
         <table style="min-width:600px;width:100%">
@@ -1094,6 +1108,29 @@ tr:hover td{background:#fafafa}
       <button class="btn btn-p" onclick="confirmPayment()" style="flex:1;justify-content:center;font-size:14px;font-weight:700;padding:10px">
         ✓ Подтвердить оплату
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Wholesale item picker modal -->
+<div class="overlay hidden" id="m-wh-picker">
+  <div class="modal" style="max-width:660px">
+    <div class="mhd">
+      <div>
+        <h3 style="font-size:16px;font-weight:700">Выбрать товар со склада</h3>
+        <p style="font-size:12px;color:var(--text3);margin-top:2px">Нажмите на строку — укажите количество и добавьте</p>
+      </div>
+      <button class="btn-i" onclick="cm('m-wh-picker')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mbd" style="padding-top:8px;padding-bottom:0">
+      <div class="sw" style="margin-bottom:12px">
+        <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="wh-picker-q" placeholder="Поиск по названию, артикулу, штрихкоду..." oninput="renderWhPicker(this.value)" autocomplete="off" style="width:100%">
+      </div>
+      <div id="wh-picker-list" style="max-height:360px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:#fff"></div>
+    </div>
+    <div class="mft" style="gap:10px;padding-top:12px">
+      <button class="btn btn-g" onclick="cm('m-wh-picker')">Закрыть</button>
     </div>
   </div>
 </div>
@@ -3157,13 +3194,26 @@ function renderWholesaleItems(){
     document.getElementById('wc-total').textContent='0 ₽'
     return
   }
-  tbody.innerHTML=items.map((it,i)=>`<tr style="border-bottom:1px solid #f1f5f9">
-    <td style="padding:8px 12px"><input class="fc" value="${it.name||''}" oninput="WCUR.items[${i}].name=this.value" placeholder="Наименование" style="min-width:180px"></td>
-    <td style="padding:8px 12px"><input class="fc" type="number" value="${it.qty||1}" oninput="WCUR.items[${i}].qty=+this.value;renderWholesaleTotal()" style="text-align:right"></td>
-    <td style="padding:8px 12px"><input class="fc" type="number" value="${it.price||0}" oninput="WCUR.items[${i}].price=+this.value;renderWholesaleTotal()" style="text-align:right"></td>
-    <td style="padding:8px 12px;text-align:right;font-weight:500">${((it.qty||1)*(it.price||0)).toLocaleString('ru')} ₽</td>
-    <td style="padding:8px;text-align:center"><button onclick="removeWholesaleItem(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:16px;line-height:1">×</button></td>
-  </tr>`).join('')
+  const whItems=S.get('wh_items')||[]
+  tbody.innerHTML=items.map((it,i)=>{
+    const whIt=it.wh_item_id?whItems.find(w=>w.id===it.wh_item_id):null
+    const stockBadge=whIt!=null
+      ?`<span style="font-size:10px;background:${whIt.qty<=0?'#fee2e2':whIt.qty<=2?'#fef3c7':'#dcfce7'};color:${whIt.qty<=0?'#991b1b':whIt.qty<=2?'#92400e':'#166534'};border-radius:6px;padding:1px 6px;margin-left:4px;white-space:nowrap">склад: ${whIt.qty} шт.</span>`
+      :`<span style="font-size:10px;background:#f1f5f9;color:#94a3b8;border-radius:6px;padding:1px 6px;margin-left:4px">вручную</span>`
+    return `<tr style="border-bottom:1px solid #f1f5f9">
+      <td style="padding:8px 12px">
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap">
+          <input class="fc" value="${(it.name||'').replace(/"/g,'&quot;')}" oninput="WCUR.items[${i}].name=this.value" placeholder="Наименование" style="min-width:160px;flex:1">
+          ${stockBadge}
+        </div>
+        ${it.sku?`<div style="font-size:10px;color:#94a3b8;margin-top:2px">Арт: ${it.sku}</div>`:''}
+      </td>
+      <td style="padding:8px 12px"><input class="fc" type="number" min="1" value="${it.qty||1}" oninput="WCUR.items[${i}].qty=+this.value;renderWholesaleTotal()" style="text-align:right;width:70px"></td>
+      <td style="padding:8px 12px"><input class="fc" type="number" min="0" value="${it.price||0}" oninput="WCUR.items[${i}].price=+this.value;renderWholesaleTotal()" style="text-align:right;width:90px"></td>
+      <td style="padding:8px 12px;text-align:right;font-weight:600;color:var(--text)">${((it.qty||1)*(it.price||0)).toLocaleString('ru')} ₽</td>
+      <td style="padding:8px;text-align:center"><button onclick="removeWholesaleItem(${i})" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:18px;line-height:1" title="Удалить">×</button></td>
+    </tr>`
+  }).join('')
   renderWholesaleTotal()
 }
 
@@ -3183,13 +3233,137 @@ function removeWholesaleItem(i){
   renderWholesaleItems()
 }
 
+// ── СТАТУС: блокировка закрытия без оплаты ────────────────────────────────────
+function wcStatusChange(sel){
+  if(sel.value==='closed'){
+    const paid = WCUR && WCUR.status==='paid'
+    if(!paid){
+      alert('❌ Нельзя закрыть заказ без оплаты.\nСначала проведите оплату через кнопку «Оплатить».')
+      sel.value = (WCUR&&WCUR.status)||'awaiting_payment'
+    }
+  }
+}
+
+// ── ВЫБОР ТОВАРА СО СКЛАДА ────────────────────────────────────────────────────
+function openWhPicker(prefill){
+  document.getElementById('wh-picker-q').value=prefill||''
+  renderWhPicker(prefill||'')
+  om('m-wh-picker')
+  setTimeout(()=>document.getElementById('wh-picker-q').focus(),100)
+}
+
+function renderWhPicker(q){
+  const items=(S.get('wh_items')||[])
+  const sq=(q||'').trim().toLowerCase()
+  const filtered=sq
+    ? items.filter(it=>
+        (it.name||'').toLowerCase().includes(sq)||
+        (it.sku||'').toLowerCase().includes(sq)||
+        (it.barcode||'').includes(sq)
+      )
+    : items
+  const el=document.getElementById('wh-picker-list')
+  if(!filtered.length){
+    el.innerHTML='<div style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Ничего не найдено</div>'
+    return
+  }
+  const srcBadge=s=>s==='1c'
+    ?'<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;margin-left:4px">1С</span>'
+    :''
+  el.innerHTML=filtered.map(it=>{
+    const alreadyQty=(WCUR&&WCUR.items||[]).filter(x=>x.wh_item_id===it.id).reduce((s,x)=>s+(+x.qty||1),0)
+    const stockColor=it.qty<=0?'#dc2626':it.qty<=2?'#f59e0b':'#16a34a'
+    return `<div onclick="addFromWhItem(${it.id})" style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #f1f5f9;cursor:pointer;transition:background .1s" onmouseenter="this.style.background='#f5f3ff'" onmouseleave="this.style.background=''">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}${srcBadge(it.src)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${it.sku?'Арт: '+it.sku:''}${it.barcode?' · '+it.barcode:''}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:13px;font-weight:700;color:${stockColor}">В наличии: ${it.qty} шт.</div>
+        <div style="font-size:12px;color:var(--text3)">${(it.sale_price||it.price||0).toLocaleString('ru')} ₽</div>
+      </div>
+      ${alreadyQty?`<div style="background:#ede9fe;color:#6d28d9;font-size:11px;font-weight:600;border-radius:8px;padding:2px 8px;flex-shrink:0">+${alreadyQty} в заказе</div>`:'<div style="width:60px;flex-shrink:0"></div>'}
+    </div>`
+  }).join('')
+}
+
+function addFromWhItem(id){
+  const it=(S.get('wh_items')||[]).find(i=>i.id===id)
+  if(!it) return
+  if(!WCUR.items) WCUR.items=[]
+  // Если уже есть — увеличим qty
+  const exist=WCUR.items.find(x=>x.wh_item_id===it.id)
+  if(exist){
+    exist.qty=(+exist.qty||1)+1
+  } else {
+    WCUR.items.push({
+      wh_item_id: it.id,
+      name:  it.name,
+      sku:   it.sku||'',
+      qty:   1,
+      price: it.sale_price||it.price||0,
+      src:   it.src||'local'
+    })
+  }
+  renderWholesaleItems()
+  // Обновим счётчик в пикере
+  renderWhPicker(document.getElementById('wh-picker-q').value)
+}
+
+// ── СКАНИРОВАНИЕ ──────────────────────────────────────────────────────────────
+let _wScanTimer=null
+function wScanLive(val){
+  clearTimeout(_wScanTimer)
+  if(!val) return
+  // При вставке штрихкода сканером (быстрый ввод длинной строки) — автодобавляем
+  _wScanTimer=setTimeout(()=>{
+    if(val.length>=8) wScanEnter(val,true)
+  },400)
+}
+
+function wScanEnter(val,silent){
+  val=(val||'').trim()
+  if(!val) return
+  const items=S.get('wh_items')||[]
+  // Точное совпадение: штрихкод или артикул
+  let found=items.find(it=>(it.barcode||'')=== val)
+  if(!found) found=items.find(it=>(it.sku||'').toLowerCase()===val.toLowerCase())
+  if(!found){
+    // Частичное совпадение по названию
+    const matches=items.filter(it=>(it.name||'').toLowerCase().includes(val.toLowerCase()))
+    if(matches.length===1) found=matches[0]
+    else if(matches.length>1){
+      openWhPicker(val)
+      document.getElementById('wc-scan-input').value=''
+      return
+    }
+  }
+  if(found){
+    addFromWhItem(found.id)
+    document.getElementById('wc-scan-input').value=''
+    // Мигнём строкой
+    const tds=document.querySelectorAll('#wc-items-tbody tr:last-child td')
+    tds.forEach(td=>{td.style.background='#d1fae5';setTimeout(()=>td.style.background='',700)})
+    if(!silent) document.getElementById('wc-scan-input').focus()
+  } else {
+    if(!silent) openWhPicker(val)
+    document.getElementById('wc-scan-input').value=''
+  }
+}
+
 function collectWholesale(){
+  let status=document.getElementById('wc-status').value
+  // Защита: нельзя закрыть без оплаты
+  if(status==='closed' && WCUR && WCUR.status!=='paid'){
+    status=WCUR.status||'awaiting_payment'
+    document.getElementById('wc-status').value=status
+  }
   return {
     ...WCUR,
     client:    document.getElementById('wc-client').value,
     client_id: document.getElementById('wc-client-id').value||null,
     warehouse: document.getElementById('wc-warehouse').value,
-    status:    document.getElementById('wc-status').value,
+    status,
     comment:   document.getElementById('wc-comment').value,
     total:     (WCUR.items||[]).reduce((s,it)=>s+(it.qty||1)*(it.price||0),0),
   }
@@ -3232,7 +3406,10 @@ function markShipped(){
     const name=(item.name||'').trim()
     if(!name) return
     const qty=+item.qty||1
-    const idx=whItems.findIndex(it=>it.name.trim().toLowerCase()===name.toLowerCase())
+    // Ищем сначала по wh_item_id (точный), потом по имени
+    let idx=-1
+    if(item.wh_item_id) idx=whItems.findIndex(it=>it.id===item.wh_item_id)
+    if(idx<0) idx=whItems.findIndex(it=>it.name.trim().toLowerCase()===name.toLowerCase())
     if(idx>=0){
       const before=whItems[idx].qty
       whItems[idx].qty=Math.max(0,whItems[idx].qty-qty)
@@ -3240,7 +3417,7 @@ function markShipped(){
         id:S.nid('wh_log'), type:'write_off',
         item_id:whItems[idx].id, qty:-qty,
         warehouse, comment:'Выгрузка по '+orderNum+' ('+wLabel+')',
-        synced1c:false, date:new Date().toISOString()
+        synced1c:whItems[idx].src==='1c'?false:false, date:new Date().toISOString()
       })
       deducted.push({name,qty,before,after:whItems[idx].qty,src:whItems[idx].src||'local'})
     } else {
