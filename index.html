@@ -263,6 +263,11 @@ tr:hover td{background:#fafafa}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       Задачи
     </a>
+    <div class="nav-section">Финансы</div>
+    <a onclick="nav('cash',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      Касса
+    </a>
     <div class="nav-section">Склад</div>
     <a onclick="nav('warehouse',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -918,9 +923,175 @@ tr:hover td{background:#fafafa}
     </div>
   </div>
 
+  <!-- КАССА -->
+  <div id="page-cash" class="page" style="display:flex;flex-direction:column;height:100vh">
+
+    <!-- Toolbar -->
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+      <button onclick="openCashModal()" class="plus-btn" style="width:32px;height:32px;font-size:18px;flex-shrink:0">+</button>
+      <div style="display:flex;align-items:center;gap:6px;background:#f9fafb;border:1px solid var(--border);border-radius:9px;padding:5px 12px;font-size:13px;color:var(--text2);min-width:200px">
+        <svg style="width:14px;height:14px;color:var(--text3);flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        <span id="cash-branch">Основной офис</span>
+        <svg style="width:12px;height:12px;color:var(--text3);margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <!-- Date from -->
+      <input type="date" id="cash-date-from" class="fc" style="width:140px;padding:6px 10px" onchange="renderCash()">
+      <span style="color:var(--text3);font-size:13px">—</span>
+      <!-- Date to -->
+      <input type="date" id="cash-date-to" class="fc" style="width:140px;padding:6px 10px" onchange="renderCash()">
+      <!-- Filter icon -->
+      <button class="btn btn-g" style="padding:6px 10px" title="Фильтры">
+        <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      </button>
+      <!-- Group icon -->
+      <button class="btn btn-g" style="padding:6px 10px" title="Группировка">
+        <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+      <!-- Confirm button -->
+      <button onclick="confirmAllCash()" style="width:34px;height:34px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,.35)" title="Подтвердить всё">
+        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <div class="sw" style="min-width:180px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="cash-search" placeholder="Поиск..." oninput="renderCash()" style="padding:6px 8px 6px 32px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;width:100%;background:var(--surface);font-family:inherit">
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div style="flex:1;overflow:auto">
+      <table style="min-width:1200px;width:100%">
+        <thead>
+          <tr style="background:#f9fafb;border-bottom:2px solid var(--border);position:sticky;top:0">
+            <th style="width:36px;padding:10px 12px"><input type="checkbox" style="accent-color:var(--accent)"></th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Дата</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Номер</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Заказ</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Объект</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Сотрудник</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:right">Приход</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:right">Расход</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Тип прихода/расхода</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:right">Оплата Best2Pay</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:right">Оплата картой</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;text-align:right">Возврат по карте</th>
+          </tr>
+        </thead>
+        <tbody id="cash-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Footer totals -->
+    <div style="background:var(--surface);border-top:2px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:24px;flex-shrink:0;box-shadow:0 -1px 4px rgba(0,0,0,.04)">
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:12px;color:var(--text3);font-weight:500">Наличные:</span>
+        <span id="cash-total-cash" style="font-size:14px;font-weight:700;color:var(--green)">+0</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:12px;color:var(--text3);font-weight:500">По карте:</span>
+        <span id="cash-total-card" style="font-size:14px;font-weight:700;color:var(--text2)">0</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:12px;color:var(--text3);font-weight:500">Best2Pay:</span>
+        <span id="cash-total-b2p" style="font-size:14px;font-weight:700;color:var(--text2)">0</span>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center;padding-left:16px;border-left:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--text3);font-weight:600">Итого:</span>
+        <span id="cash-total-all" style="font-size:15px;font-weight:800;color:var(--text)">+0</span>
+      </div>
+      <!-- Pagination -->
+      <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+        <button class="pgbtn" id="cash-pg-prev" onclick="cashChangePage(-1)">‹</button>
+        <div id="cash-pg-nums" style="display:flex;gap:4px"></div>
+        <button class="pgbtn" id="cash-pg-next" onclick="cashChangePage(1)">›</button>
+        <select id="cash-per-page" class="fc" style="width:80px;padding:4px 8px;font-size:12px" onchange="cashPerPageChange()">
+          <option value="20">20</option>
+          <option value="50">50</option>
+          <option value="100" selected>100</option>
+        </select>
+        <span style="font-size:12px;color:var(--text3)">/ стр.</span>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /main -->
 
 <!-- MODALS -->
+
+<!-- Cash transaction modal -->
+<div class="overlay hidden" id="m-cash">
+  <div class="modal" style="max-width:480px">
+    <div class="mhd">
+      <h3 id="cash-modal-title">Новая операция</h3>
+      <button class="btn-i" onclick="cm('m-cash')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mbd">
+      <input type="hidden" id="cash-edit-id">
+      <div class="fr">
+        <div class="fg">
+          <label>Тип операции</label>
+          <select id="cash-direction" class="fc" onchange="updateCashDirection()">
+            <option value="income">📥 Приход</option>
+            <option value="expense">📤 Расход</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Способ оплаты</label>
+          <select id="cash-method" class="fc">
+            <option value="cash">💵 Наличные</option>
+            <option value="card">💳 Карта</option>
+            <option value="best2pay">🌐 Best2Pay</option>
+            <option value="return_card">↩ Возврат по карте</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="fg">
+          <label>Сумма (₽)</label>
+          <input id="cash-amount" type="number" class="fc" placeholder="0" min="0">
+        </div>
+        <div class="fg">
+          <label>Дата и время</label>
+          <input id="cash-datetime" type="datetime-local" class="fc">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Тип прихода/расхода</label>
+        <select id="cash-type" class="fc">
+          <option value="Оплата по заказу">Оплата по заказу</option>
+          <option value="Аванс">Аванс</option>
+          <option value="Возврат клиенту">Возврат клиенту</option>
+          <option value="Закупка">Закупка</option>
+          <option value="Аренда">Аренда</option>
+          <option value="Зарплата">Зарплата</option>
+          <option value="Прочий доход">Прочий доход</option>
+          <option value="Прочий расход">Прочий расход</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Заказ (необязательно)</label>
+        <input id="cash-order-ref" class="fc" placeholder="Номер заказа...">
+      </div>
+      <div class="fg">
+        <label>Объект / Описание</label>
+        <input id="cash-object" class="fc" placeholder="Название услуги или товара...">
+      </div>
+      <div class="fg">
+        <label>Сотрудник</label>
+        <input id="cash-emp" class="fc" placeholder="ФИО сотрудника...">
+      </div>
+      <div class="fg">
+        <label>Комментарий</label>
+        <textarea id="cash-comment" class="fc" style="height:60px;resize:none" placeholder="Примечание..."></textarea>
+      </div>
+    </div>
+    <div class="mft">
+      <button class="btn btn-g" onclick="cm('m-cash')">Отмена</button>
+      <button class="btn btn-p" onclick="saveCashTx()">Сохранить</button>
+    </div>
+  </div>
+</div>
 
 <!-- Quick sale — product picker -->
 <div class="overlay hidden" id="m-quick">
@@ -1363,6 +1534,7 @@ function nav(id,el){
   if(id==='deals')     renderDeals()
   if(id==='tasks')     renderTasks()
   if(id==='warehouse') renderWarehouse()
+  if(id==='cash'){initCashDates();renderCash()}
 }
 
 // ── Modal helpers ─────────────────────────────────────────────────────────────
@@ -2172,6 +2344,209 @@ function openSettings(){
   const orders=S.get('orders'),org=getOrg()
   document.getElementById('set-preview').textContent=org+'-'+String((orders.length||0)+1).padStart(6,'0')
   om('m-settings')
+}
+
+// ── КАССА ─────────────────────────────────────────────────────────────────────
+let cashPage=1, cashPerPage=100
+
+function initCashDates(){
+  const now=new Date()
+  const from=new Date(now); from.setDate(1)
+  const to=new Date(now); to.setMonth(to.getMonth()+1); to.setDate(0)
+  const fmt=d=>d.toISOString().slice(0,10)
+  const df=document.getElementById('cash-date-from')
+  const dt=document.getElementById('cash-date-to')
+  if(df&&!df.value) df.value=fmt(from)
+  if(dt&&!dt.value) dt.value=fmt(to)
+}
+
+function getCashFiltered(){
+  let txs=S.get('cash_tx')||[]
+  const q=(document.getElementById('cash-search')?.value||'').toLowerCase()
+  const from=document.getElementById('cash-date-from')?.value
+  const to=document.getElementById('cash-date-to')?.value
+  if(from) txs=txs.filter(t=>t.date>=from)
+  if(to)   txs=txs.filter(t=>t.date<=to+'T23:59:59')
+  if(q)    txs=txs.filter(t=>(t.object||'').toLowerCase().includes(q)||(t.order_ref||'').toLowerCase().includes(q)||(t.emp||'').toLowerCase().includes(q)||(t.type||'').toLowerCase().includes(q)||(t.tx_number||'').toLowerCase().includes(q))
+  return txs.sort((a,b)=>new Date(b.date)-new Date(a.date))
+}
+
+function renderCash(){
+  initCashDates()
+  const all=getCashFiltered()
+  const perPage=+document.getElementById('cash-per-page')?.value||100
+  cashPerPage=perPage
+  const pages=Math.max(1,Math.ceil(all.length/perPage))
+  cashPage=Math.min(cashPage,pages)
+  const slice=all.slice((cashPage-1)*perPage, cashPage*perPage)
+
+  // Totals
+  let totCash=0,totCard=0,totB2p=0
+  all.forEach(t=>{
+    const val=t.direction==='expense'?-(+t.amount||0):(+t.amount||0)
+    if(t.method==='cash') totCash+=val
+    else if(t.method==='card') totCard+=val
+    else if(t.method==='best2pay') totB2p+=val
+    else if(t.method==='return_card') totCard-=(+t.amount||0)
+  })
+  const fmtN=n=>(n>=0?'+':'')+Number(n).toLocaleString('ru')
+  document.getElementById('cash-total-cash').textContent=fmtN(totCash)
+  document.getElementById('cash-total-cash').style.color=totCash>=0?'var(--green)':'var(--red)'
+  document.getElementById('cash-total-card').textContent=fmtN(totCard)
+  document.getElementById('cash-total-b2p').textContent=fmtN(totB2p)
+  const tot=totCash+totCard+totB2p
+  document.getElementById('cash-total-all').textContent=fmtN(tot)
+  document.getElementById('cash-total-all').style.color=tot>=0?'var(--green)':'var(--red)'
+
+  const fdt=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
+  const methodLabel={cash:'Наличные',card:'Карта',best2pay:'Best2Pay',return_card:'Возврат картой'}
+
+  document.getElementById('cash-tbody').innerHTML=slice.length?slice.map(t=>{
+    const isExp=t.direction==='expense'
+    const isConf=t.confirmed
+    const incAmt=!isExp?(+t.amount||0):0
+    const expAmt=isExp?(+t.amount||0):0
+    const cardAmt=t.method==='card'&&!isExp?(+t.amount||0):0
+    const b2pAmt=t.method==='best2pay'&&!isExp?(+t.amount||0):0
+    const retAmt=t.method==='return_card'?(+t.amount||0):0
+    return `<tr style="border-bottom:1px solid var(--border-light);transition:background .1s" onmouseenter="this.style.background='#f5f3ff'" onmouseleave="this.style.background=''">
+      <td style="padding:9px 12px;width:36px">
+        <div onclick="toggleCashConfirm('${t.id}')" style="width:18px;height:18px;border-radius:50%;border:2px solid ${isConf?'var(--green)':'#d1d5db'};background:${isConf?'var(--green)':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s">
+          ${isConf?'<svg style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}
+        </div>
+      </td>
+      <td style="padding:9px 12px;font-size:12px;color:var(--text2);white-space:nowrap">${fdt(t.date)}</td>
+      <td style="padding:9px 12px;font-size:12px;color:var(--accent);font-weight:600">${t.tx_number||'—'}</td>
+      <td style="padding:9px 12px;font-size:12px;color:var(--accent)">${t.order_ref?`<span style="cursor:pointer;text-decoration:underline dotted">${t.order_ref}</span>`:'—'}</td>
+      <td style="padding:9px 12px;font-size:13px;font-weight:500;color:var(--text)">${t.object||'—'}</td>
+      <td style="padding:9px 12px;font-size:12px;color:var(--text2)">${t.emp||'—'}</td>
+      <td style="padding:9px 12px;font-size:13px;font-weight:700;text-align:right;color:${incAmt?'var(--green)':'var(--text3)'}">${incAmt?Number(incAmt).toLocaleString('ru'):''}</td>
+      <td style="padding:9px 12px;font-size:13px;font-weight:700;text-align:right;color:${expAmt?'var(--red)':'var(--text3)'}">${expAmt?Number(expAmt).toLocaleString('ru'):''}</td>
+      <td style="padding:9px 12px">
+        <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:${isExp?'#fee2e2':'#d1fae5'};color:${isExp?'var(--red)':'#065f46'}">${t.type||'—'}</span>
+      </td>
+      <td style="padding:9px 12px;font-size:13px;font-weight:600;text-align:right;color:var(--text2)">${b2pAmt?Number(b2pAmt).toLocaleString('ru'):''}</td>
+      <td style="padding:9px 12px;font-size:13px;font-weight:600;text-align:right;color:var(--text2)">${cardAmt?Number(cardAmt).toLocaleString('ru'):''}</td>
+      <td style="padding:9px 12px;font-size:13px;font-weight:600;text-align:right;color:var(--red)">${retAmt?Number(retAmt).toLocaleString('ru'):''}</td>
+    </tr>`
+  }).join(''):'<tr><td colspan="12" style="text-align:center;color:var(--text3);padding:60px;font-size:14px">💰 Операций за выбранный период нет</td></tr>'
+
+  // Pagination
+  const pg=document.getElementById('cash-pg-nums')
+  if(!pg) return
+  let html=''
+  for(let i=1;i<=pages;i++){
+    if(pages>7&&i>2&&i<pages-1&&Math.abs(i-cashPage)>1){if(html.slice(-3)!='…')html+='<span style="padding:0 4px;color:var(--text3)">…</span>';continue}
+    html+=`<button class="pgnum${i===cashPage?' active':''}" onclick="cashGoPage(${i})">${i}</button>`
+  }
+  pg.innerHTML=html
+}
+
+function cashGoPage(n){cashPage=n;renderCash()}
+function cashChangePage(d){cashPage=Math.max(1,cashPage+d);renderCash()}
+function cashPerPageChange(){cashPage=1;renderCash()}
+
+let _cashTxNum=1
+function genCashNum(){
+  const txs=S.get('cash_tx')||[]
+  const max=txs.reduce((m,t)=>Math.max(m,+(t.tx_number||0)),0)
+  return String(max+1).padStart(9,'0')
+}
+
+function openCashModal(id){
+  document.getElementById('cash-edit-id').value=id||''
+  if(id){
+    const t=(S.get('cash_tx')||[]).find(x=>x.id==id)||{}
+    document.getElementById('cash-modal-title').textContent='Редактировать операцию'
+    document.getElementById('cash-direction').value=t.direction||'income'
+    document.getElementById('cash-method').value=t.method||'cash'
+    document.getElementById('cash-amount').value=t.amount||''
+    document.getElementById('cash-datetime').value=t.date?t.date.slice(0,16):''
+    document.getElementById('cash-type').value=t.type||'Оплата по заказу'
+    document.getElementById('cash-order-ref').value=t.order_ref||''
+    document.getElementById('cash-object').value=t.object||''
+    document.getElementById('cash-emp').value=t.emp||''
+    document.getElementById('cash-comment').value=t.comment||''
+  } else {
+    document.getElementById('cash-modal-title').textContent='Новая операция'
+    document.getElementById('cash-direction').value='income'
+    document.getElementById('cash-method').value='cash'
+    document.getElementById('cash-amount').value=''
+    document.getElementById('cash-datetime').value=new Date().toISOString().slice(0,16)
+    document.getElementById('cash-type').value='Оплата по заказу'
+    document.getElementById('cash-order-ref').value=''
+    document.getElementById('cash-object').value=''
+    document.getElementById('cash-emp').value=''
+    document.getElementById('cash-comment').value=''
+  }
+  om('m-cash')
+}
+
+function saveCashTx(){
+  const id=document.getElementById('cash-edit-id').value
+  const amount=+document.getElementById('cash-amount').value||0
+  if(!amount){alert('Укажите сумму');return}
+  const obj={
+    direction:document.getElementById('cash-direction').value,
+    method:document.getElementById('cash-method').value,
+    amount,
+    date:document.getElementById('cash-datetime').value||new Date().toISOString().slice(0,16),
+    type:document.getElementById('cash-type').value,
+    order_ref:document.getElementById('cash-order-ref').value.trim(),
+    object:document.getElementById('cash-object').value.trim(),
+    emp:document.getElementById('cash-emp').value.trim(),
+    comment:document.getElementById('cash-comment').value.trim(),
+    confirmed:false,
+  }
+  const txs=S.get('cash_tx')||[]
+  if(id){
+    const i=txs.findIndex(t=>t.id==id)
+    if(i>=0){txs[i]={...txs[i],...obj};obj.tx_number=txs[i].tx_number}
+  } else {
+    obj.id=S.nid('cash_tx')
+    obj.tx_number=genCashNum()
+    txs.unshift(obj)
+  }
+  S.set('cash_tx',txs)
+  cm('m-cash')
+  renderCash()
+}
+
+function toggleCashConfirm(id){
+  const txs=S.get('cash_tx')||[]
+  const i=txs.findIndex(t=>t.id==id)
+  if(i>=0){txs[i].confirmed=!txs[i].confirmed;S.set('cash_tx',txs);renderCash()}
+}
+
+function confirmAllCash(){
+  const txs=S.get('cash_tx')||[]
+  txs.forEach(t=>t.confirmed=true)
+  S.set('cash_tx',txs);renderCash()
+}
+
+// Auto-create cash tx when order is paid
+function createCashTxFromOrder(order){
+  const total=order.total||+order.price||0
+  if(!total) return
+  const txs=S.get('cash_tx')||[]
+  const exists=txs.find(t=>t.order_ref===order.number&&t.type==='Оплата по заказу')
+  if(exists) return
+  const tx={
+    id:S.nid('cash_tx'),
+    tx_number:genCashNum(),
+    direction:'income',
+    method:'cash',
+    amount:total,
+    date:new Date().toISOString().slice(0,16),
+    type:'Оплата по заказу',
+    order_ref:order.number||'',
+    object:order.device?order.device+(order.model?' '+order.model:''):'Заказ',
+    emp:order.emp||order.closer||'',
+    comment:'',
+    confirmed:false,
+  }
+  txs.unshift(tx)
+  S.set('cash_tx',txs)
 }
 
 // ── WAREHOUSE ─────────────────────────────────────────────────────────────────
