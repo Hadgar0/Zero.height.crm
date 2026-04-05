@@ -286,7 +286,7 @@ tr:hover td{background:#fafafa}
       <option value="">— не выбран —</option>
     </select>
   </div>
-  <div class="sb-ver">Zero.height <span>v1.0</span></div>
+  <div class="sb-ver">Zero.height <span>v1.0.0.1</span></div>
 </div>
 
 <div id="main">
@@ -332,7 +332,15 @@ tr:hover td{background:#fafafa}
       </select>
     </div>
     <div class="card">
-      <table><thead><tr><th>Имя</th><th>Компания</th><th>Телефон</th><th>Статус</th><th></th></tr></thead>
+      <table><thead><tr>
+        <th>Имя</th>
+        <th>Телефон</th>
+        <th>Куплено за месяц</th>
+        <th>Не оплачено</th>
+        <th>Последняя покупка</th>
+        <th>Статус</th>
+        <th></th>
+      </tr></thead>
       <tbody id="clients-tbody"></tbody></table>
     </div>
   </div>
@@ -1847,32 +1855,110 @@ function renderDash(){
 
 // ── CLIENTS ───────────────────────────────────────────────────────────────────
 let expandC=null
+
+function clientStats(cid){
+  const now=new Date()
+  const monthAgo=new Date(now); monthAgo.setDate(now.getDate()-30)
+  const threeDaysAgo=new Date(now); threeDaysAgo.setDate(now.getDate()-3)
+  const orders=S.get('orders')||[]
+  const wholesale=S.get('wholesale')||[]
+  const deals=S.get('deals')||[]
+  const allPurchases=[
+    ...orders.filter(o=>o.client_id==cid).map(o=>({
+      date:o.created_at, amount:+o.total||0,
+      paid:o.status==='closed'||o.status==='paid'||!!o.payment_method,
+      num:o.number||'—', label:o.device||'Заказ'
+    })),
+    ...wholesale.filter(w=>w.client_id==cid).map(w=>({
+      date:w.created_at,
+      amount:(w.items||[]).reduce((s,i)=>s+(+i.price||0)*(+i.qty||1),0),
+      paid:w.status==='paid'||w.status==='closed',
+      num:w.number||'ОПТ', label:'Опт. продажа'
+    })),
+    ...deals.filter(d=>d.client_id==cid&&d.stage==='won').map(d=>({
+      date:d.created_at, amount:+d.amount||0,
+      paid:d.status==='closed',
+      num:'#'+d.id, label:d.title
+    }))
+  ]
+  const monthTotal=allPurchases.filter(p=>p.date&&new Date(p.date)>=monthAgo).reduce((s,p)=>s+p.amount,0)
+  const unpaid=allPurchases.filter(p=>!p.paid).reduce((s,p)=>s+p.amount,0)
+  const dates=allPurchases.map(p=>p.date&&new Date(p.date)).filter(Boolean)
+  const lastDate=dates.length?new Date(Math.max(...dates)):null
+  const inactive3=allPurchases.length>0&&lastDate&&lastDate<threeDaysAgo
+  return {monthTotal,unpaid,lastDate,inactive3,count:allPurchases.length,all:allPurchases}
+}
+
 function renderClients(){
   let cl=S.get('clients')
   const q=document.getElementById('client-search').value.toLowerCase()
   const sf=document.getElementById('client-sf').value
-  if(q) cl=cl.filter(c=>(c.name+c.email+c.company).toLowerCase().includes(q))
+  if(q) cl=cl.filter(c=>(c.name+c.email+(c.company||'')).toLowerCase().includes(q))
   if(sf) cl=cl.filter(c=>c.status===sf)
   const tb=document.getElementById('clients-tbody')
-  if(!cl.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;color:#94a3b8;padding:32px">Клиенты не найдены</td></tr>';return}
+  if(!cl.length){tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:32px">Клиенты не найдены</td></tr>';return}
+  document.getElementById('clients-count-sub').textContent=cl.length+' клиентов'
   tb.innerHTML=cl.map(c=>{
     const m=CLM[c.status]||CLM.inactive
-    return `<tr class="cr" onclick="toggleC(${c.id})">
-      <td><strong>${c.name}</strong></td><td>${c.company||'—'}</td><td>${c.phone||'—'}</td>
+    const st=clientStats(c.id)
+    const rowStyle=st.inactive3?'background:#fff5f5':''
+    const inactiveDot=st.inactive3?'<span title="Нет покупок более 3 дней" style="color:#ef4444;font-size:11px;margin-left:5px;vertical-align:middle">⚠</span>':''
+    const lastBuy=st.lastDate?(()=>{
+      const diff=Math.floor((new Date()-st.lastDate)/864e5)
+      const color=diff>=3?'#ef4444':diff>=1?'#f59e0b':'#10b981'
+      const txt=diff===0?'Сегодня':diff===1?'Вчера':diff+' дн. назад'
+      return `<span style="color:${color};font-weight:600;font-size:12px">${txt}</span>`
+    })():'<span style="color:#94a3b8;font-size:12px">—</span>'
+    return `<tr class="cr" onclick="toggleC(${c.id})" style="${rowStyle}">
+      <td>
+        <strong>${c.name}</strong>${inactiveDot}
+        ${c.company?`<div style="font-size:11px;color:var(--text3);margin-top:1px">${c.company}</div>`:''}
+      </td>
+      <td style="font-size:12px">${c.phone||'—'}</td>
+      <td style="text-align:right">
+        ${st.monthTotal>0?`<b style="color:var(--text)">${st.monthTotal.toLocaleString('ru')} ₽</b>`:'<span style="color:var(--text3)">—</span>'}
+      </td>
+      <td style="text-align:right">
+        ${st.unpaid>0?`<b style="color:#ef4444">${st.unpaid.toLocaleString('ru')} ₽</b>`:'<span style="color:#10b981;font-size:12px">✓ нет долга</span>'}
+      </td>
+      <td>${lastBuy}</td>
       <td><span class="badge ${m.c}">${m.l}</span></td>
       <td style="white-space:nowrap" onclick="event.stopPropagation()">
         <button class="btn-i" onclick="openClientModal(${c.id})">${EICO}</button>
         <button class="btn-i d" onclick="delClient(${c.id})">${DICO}</button>
       </td></tr>
-    <tr><td colspan="5" style="padding:0"><div class="cx ${expandC===c.id?'open':''}" id="cx-${c.id}">${renderCX(c)}</div></td></tr>`
+    <tr><td colspan="7" style="padding:0"><div class="cx ${expandC===c.id?'open':''}" id="cx-${c.id}">${renderCX(c)}</div></td></tr>`
   }).join('')
 }
+
 function renderCX(c){
-  const deals=S.get('deals').filter(d=>d.client_id===c.id)
+  const st=clientStats(c.id)
   const tasks=S.get('tasks').filter(t=>t.client_id===c.id)
-  return `<div class="xs"><h4>Заказы (${deals.length})</h4>${deals.map(d=>`<p>${d.title} — <b>${fmt(d.amount)}</b></p>`).join('')||'<p style="color:#94a3b8">Нет</p>'}</div>
-  <div class="xs"><h4>Задачи (${tasks.length})</h4>${tasks.map(t=>`<p>• ${t.title}</p>`).join('')||'<p style="color:#94a3b8">Нет</p>'}</div>
-  <div class="xs"><h4>История</h4><div class="ii"><input id="ii-${c.id}" placeholder="Добавить заметку..." onkeydown="if(event.key==='Enter')addInt(${c.id})"><button onclick="addInt(${c.id})">+</button></div>${(c.interactions||[]).slice().reverse().slice(0,5).map(i=>`<p><span style="color:#94a3b8">${fdt(i.date)} — </span>${i.text}</p>`).join('')||'<p style="color:#94a3b8">Нет записей</p>'}</div>`
+  const recent=st.all.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,6)
+  return `
+  <div class="xs" style="min-width:180px">
+    <h4>Статистика</h4>
+    <p>Всего покупок: <b>${st.count}</b></p>
+    <p>За 30 дней: <b style="color:var(--accent)">${st.monthTotal.toLocaleString('ru')} ₽</b></p>
+    ${st.unpaid>0?`<p style="color:#ef4444">Долг: <b>${st.unpaid.toLocaleString('ru')} ₽</b></p>`:'<p style="color:#10b981">✓ Долгов нет</p>'}
+    ${st.inactive3?'<p style="color:#ef4444;font-size:11px">⚠ Не покупал 3+ дней</p>':''}
+  </div>
+  <div class="xs" style="flex:2;min-width:240px">
+    <h4>Последние покупки</h4>
+    ${recent.map(o=>`<p style="display:flex;justify-content:space-between;gap:8px;font-size:12px">
+      <span style="color:var(--text2)">${o.num} · ${o.label}</span>
+      <span style="font-weight:600;white-space:nowrap;color:${o.paid?'var(--text)':'#ef4444'}">${o.amount?o.amount.toLocaleString('ru')+' ₽':'—'}${o.paid?'':' ⚠'}</span>
+    </p>`).join('')||'<p style="color:#94a3b8">Нет</p>'}
+  </div>
+  <div class="xs">
+    <h4>Задачи (${tasks.length})</h4>
+    ${tasks.slice(0,4).map(t=>`<p>• ${t.title}</p>`).join('')||'<p style="color:#94a3b8">Нет</p>'}
+  </div>
+  <div class="xs">
+    <h4>История</h4>
+    <div class="ii"><input id="ii-${c.id}" placeholder="Добавить заметку..." onkeydown="if(event.key==='Enter')addInt(${c.id})"><button onclick="addInt(${c.id})">+</button></div>
+    ${(c.interactions||[]).slice().reverse().slice(0,5).map(i=>`<p><span style="color:#94a3b8">${fdt(i.date)} — </span>${i.text}</p>`).join('')||'<p style="color:#94a3b8">Нет записей</p>'}
+  </div>`
 }
 function toggleC(id){expandC=expandC===id?null:id;renderClients()}
 function addInt(cid){
@@ -2038,7 +2124,8 @@ function getFilteredOrders(){
   const wholesaleRows=wholesale.map(w=>{
     const cl=clients.find(c=>c.id==w.client_id)
     const totalAmt=(w.items||[]).reduce((s,i)=>s+(+i.price||0)*(+i.qty||1),0)
-    const wStatus=w.shipped?'closed':(w.status==='paid'?'closed':w.status==='awaiting_payment'?'awaiting_payment':'open')
+    // shipped = товар выгружен, но заказ закрывается только при статусе 'paid'
+    const wStatus=w.status==='paid'?'closed':w.status==='closed'?'closed':w.status==='awaiting_payment'?'awaiting_payment':'open'
     return {
       id:'w'+w.id, _wholesale:w, _type:'wholesale',
       title:'Опт: '+(cl?cl.name:w.client||'—'),
