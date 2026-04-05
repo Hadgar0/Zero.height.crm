@@ -536,7 +536,7 @@ tr:hover td{background:#fafafa}
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Сохранить
       </button>
-      <button class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 14px;font-weight:600">
+      <button onclick="openPayModal('order')" class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 14px;font-weight:600">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Оплата
       </button>
@@ -843,6 +843,10 @@ tr:hover td{background:#fafafa}
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Сохранить
       </button>
+      <button onclick="openPayModal('wholesale')" class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 14px;font-weight:600">
+        <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Оплатить
+      </button>
       <button onclick="markShipped()" class="btn" style="background:#16a34a;color:#fff;font-size:12px;padding:6px 12px">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
         Товар выгружен
@@ -1024,6 +1028,72 @@ tr:hover td{background:#fafafa}
 </div><!-- /main -->
 
 <!-- MODALS -->
+
+<!-- ── PAYMENT MODAL ───────────────────────────────────────────────── -->
+<div class="overlay hidden" id="m-pay">
+  <div class="modal" style="max-width:420px">
+    <div class="mhd" style="border-bottom:none;padding-bottom:8px">
+      <div>
+        <h3 style="font-size:17px;font-weight:700">Оплата</h3>
+        <p id="pay-subtitle" style="font-size:12px;color:var(--text3);margin-top:2px"></p>
+      </div>
+      <button class="btn-i" onclick="cm('m-pay')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="mbd" style="padding-top:0">
+
+      <!-- Amount -->
+      <div style="background:var(--accent-light);border-radius:12px;padding:16px 18px;margin-bottom:18px;text-align:center">
+        <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Сумма к оплате</div>
+        <div style="font-size:32px;font-weight:800;color:var(--accent)" id="pay-amount-display">0 ₽</div>
+        <input type="hidden" id="pay-amount">
+        <input type="hidden" id="pay-source">
+        <input type="hidden" id="pay-order-num">
+        <input type="hidden" id="pay-order-obj">
+      </div>
+
+      <!-- Payment method buttons -->
+      <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px">Способ оплаты</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px">
+        <button onclick="selectPayMethod('cash')" id="pm-cash" class="pay-method-btn active" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border:2px solid var(--accent);background:var(--accent-light);border-radius:12px;cursor:pointer;transition:all .15s;font-family:inherit">
+          <span style="font-size:28px">💵</span>
+          <span style="font-size:13px;font-weight:600;color:var(--accent)">Наличные</span>
+        </button>
+        <button onclick="selectPayMethod('card')" id="pm-card" class="pay-method-btn" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border:2px solid var(--border);background:var(--surface);border-radius:12px;cursor:pointer;transition:all .15s;font-family:inherit">
+          <span style="font-size:28px">💳</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text2)">Карта</span>
+        </button>
+        <button onclick="selectPayMethod('transfer')" id="pm-transfer" class="pay-method-btn" style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border:2px solid var(--border);background:var(--surface);border-radius:12px;cursor:pointer;transition:all .15s;font-family:inherit">
+          <span style="font-size:28px">📲</span>
+          <span style="font-size:13px;font-weight:600;color:var(--text2)">Перевод</span>
+        </button>
+      </div>
+
+      <!-- Custom amount -->
+      <div class="fg">
+        <label>Сумма (можно изменить)</label>
+        <input id="pay-custom-amount" type="number" class="fc" placeholder="0" oninput="document.getElementById('pay-amount-display').textContent=(+this.value||0).toLocaleString('ru')+' ₽'">
+      </div>
+
+      <!-- Employee -->
+      <div class="fg">
+        <label>Сотрудник</label>
+        <input id="pay-emp" class="fc" placeholder="ФИО сотрудника..." list="emp-list">
+      </div>
+
+      <!-- Comment -->
+      <div class="fg" style="margin-bottom:0">
+        <label>Комментарий (необязательно)</label>
+        <input id="pay-comment" class="fc" placeholder="Примечание...">
+      </div>
+    </div>
+    <div class="mft" style="gap:10px">
+      <button class="btn btn-g" onclick="cm('m-pay')">Отмена</button>
+      <button class="btn btn-p" onclick="confirmPayment()" style="flex:1;justify-content:center;font-size:14px;font-weight:700;padding:10px">
+        ✓ Подтвердить оплату
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- Cash transaction modal -->
 <div class="overlay hidden" id="m-cash">
@@ -3059,7 +3129,9 @@ function openWholesale(o){
   document.getElementById('wc-client').value=o.client||''
   document.getElementById('wc-client-id').value=o.client_id||''
   document.getElementById('wc-warehouse').value=o.warehouse||'main'
-  document.getElementById('wc-status').value=o.status||'awaiting_payment'
+  const validWStatuses=['awaiting_payment','paid','closed']
+  const wStatus=validWStatuses.includes(o.status)?o.status:'awaiting_payment'
+  document.getElementById('wc-status').value=wStatus
   document.getElementById('wc-comment').value=o.comment||''
   renderWholesaleItems()
   const sb=document.getElementById('wc-shipped-bar')
@@ -3142,6 +3214,95 @@ function markShipped(){
   const sb=document.getElementById('wc-shipped-bar')
   sb.style.display='flex'
   document.getElementById('wc-shipped-date').textContent=new Date(WCUR.shipped_at).toLocaleString('ru')
+}
+
+// ── PAYMENT MODAL ─────────────────────────────────────────────────────────────
+let _payMethod='cash'
+
+function openPayModal(source){
+  _payMethod='cash'
+  let amount=0, num='', obj=''
+  if(source==='wholesale'&&WCUR){
+    amount=(WCUR.items||[]).reduce((s,i)=>s+(+i.price||0)*(+i.qty||1),0)
+    num=WCUR.number||''
+    obj='Оптовая продажа'
+  } else if(source==='order'&&CUR){
+    amount=calcTotal()
+    num=CUR.number||''
+    obj=CUR.device||'Заказ'
+  }
+  document.getElementById('pay-amount').value=amount
+  document.getElementById('pay-custom-amount').value=amount
+  document.getElementById('pay-amount-display').textContent=amount.toLocaleString('ru')+' ₽'
+  document.getElementById('pay-source').value=source
+  document.getElementById('pay-order-num').value=num
+  document.getElementById('pay-order-obj').value=obj
+  document.getElementById('pay-subtitle').textContent=num+(obj?' · '+obj:'')
+  document.getElementById('pay-emp').value=''
+  document.getElementById('pay-comment').value=''
+  selectPayMethod('cash')
+  om('m-pay')
+}
+
+function selectPayMethod(method){
+  _payMethod=method
+  const styles={
+    cash:{border:'2px solid var(--accent)',bg:'var(--accent-light)',color:'var(--accent)'},
+    card:{border:'2px solid var(--accent)',bg:'var(--accent-light)',color:'var(--accent)'},
+    transfer:{border:'2px solid var(--accent)',bg:'var(--accent-light)',color:'var(--accent)'}
+  }
+  ;['cash','card','transfer'].forEach(m=>{
+    const btn=document.getElementById('pm-'+m)
+    if(!btn) return
+    const lbl=btn.querySelector('span:last-child')
+    if(m===method){
+      btn.style.border='2px solid var(--accent)'
+      btn.style.background='var(--accent-light)'
+      if(lbl) lbl.style.color='var(--accent)'
+    } else {
+      btn.style.border='2px solid var(--border)'
+      btn.style.background='var(--surface)'
+      if(lbl) lbl.style.color='var(--text2)'
+    }
+  })
+}
+
+function updatePayDisplay(){
+  const v=+document.getElementById('pay-custom-amount').value||0
+  document.getElementById('pay-amount-display').textContent=v.toLocaleString('ru')+' ₽'
+}
+
+function confirmPayment(){
+  const source=document.getElementById('pay-source').value
+  const amount=+document.getElementById('pay-custom-amount').value||+document.getElementById('pay-amount').value||0
+  if(!amount){alert('Укажите сумму');return}
+  const emp=document.getElementById('pay-emp').value.trim()
+  const comment=document.getElementById('pay-comment').value.trim()
+  const orderNum=document.getElementById('pay-order-num').value
+  const obj=document.getElementById('pay-order-obj').value
+  const methodCash={cash:'cash',card:'card',transfer:'card'}
+  const tx={
+    id:S.nid('cash_tx'), tx_number:genCashNum(),
+    direction:'income', method:methodCash[_payMethod]||'cash',
+    amount, date:new Date().toISOString().slice(0,16),
+    type:'Оплата по заказу', order_ref:orderNum,
+    object:obj, emp, comment, confirmed:false
+  }
+  const txs=S.get('cash_tx')||[]; txs.unshift(tx); S.set('cash_tx',txs)
+  if(source==='wholesale'&&WCUR){
+    WCUR.status='paid'; WCUR.payment_method=_payMethod
+    const sel=document.getElementById('wc-status')
+    if(sel) sel.value='paid'
+    saveWholesale()
+  } else if(source==='order'&&CUR){
+    CUR.status='awaiting_payment'; CUR.payment_method=_payMethod
+    const sel=document.getElementById('oc-status')
+    if(sel) sel.value='awaiting_payment'
+    saveOrder()
+  }
+  cm('m-pay')
+  const methodLabel={cash:'наличные',card:'карта',transfer:'перевод'}
+  alert('✅ Оплата принята: '+amount.toLocaleString('ru')+' ₽ ('+( methodLabel[_payMethod]||_payMethod)+')')
 }
 
 function deleteWholesale(){
