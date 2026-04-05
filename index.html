@@ -337,39 +337,43 @@ tr:hover td{background:#fafafa}
           <button class="pmitem" onclick="openQuickRepairTab()">⚡ Быстрые работы (ремонт)</button>
         </div>
       </div>
-      <div style="display:flex;gap:4px;flex:1;min-width:0;flex-wrap:wrap;align-items:center">
-        <button id="f-all" class="ofbtn active" onclick="setOF('all')">Все заказы</button>
-        <button id="f-open" class="ofbtn" onclick="setOF('open')">Только незакрытые</button>
-        <button id="f-date" class="ofbtn" onclick="setOSort('date')">По дате создания</button>
-        <select id="f-status" class="ofbtn" style="padding:4px 8px" onchange="renderDeals()">
-          <option value="">По статусу</option>
-          <option value="open">Открыт</option>
-          <option value="in_work">В работе</option>
-          <option value="ready">Готов</option>
-          <option value="awaiting_payment">Ожидает оплаты</option>
-          <option value="closed">Закрыт</option>
-          <option value="cancelled">Отменён</option>
+      <div style="display:flex;gap:6px;flex:1;min-width:0;flex-wrap:wrap;align-items:center">
+        <div class="sw" style="min-width:200px;flex:1;max-width:280px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="o-search" placeholder="Поиск заказов..." oninput="renderDeals()" style="padding:6px 8px 6px 32px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;width:100%;background:var(--surface);font-family:inherit;color:var(--text)">
+        </div>
+        <button id="f-all" class="ofbtn active" onclick="setOF('all')">Все</button>
+        <button id="f-open" class="ofbtn" onclick="setOF('open')">Открытые</button>
+        <button id="f-date" class="ofbtn" onclick="setOSort('date')">↕ Дата</button>
+        <select id="f-status" class="ofbtn" style="padding:5px 8px" onchange="renderDeals()">
+          <option value="">Все статусы</option>
+          <option value="open">🔵 Открыт</option>
+          <option value="in_work">🟡 В работе</option>
+          <option value="ready">🟢 Готов</option>
+          <option value="awaiting_payment">🟠 Ожидает оплаты</option>
+          <option value="closed">⚫ Закрыт</option>
+          <option value="cancelled">🔴 Отменён</option>
         </select>
-        <button class="ofbtn" onclick="clearOF()" style="color:#64748b">Очистить фильтры</button>
+        <button class="ofbtn" onclick="clearOF()">✕ Сбросить</button>
       </div>
     </div>
     <!-- Table -->
-    <div style="overflow-x:auto;background:#fff">
+    <div style="overflow-x:auto;background:var(--surface)">
       <table id="orders-table" style="min-width:1100px">
         <thead>
-          <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0">
-            <th style="width:32px;padding:10px 8px"><input type="checkbox" id="chk-all" onchange="toggleAllChk(this)"></th>
-            <th class="oth" onclick="setOSort('number')">Номер</th>
-            <th class="oth" onclick="setOSort('date')">Создан</th>
-            <th class="oth">Статус</th>
-            <th class="oth">Устройство</th>
-            <th class="oth">Цвет</th>
-            <th class="oth">Клиент</th>
-            <th class="oth" onclick="setOSort('amount')">Цена работ</th>
-            <th class="oth">Телефон клиента</th>
-            <th class="oth">Принял</th>
-            <th class="oth">Исполнитель</th>
-            <th class="oth">Кто закрыл</th>
+          <tr style="background:#f9fafb;border-bottom:2px solid var(--border)">
+            <th style="width:36px;padding:10px 12px"><input type="checkbox" id="chk-all" onchange="toggleAllChk(this)" style="accent-color:var(--accent)"></th>
+            <th class="oth" onclick="setOSort('number')" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Номер ↕</th>
+            <th class="oth" onclick="setOSort('date')" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Создан ↕</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Статус</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Устройство</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Цвет</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Клиент</th>
+            <th class="oth" onclick="setOSort('amount')" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Сумма ↕</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Телефон</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Принял</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Исполнитель</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Закрыл</th>
           </tr>
         </thead>
         <tbody id="orders-tbody"></tbody>
@@ -377,12 +381,12 @@ tr:hover td{background:#fafafa}
     </div>
     <!-- Footer -->
     <div style="background:var(--surface);border-top:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--text2)">
-      <span id="orders-total"></span>
+      <span id="orders-total" style="font-size:12px;color:var(--text3)"></span>
       <div style="display:flex;align-items:center;gap:6px">
         <button class="pgbtn" id="pg-prev" onclick="changePage(-1)">‹</button>
         <div id="pg-nums" style="display:flex;gap:4px"></div>
         <button class="pgbtn" id="pg-next" onclick="changePage(1)">›</button>
-        <span style="color:#94a3b8;margin-left:8px">/ стр.: <strong id="pg-per">20</strong></span>
+        <span style="color:var(--text3);margin-left:8px;font-size:12px">/ стр.: <strong id="pg-per">20</strong></span>
       </div>
     </div>
   </div>
@@ -1378,12 +1382,28 @@ function renderDash(){
     {l:'Задач',v:tasks.filter(t=>t.status==='pending').length,s:'ожидают',bg:'#06b6d4'},
     {l:'Просрочено',v:tasks.filter(t=>t.status==='pending'&&t.due&&new Date(t.due)<new Date()).length,s:'нужно внимание',bg:'#ef4444'},
   ]
-  document.getElementById('dash-stats').innerHTML=stats.map(s=>`<div class="stat-card"><div class="ico" style="background:${s.bg}"><svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="12" r="6"/></svg></div><div class="lbl">${s.l}</div><div class="val">${s.v}</div><div class="sub">${s.s}</div></div>`).join('')
+  const icons=['👥','📋','💰','📊','✅','⚠️']
+  const bgs=[
+    'linear-gradient(135deg,#6366f1,#4f46e5)',
+    'linear-gradient(135deg,#8b5cf6,#7c3aed)',
+    'linear-gradient(135deg,#10b981,#059669)',
+    'linear-gradient(135deg,#f59e0b,#d97706)',
+    'linear-gradient(135deg,#06b6d4,#0891b2)',
+    'linear-gradient(135deg,#ef4444,#dc2626)',
+  ]
+  document.getElementById('dash-stats').innerHTML=stats.map((s,i)=>`
+    <div class="stat-card">
+      <div class="ico" style="background:${bgs[i]};color:#fff;font-size:15px">${icons[i]}</div>
+      <div class="lbl">${s.l}</div>
+      <div class="val" style="color:${['#6366f1','#8b5cf6','#10b981','#f59e0b','#06b6d4','#ef4444'][i]}">${s.v}</div>
+      <div class="sub">${s.s}</div>
+    </div>`).join('')
   const sc=Object.keys(SM).map(k=>deals.filter(d=>d.stage===k).length),mx=Math.max(...sc,1)
-  document.getElementById('funnel-chart').innerHTML=Object.keys(SM).map((k,i)=>`<div class="bi"><div class="bv2">${sc[i]}</div><div class="br2" style="height:${Math.max(sc[i]/mx*100,4)}px;background:#3b82f6;opacity:${0.4+0.6*i/6}"></div><div class="bl">${SM[k].l.split(' ')[0]}</div></div>`).join('')
+  const chartColors=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444']
+  document.getElementById('funnel-chart').innerHTML=Object.keys(SM).map((k,i)=>`<div class="bi"><div class="bv2">${sc[i]}</div><div class="br2" style="height:${Math.max(sc[i]/mx*100,4)}px;background:${chartColors[i%chartColors.length]};border-radius:5px 5px 0 0"></div><div class="bl">${SM[k].l.split(' ')[0]}</div></div>`).join('')
   const pc=['high','medium','low'].map(p=>tasks.filter(t=>t.priority===p&&t.status!=='completed').length),mpx=Math.max(...pc,1)
-  const pc2=['#ef4444','#f59e0b','#22c55e']
-  document.getElementById('priority-chart').innerHTML=['high','medium','low'].map((p,i)=>`<div class="bi"><div class="bv2">${pc[i]}</div><div class="br2" style="height:${Math.max(pc[i]/mpx*100,4)}px;background:${pc2[i]}"></div><div class="bl">${PM[p].l}</div></div>`).join('')
+  const pc2=['#ef4444','#f59e0b','#10b981']
+  document.getElementById('priority-chart').innerHTML=['high','medium','low'].map((p,i)=>`<div class="bi"><div class="bv2">${pc[i]}</div><div class="br2" style="height:${Math.max(pc[i]/mpx*100,4)}px;background:${pc2[i]};border-radius:5px 5px 0 0"></div><div class="bl">${PM[p].l}</div></div>`).join('')
 }
 
 // ── CLIENTS ───────────────────────────────────────────────────────────────────
@@ -1580,8 +1600,10 @@ function getFilteredOrders(){
 
   // filter
   const sf=document.getElementById('f-status')?.value||''
+  const oq=(document.getElementById('o-search')?.value||'').toLowerCase()
   if(oFilter==='open') all=all.filter(o=>o.status!=='closed'&&o.status!=='cancelled')
   if(sf) all=all.filter(o=>o.status===sf)
+  if(oq) all=all.filter(o=>(o.number||'').toLowerCase().includes(oq)||(o.client||'').toLowerCase().includes(oq)||(o.device||'').toLowerCase().includes(oq)||(o.model||'').toLowerCase().includes(oq)||(o.phone||'').toLowerCase().includes(oq))
 
   // sort
   all.sort((a,b)=>{
@@ -1599,7 +1621,7 @@ function renderDeals(){
   oPage=Math.min(oPage,pages)
   const slice=all.slice((oPage-1)*oPerPage, oPage*oPerPage)
 
-  document.getElementById('orders-total').textContent='Итого: '+all.length
+  document.getElementById('orders-total').textContent='Показано: '+Math.min(oPerPage,all.length)+' из '+all.length+' заказов'
 
   const fdt2=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
 
@@ -1607,20 +1629,20 @@ function renderDeals(){
     const sd=STATUS_DOT[o.status]||STATUS_DOT.open
     const isPink=o.status==='cancelled'
     return `<tr class="orow${isPink?' pink':''}" onclick="rowClick('${o.id}')">
-      <td onclick="event.stopPropagation()" style="width:32px"><input type="checkbox" class="orow-chk"></td>
-      <td style="color:#2563eb;font-weight:500">${o.number}</td>
-      <td style="color:#64748b">${fdt2(o.created_at)}</td>
-      <td><span class="sdot" style="background:${sd.color}"></span>${sd.label}</td>
-      <td>${o.device||'—'}</td>
-      <td>${o.color||'—'}</td>
-      <td>${o.client||'—'}</td>
-      <td style="font-weight:500">${o.amount?Number(o.amount).toLocaleString('ru')+' ₽':'0'}</td>
-      <td style="color:#64748b">${o.phone||'—'}</td>
-      <td style="color:#64748b">${o.emp||'—'}</td>
-      <td style="color:#64748b">${o.exec||'—'}</td>
-      <td style="color:#64748b">${o.closer||'—'}</td>
+      <td onclick="event.stopPropagation()" style="width:36px;padding:9px 12px"><input type="checkbox" class="orow-chk" style="accent-color:var(--accent)"></td>
+      <td style="color:var(--accent);font-weight:600;font-size:12px">${o.number}</td>
+      <td style="color:var(--text3);font-size:12px">${fdt2(o.created_at)}</td>
+      <td><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:${sd.color}18;color:${sd.color}"><span style="width:6px;height:6px;border-radius:50%;background:${sd.color};flex-shrink:0"></span>${sd.label}</span></td>
+      <td style="font-weight:500">${o.device||'—'}</td>
+      <td style="color:var(--text3);font-size:12px">${o.color||'—'}</td>
+      <td style="font-weight:500">${o.client||'—'}</td>
+      <td style="font-weight:700;color:var(--text)">${o.amount?Number(o.amount).toLocaleString('ru')+' ₽':'—'}</td>
+      <td style="color:var(--text3);font-size:12px">${o.phone||'—'}</td>
+      <td style="color:var(--text2);font-size:12px">${o.emp||'—'}</td>
+      <td style="color:var(--text2);font-size:12px">${o.exec||'—'}</td>
+      <td style="color:var(--text2);font-size:12px">${o.closer||'—'}</td>
     </tr>`
-  }).join(''):'<tr><td colspan="12" style="text-align:center;color:#94a3b8;padding:48px;font-size:13px">Заказы не найдены</td></tr>'
+  }).join(''):'<tr><td colspan="12" style="text-align:center;color:var(--text3);padding:60px;font-size:14px">🔍 Заказы не найдены</td></tr>'
 
   // pagination
   const pg=document.getElementById('pg-nums')
