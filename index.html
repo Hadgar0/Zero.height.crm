@@ -927,9 +927,12 @@ tr:hover td{background:#fafafa}
       </div>
 
       <!-- Shipped indicator -->
-      <div id="wc-shipped-bar" style="display:none;background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;font-size:13px;color:#166534;font-weight:500">
-        <svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        Товар выгружен · <span id="wc-shipped-date"></span>
+      <div id="wc-shipped-bar" style="display:none;background:#dcfce7;border:1px solid #86efac;border-radius:10px;padding:12px 16px;align-items:flex-start;gap:10px;font-size:13px;color:#166534">
+        <svg style="width:18px;height:18px;flex-shrink:0;margin-top:1px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        <div>
+          <div style="font-weight:600">Товар выгружен · <span id="wc-shipped-date"></span></div>
+          <div id="wc-shipped-detail" style="font-size:12px;color:#15803d;margin-top:4px;line-height:1.7"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -3136,10 +3139,10 @@ function openWholesale(o){
   renderWholesaleItems()
   const sb=document.getElementById('wc-shipped-bar')
   if(o.shipped){
-    sb.style.display='flex'
-    document.getElementById('wc-shipped-date').textContent=o.shipped_at?new Date(o.shipped_at).toLocaleString('ru'):''
+    _renderShippedBar()
   } else {
     sb.style.display='none'
+    document.getElementById('wc-shipped-detail').innerHTML=''
   }
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
   document.getElementById('page-wholesale').classList.add('active')
@@ -3205,15 +3208,97 @@ function saveWholesale(){
 }
 
 function markShipped(){
-  if(!confirm('Отметить товар как выгруженный?')) return
+  if(WCUR.shipped){
+    alert('Товар уже был выгружен '+new Date(WCUR.shipped_at).toLocaleString('ru'))
+    return
+  }
+  const items=WCUR.items||[]
+  if(!items.length){alert('Нет товаров в заказе');return}
+
+  const warehouseLabel={main:'Основной склад',reserve:'Резервный склад',shop:'Торговый зал',service:'Сервисный склад'}
+  const warehouse=document.getElementById('wc-warehouse').value||'main'
+  const wLabel=warehouseLabel[warehouse]||warehouse
+  const orderNum=WCUR.number||('ОПТ-'+WCUR.id)
+
+  if(!confirm('Подтвердить выгрузку товаров?\nСклад: '+wLabel+'\nПозиций: '+items.length+'\n\nТовары будут списаны со склада автоматически.')) return
+
+  // — Списание со склада —
+  const whItems=S.get('wh_items')||[]
+  const log=S.get('wh_log')||[]
+  const deducted=[]
+  const notFound=[]
+
+  items.forEach(item=>{
+    const name=(item.name||'').trim()
+    if(!name) return
+    const qty=+item.qty||1
+    const idx=whItems.findIndex(it=>it.name.trim().toLowerCase()===name.toLowerCase())
+    if(idx>=0){
+      const before=whItems[idx].qty
+      whItems[idx].qty=Math.max(0,whItems[idx].qty-qty)
+      log.push({
+        id:S.nid('wh_log'), type:'write_off',
+        item_id:whItems[idx].id, qty:-qty,
+        warehouse, comment:'Выгрузка по '+orderNum+' ('+wLabel+')',
+        synced1c:false, date:new Date().toISOString()
+      })
+      deducted.push({name,qty,before,after:whItems[idx].qty,src:whItems[idx].src||'local'})
+    } else {
+      notFound.push({name,qty})
+    }
+  })
+  S.set('wh_items',whItems)
+  S.set('wh_log',log)
+
+  // — Фиксация выгрузки (статус НЕ меняем, если не оплачен) —
   WCUR.shipped=true
   WCUR.shipped_at=new Date().toISOString()
-  WCUR.status='closed'
-  document.getElementById('wc-status').value='closed'
+  WCUR.shipped_warehouse=warehouse
+  WCUR.shipped_deducted=deducted
+  WCUR.shipped_not_found=notFound
+
   saveWholesale()
+  _renderShippedBar()
+
+  // — Итоговый отчёт —
+  let msg='✅ Выгрузка зафиксирована\n'+new Date(WCUR.shipped_at).toLocaleString('ru')+'\nСклад: '+wLabel+'\n'
+  if(deducted.length){
+    msg+='\n📦 Списано ('+deducted.length+' поз.):\n'
+    deducted.forEach(d=>{
+      msg+='  • '+d.name+': −'+d.qty+' шт. (остаток: '+d.after+')'+(d.src==='1c'?' [1С]':'')+'\n'
+    })
+  }
+  if(notFound.length){
+    msg+='\n⚠️ Не найдено на складе ('+notFound.length+' поз.):\n'
+    notFound.forEach(d=>{ msg+='  • '+d.name+': '+d.qty+' шт.\n' })
+    msg+='\nЭти позиции нужно списать вручную.'
+  }
+  alert(msg)
+}
+
+function _renderShippedBar(){
+  if(!WCUR||!WCUR.shipped) return
+  const warehouseLabel={main:'Основной склад',reserve:'Резервный склад',shop:'Торговый зал',service:'Сервисный склад'}
+  const wLabel=warehouseLabel[WCUR.shipped_warehouse]||WCUR.shipped_warehouse||''
   const sb=document.getElementById('wc-shipped-bar')
   sb.style.display='flex'
-  document.getElementById('wc-shipped-date').textContent=new Date(WCUR.shipped_at).toLocaleString('ru')
+  document.getElementById('wc-shipped-date').textContent=
+    new Date(WCUR.shipped_at).toLocaleString('ru')+(wLabel?' · '+wLabel:'')
+
+  const detail=document.getElementById('wc-shipped-detail')
+  const ded=WCUR.shipped_deducted||[]
+  const nf=WCUR.shipped_not_found||[]
+  let html=''
+  if(ded.length){
+    html+='<span style="font-weight:600">Списано:</span> '
+    html+=ded.map(d=>'<span style="background:#bbf7d0;border-radius:4px;padding:1px 6px">'+d.name+' ×'+d.qty+(d.src==='1c'?' <b>[1С]</b>':'')+'</span>').join(' ')
+  }
+  if(nf.length){
+    if(html) html+='<br>'
+    html+='<span style="font-weight:600;color:#dc2626">⚠ Не найдено:</span> '
+    html+=nf.map(d=>'<span style="background:#fee2e2;border-radius:4px;padding:1px 6px;color:#991b1b">'+d.name+' ×'+d.qty+'</span>').join(' ')
+  }
+  detail.innerHTML=html
 }
 
 // ── PAYMENT MODAL ─────────────────────────────────────────────────────────────
