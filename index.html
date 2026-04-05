@@ -351,6 +351,12 @@ tr:hover td{background:#fafafa}
         <button id="f-all" class="ofbtn active" onclick="setOF('all')">Все</button>
         <button id="f-open" class="ofbtn" onclick="setOF('open')">Открытые</button>
         <button id="f-date" class="ofbtn" onclick="setOSort('date')">↕ Дата</button>
+        <select id="f-type" class="ofbtn" style="padding:5px 8px" onchange="renderDeals()">
+          <option value="">Все типы</option>
+          <option value="repair">🔧 Ремонт</option>
+          <option value="wholesale">📦 Опт</option>
+          <option value="deal">💼 Сделка</option>
+        </select>
         <select id="f-status" class="ofbtn" style="padding:5px 8px" onchange="renderDeals()">
           <option value="">Все статусы</option>
           <option value="open">🔵 Открыт</option>
@@ -371,6 +377,7 @@ tr:hover td{background:#fafafa}
             <th style="width:36px;padding:10px 12px"><input type="checkbox" id="chk-all" onchange="toggleAllChk(this)" style="accent-color:var(--accent)"></th>
             <th class="oth" onclick="setOSort('number')" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Номер ↕</th>
             <th class="oth" onclick="setOSort('date')" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Создан ↕</th>
+            <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Тип</th>
             <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Статус</th>
             <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Устройство</th>
             <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Цвет</th>
@@ -1715,6 +1722,8 @@ function setOSort(s){
 function clearOF(){
   oFilter='all'; oSort='date'; oSortDir=1; oPage=1
   document.getElementById('f-status').value=''
+  document.getElementById('f-type').value=''
+  document.getElementById('o-search').value=''
   document.querySelectorAll('.ofbtn[id^="f-"]').forEach(b=>b.classList.remove('active'))
   document.getElementById('f-all').classList.add('active')
   renderDeals()
@@ -1738,29 +1747,25 @@ const STATUS_DOT={
 }
 
 function getFilteredOrders(){
-  const deals=S.get('deals'), orders=S.get('orders')
-  // merge: saved orders + deals, orders take priority
-  const orderDeals=orders.map(o=>({
-    id:'o'+o.id, _order:o,
-    title: (o.device||'Аксессуары')+' '+(o.model||''),
-    client: o.client||'Розничный покупатель',
-    phone: o.phone||'',
-    device: o.device||'Аксессуары',
-    model: o.model||'',
-    color: o.color||'',
-    amount: o.total||o.price||0,
-    status: o.status||'open',
-    emp: o.emp||'',
-    exec: (o.works&&o.works[0]&&o.works[0].exec)||'',
-    closer: o.closer||'',
-    number: o.number||('№'+o.id),
-    created_at: o.created_at,
-  }))
+  const deals=S.get('deals'), orders=S.get('orders'), wholesale=S.get('wholesale')||[]
   const clients=S.get('clients')
+
+  // Repair orders
+  const orderDeals=orders.map(o=>({
+    id:'o'+o.id, _order:o, _type:'repair',
+    title:(o.device||'Аксессуары')+' '+(o.model||''),
+    client:o.client||'Розничный покупатель', phone:o.phone||'',
+    device:o.device||'Аксессуары', model:o.model||'', color:o.color||'',
+    amount:o.total||o.price||0, status:o.status||'open',
+    emp:o.emp||'', exec:(o.works&&o.works[0]&&o.works[0].exec)||'',
+    closer:o.closer||'', number:o.number||('№'+o.id), created_at:o.created_at,
+  }))
+
+  // Regular CRM deals
   const regularDeals=deals.filter(d=>!d.order_id).map(d=>{
     const cl=clients.find(c=>c.id==d.client_id)
     return {
-      id:'d'+d.id, _deal:d,
+      id:'d'+d.id, _deal:d, _type:'deal',
       title:d.title, client:cl?cl.name:'Розничный покупатель',
       phone:cl?cl.phone||'':'', device:d.title, model:'', color:'',
       amount:d.amount||0, status:d.status==='closed'?'closed':d.status||'open',
@@ -1768,13 +1773,33 @@ function getFilteredOrders(){
       created_at:d.created_at,
     }
   })
-  let all=[...orderDeals,...regularDeals]
+
+  // Wholesale orders
+  const wholesaleRows=wholesale.map(w=>{
+    const cl=clients.find(c=>c.id==w.client_id)
+    const totalAmt=(w.items||[]).reduce((s,i)=>s+(+i.price||0)*(+i.qty||1),0)
+    const wStatus=w.shipped?'closed':(w.status==='paid'?'closed':w.status==='awaiting_payment'?'awaiting_payment':'open')
+    return {
+      id:'w'+w.id, _wholesale:w, _type:'wholesale',
+      title:'Опт: '+(cl?cl.name:w.client||'—'),
+      client:cl?cl.name:w.client||'—', phone:cl?cl.phone||'':'',
+      device:'Оптовая продажа',
+      model:(w.items||[]).map(i=>i.name).slice(0,2).join(', ')||w.comment||'',
+      color:'', amount:totalAmt, status:wStatus,
+      emp:'', exec:'', closer:'',
+      number:w.number||('ОПТ-'+w.id), created_at:w.created_at,
+    }
+  })
+
+  let all=[...orderDeals,...wholesaleRows,...regularDeals]
 
   // filter
   const sf=document.getElementById('f-status')?.value||''
+  const ft=document.getElementById('f-type')?.value||''
   const oq=(document.getElementById('o-search')?.value||'').toLowerCase()
   if(oFilter==='open') all=all.filter(o=>o.status!=='closed'&&o.status!=='cancelled')
   if(sf) all=all.filter(o=>o.status===sf)
+  if(ft) all=all.filter(o=>o._type===ft)
   if(oq) all=all.filter(o=>(o.number||'').toLowerCase().includes(oq)||(o.client||'').toLowerCase().includes(oq)||(o.device||'').toLowerCase().includes(oq)||(o.model||'').toLowerCase().includes(oq)||(o.phone||'').toLowerCase().includes(oq))
 
   // sort
@@ -1797,13 +1822,20 @@ function renderDeals(){
 
   const fdt2=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
 
+  const TYPE_BADGE={
+    repair:    {label:'🔧 Ремонт',    bg:'#eff6ff',color:'#1d4ed8'},
+    wholesale: {label:'📦 Опт',       bg:'#fef3c7',color:'#92400e'},
+    deal:      {label:'💼 Сделка',    bg:'#f5f3ff',color:'#6d28d9'},
+  }
   document.getElementById('orders-tbody').innerHTML=slice.length?slice.map(o=>{
     const sd=STATUS_DOT[o.status]||STATUS_DOT.open
+    const tb=TYPE_BADGE[o._type]||TYPE_BADGE.repair
     const isPink=o.status==='cancelled'
     return `<tr class="orow${isPink?' pink':''}" onclick="rowClick('${o.id}')">
       <td onclick="event.stopPropagation()" style="width:36px;padding:9px 12px"><input type="checkbox" class="orow-chk" style="accent-color:var(--accent)"></td>
       <td style="color:var(--accent);font-weight:600;font-size:12px">${o.number}</td>
       <td style="color:var(--text3);font-size:12px">${fdt2(o.created_at)}</td>
+      <td><span style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:${tb.bg};color:${tb.color};white-space:nowrap">${tb.label}</span></td>
       <td><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:${sd.color}18;color:${sd.color}"><span style="width:6px;height:6px;border-radius:50%;background:${sd.color};flex-shrink:0"></span>${sd.label}</span></td>
       <td style="font-weight:500">${o.device||'—'}</td>
       <td style="color:var(--text3);font-size:12px">${o.color||'—'}</td>
@@ -1814,7 +1846,7 @@ function renderDeals(){
       <td style="color:var(--text2);font-size:12px">${o.exec||'—'}</td>
       <td style="color:var(--text2);font-size:12px">${o.closer||'—'}</td>
     </tr>`
-  }).join(''):'<tr><td colspan="12" style="text-align:center;color:var(--text3);padding:60px;font-size:14px">🔍 Заказы не найдены</td></tr>'
+  }).join(''):'<tr><td colspan="13" style="text-align:center;color:var(--text3);padding:60px;font-size:14px">🔍 Заказы не найдены</td></tr>'
 
   // pagination
   const pg=document.getElementById('pg-nums')
@@ -1832,12 +1864,24 @@ function renderDeals(){
 function goPage(n){oPage=n;renderDeals()}
 
 function rowClick(id){
-  const orders=S.get('orders'),deals=S.get('deals')
+  const orders=S.get('orders'),deals=S.get('deals'),wholesale=S.get('wholesale')||[]
   if(id.startsWith('o')){
+    // Repair order
     const oid=parseInt(id.slice(1))
     const o=orders.find(o=>o.id===oid)
     if(o) openOrderInTab(o)
+  } else if(id.startsWith('w')){
+    // Wholesale order — open in wholesale tab
+    const wid=parseInt(id.slice(1))
+    const w=wholesale.find(w=>w.id===wid)
+    if(w){
+      localStorage.setItem('_wholesale_tab',JSON.stringify(w))
+      const base=location.href.split('?')[0].split('#')[0]
+      const win=window.open(base+'?wholesale=1','_blank')
+      if(!win) alert('Разрешите всплывающие окна в браузере')
+    }
   } else {
+    // CRM deal
     const did=parseInt(id.slice(1))
     const d=deals.find(d=>d.id===did)
     if(d) openOrderInTab({id:null,number:getOrg()+'-'+String(d.id).padStart(6,'0'),client:d.client||'',device:d.title,model:'',color:'',emp:'',src:'',price:d.amount||0,status:d.status||'open',works:[],created_at:d.created_at})
