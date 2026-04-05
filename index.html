@@ -924,46 +924,57 @@ tr:hover td{background:#fafafa}
   </div>
 
   <!-- КАССА -->
-  <div id="page-cash" class="page" style="display:flex;flex-direction:column;height:100vh">
+  <div id="page-cash" class="page">
+
+    <!-- Top info bar: count + pagination -->
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:8px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:12;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+      <span id="cash-count" style="font-size:12px;color:var(--text3)">Показано: 0 из 0 операций</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="pgbtn" id="cash-pg-prev" onclick="cashChangePage(-1)">‹</button>
+        <div id="cash-pg-nums" style="display:flex;gap:4px"></div>
+        <button class="pgbtn" id="cash-pg-next" onclick="cashChangePage(1)">›</button>
+        <select id="cash-per-page" class="fc" style="width:70px;padding:4px 8px;font-size:12px" onchange="cashPerPageChange()">
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span style="font-size:12px;color:var(--text3)">/ стр.</span>
+      </div>
+    </div>
 
     <!-- Toolbar -->
-    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.05)">
-      <button onclick="openCashModal()" class="plus-btn" style="width:32px;height:32px;font-size:18px;flex-shrink:0">+</button>
-      <div style="display:flex;align-items:center;gap:6px;background:#f9fafb;border:1px solid var(--border);border-radius:9px;padding:5px 12px;font-size:13px;color:var(--text2);min-width:200px">
-        <svg style="width:14px;height:14px;color:var(--text3);flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    <div style="background:var(--surface);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:37px;z-index:11;box-shadow:0 1px 4px rgba(0,0,0,.05)">
+      <button onclick="openCashModal()" class="plus-btn" style="width:32px;height:32px;font-size:20px;flex-shrink:0">+</button>
+      <div style="display:flex;align-items:center;gap:6px;background:#f9fafb;border:1px solid var(--border);border-radius:9px;padding:5px 12px;font-size:13px;color:var(--text2);min-width:190px;cursor:pointer">
+        <svg style="width:13px;height:13px;color:var(--text3);flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         <span id="cash-branch">Основной офис</span>
-        <svg style="width:12px;height:12px;color:var(--text3);margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        <svg style="width:11px;height:11px;color:var(--text3);margin-left:auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <!-- Date from -->
       <input type="date" id="cash-date-from" class="fc" style="width:140px;padding:6px 10px" onchange="renderCash()">
-      <span style="color:var(--text3);font-size:13px">—</span>
-      <!-- Date to -->
+      <span style="color:var(--text3);font-size:14px;font-weight:300">—</span>
       <input type="date" id="cash-date-to" class="fc" style="width:140px;padding:6px 10px" onchange="renderCash()">
-      <!-- Filter icon -->
       <button class="btn btn-g" style="padding:6px 10px" title="Фильтры">
-        <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
       </button>
-      <!-- Group icon -->
       <button class="btn btn-g" style="padding:6px 10px" title="Группировка">
-        <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       </button>
-      <!-- Confirm button -->
-      <button onclick="confirmAllCash()" style="width:34px;height:34px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,.35)" title="Подтвердить всё">
-        <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      <button onclick="confirmAllCash()" style="width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,.3)" title="Подтвердить всё">
+        <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
       </button>
-      <div style="margin-left:auto;display:flex;gap:8px">
+      <div style="margin-left:auto">
         <div class="sw" style="min-width:180px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="cash-search" placeholder="Поиск..." oninput="renderCash()" style="padding:6px 8px 6px 32px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;width:100%;background:var(--surface);font-family:inherit">
+          <input id="cash-search" placeholder="Поиск..." oninput="renderCash()" style="padding:6px 8px 6px 32px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none;width:100%;background:var(--surface);font-family:inherit;color:var(--text)">
         </div>
       </div>
     </div>
 
     <!-- Table -->
-    <div style="flex:1;overflow:auto">
+    <div style="overflow-x:auto;background:var(--surface)">
       <table style="min-width:1200px;width:100%">
         <thead>
-          <tr style="background:#f9fafb;border-bottom:2px solid var(--border);position:sticky;top:0">
+          <tr style="background:#f9fafb;border-bottom:2px solid var(--border)">
             <th style="width:36px;padding:10px 12px"><input type="checkbox" style="accent-color:var(--accent)"></th>
             <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Дата</th>
             <th class="oth" style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px">Номер</th>
@@ -983,7 +994,7 @@ tr:hover td{background:#fafafa}
     </div>
 
     <!-- Footer totals -->
-    <div style="background:var(--surface);border-top:2px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:24px;flex-shrink:0;box-shadow:0 -1px 4px rgba(0,0,0,.04)">
+    <div style="background:var(--surface);border-top:2px solid var(--border);padding:12px 18px;display:flex;align-items:center;gap:24px;box-shadow:0 -1px 4px rgba(0,0,0,.04);position:sticky;bottom:0;z-index:10">
       <div style="display:flex;gap:6px;align-items:center">
         <span style="font-size:12px;color:var(--text3);font-weight:500">Наличные:</span>
         <span id="cash-total-cash" style="font-size:14px;font-weight:700;color:var(--green)">+0</span>
@@ -999,18 +1010,6 @@ tr:hover td{background:#fafafa}
       <div style="display:flex;gap:6px;align-items:center;padding-left:16px;border-left:1px solid var(--border)">
         <span style="font-size:12px;color:var(--text3);font-weight:600">Итого:</span>
         <span id="cash-total-all" style="font-size:15px;font-weight:800;color:var(--text)">+0</span>
-      </div>
-      <!-- Pagination -->
-      <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
-        <button class="pgbtn" id="cash-pg-prev" onclick="cashChangePage(-1)">‹</button>
-        <div id="cash-pg-nums" style="display:flex;gap:4px"></div>
-        <button class="pgbtn" id="cash-pg-next" onclick="cashChangePage(1)">›</button>
-        <select id="cash-per-page" class="fc" style="width:80px;padding:4px 8px;font-size:12px" onchange="cashPerPageChange()">
-          <option value="20">20</option>
-          <option value="50">50</option>
-          <option value="100" selected>100</option>
-        </select>
-        <span style="font-size:12px;color:var(--text3)">/ стр.</span>
       </div>
     </div>
   </div>
@@ -2397,6 +2396,10 @@ function renderCash(){
   const tot=totCash+totCard+totB2p
   document.getElementById('cash-total-all').textContent=fmtN(tot)
   document.getElementById('cash-total-all').style.color=tot>=0?'var(--green)':'var(--red)'
+
+  // Count
+  const countEl=document.getElementById('cash-count')
+  if(countEl) countEl.textContent='Показано: '+Math.min(perPage,all.length)+' из '+all.length+' операций'
 
   const fdt=d=>{if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
   const methodLabel={cash:'Наличные',card:'Карта',best2pay:'Best2Pay',return_card:'Возврат картой'}
