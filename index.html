@@ -4270,7 +4270,39 @@ function getSalesAnalytics(){
     })
   })
 
-  // From retail orders (closed)
+  // From retail orders (closed) — works with parts
+  orders.filter(o=>o.status==='closed'&&o.works&&o.works.length).forEach(o=>{
+    o.works.forEach(w=>{
+      // Parts (запчасти): w.part = name, w.pp = sale price, w.sku = sku
+      if(w.part&&+w.pp>0){
+        const whIt=w.sku?whItems.find(i=>i.sku===w.sku):whItems.find(i=>i.name===w.part)
+        const key=whIt?whIt.id:('part:'+w.part)
+        if(!map[key]) map[key]={
+          wh_item_id:whIt?whIt.id:null,
+          name:w.part,
+          src:whIt?whIt.src||'local':'local',
+          cost:0, sale:0, qty:0, revenue:0
+        }
+        const cost=whIt?+(whIt.price||0):0
+        const salePrice=+(w.pp||0)
+        map[key].cost=cost
+        map[key].sale=salePrice
+        map[key].qty+=1
+        map[key].revenue+=salePrice
+        if(whIt&&!map[key].src) map[key].src=whIt.src||'local'
+      }
+      // Works (работы): w.n = name, w.p = price (услуга без себестоимости)
+      if(w.n&&+w.p>0){
+        const key='work:'+w.n
+        if(!map[key]) map[key]={wh_item_id:null,name:w.n+' (услуга)',src:'local',cost:0,sale:0,qty:0,revenue:0}
+        map[key].sale=+(w.p||0)
+        map[key].qty+=1
+        map[key].revenue+=+(w.p||0)
+      }
+    })
+  })
+
+  // From retail orders with items[] (если есть)
   orders.filter(o=>o.status==='closed'&&o.items&&o.items.length).forEach(o=>{
     o.items.forEach(item=>{
       const key=item.wh_item_id||('name:'+item.name)
