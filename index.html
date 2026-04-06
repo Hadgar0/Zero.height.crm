@@ -282,6 +282,10 @@ tr:hover td{background:#fafafa}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="nav-label">Склад</span>
     </a>
+    <a data-tip="Аналитика" onclick="nav('analytics',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="nav-label">Аналитика</span>
+    </a>
     <div class="nav-section">Система</div>
     <a id="nav-settings" data-tip="Настройки" onclick="nav('settings',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -976,6 +980,57 @@ tr:hover td{background:#fafafa}
     </div>
   </div>
 
+  <!-- АНАЛИТИКА -->
+  <div id="page-analytics" class="page page-pad">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <div>
+        <h1 style="margin:0;font-size:22px;font-weight:800;letter-spacing:-.4px">Аналитика продаж</h1>
+        <p style="font-size:13px;color:var(--text3);margin-top:3px">Рентабельность по каждой позиции</p>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select id="an-filter-src" class="ofbtn" style="padding:6px 12px" onchange="renderAnalytics()">
+          <option value="">Все источники</option>
+          <option value="1c">1С</option>
+          <option value="local">Свой склад</option>
+        </select>
+        <button class="btn btn-p" style="font-size:12px;padding:7px 16px" onclick="checkProfitabilityTasks()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;vertical-align:middle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Проверить задачи
+        </button>
+      </div>
+    </div>
+
+    <!-- Stat summary -->
+    <div class="stat-grid" id="an-stat-grid" style="grid-template-columns:repeat(4,1fr)"></div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="card-hd" style="justify-content:space-between">
+        <h2>Рентабельность по товарам</h2>
+        <span id="an-threshold-label" style="font-size:12px;color:var(--text3)"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="an-table">
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Источник</th>
+              <th style="text-align:right">Закуп.</th>
+              <th style="text-align:right">Продажа</th>
+              <th style="text-align:right">Маржа %</th>
+              <th style="text-align:right">Продано (шт)</th>
+              <th style="text-align:right">Выручка</th>
+              <th style="text-align:right">Прибыль</th>
+            </tr>
+          </thead>
+          <tbody id="an-tbody">
+            <tr><td colspan="8" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о продажах</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <!-- НАСТРОЙКИ -->
   <div id="page-settings" class="page page-pad">
     <div style="max-width:900px;margin:0 auto">
@@ -998,6 +1053,11 @@ tr:hover td{background:#fafafa}
               <label>Краткое имя организации</label>
               <input id="set-org" class="fc" placeholder="Напр: ЗК или 655" maxlength="20">
               <p style="font-size:11px;color:var(--text3);margin-top:4px">Используется в номере заказа: <strong id="set-preview">ЗК-000001</strong></p>
+            </div>
+            <div class="fg">
+              <label>Минимальная рентабельность (%)</label>
+              <input id="set-margin" type="number" class="fc" placeholder="20" min="0" max="200" style="max-width:160px">
+              <p style="font-size:11px;color:var(--text3);margin-top:4px">Ниже этого порога — строки подсвечиваются красным и создаётся задача</p>
             </div>
             <button class="btn btn-p" onclick="saveSettings()" style="align-self:flex-start">Сохранить</button>
           </div>
@@ -1831,6 +1891,7 @@ function nav(id,el){
   if(id==='warehouse') renderWarehouse()
   if(id==='cash'){initCashDates();renderCash()}
   if(id==='settings') renderSettings()
+  if(id==='analytics') renderAnalytics()
 }
 
 // ── Modal helpers ─────────────────────────────────────────────────────────────
@@ -2742,6 +2803,8 @@ function genNum(){
 function saveSettings(){
   const v=document.getElementById('set-org').value.trim()
   if(v) localStorage.setItem('org_code',v)
+  const m=document.getElementById('set-margin').value.trim()
+  localStorage.setItem('min_margin', m===''?'20':m)
   const inp=document.querySelector('[onclick="saveSettings()"]')
   if(inp){const t=inp.textContent;inp.textContent='✓ Сохранено';inp.style.background='var(--green)';setTimeout(()=>{inp.textContent=t;inp.style.background=''},1500)}
 }
@@ -2766,6 +2829,7 @@ function setTab(btn, secId){
 function renderSettings(){
   // Org
   document.getElementById('set-org').value=localStorage.getItem('org_code')||''
+  document.getElementById('set-margin').value=localStorage.getItem('min_margin')||'20'
   const orders=S.get('orders'),org=getOrg()
   document.getElementById('set-preview').textContent=org+'-'+String((orders.length||0)+1).padStart(6,'0')
   renderBranchList()
@@ -4177,6 +4241,138 @@ function openQuickClientModalW(){
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
+// ── АНАЛИТИКА ПРОДАЖ ──────────────────────────────────────────────────────────
+function getSalesAnalytics(){
+  const wholesale=S.get('wholesale')||[]
+  const orders=S.get('orders')||[]
+  const whItems=S.get('wh_items')||[]
+  const map={} // key: wh_item_id or name
+
+  // From wholesale shipped orders
+  wholesale.filter(w=>w.shipped&&w.items&&w.items.length).forEach(w=>{
+    w.items.forEach(item=>{
+      const key=item.wh_item_id||('name:'+item.name)
+      if(!map[key]) map[key]={
+        wh_item_id:item.wh_item_id||null,
+        name:item.name||'',
+        src:item.src||'local',
+        cost:0, sale:0, qty:0, revenue:0
+      }
+      const whIt=item.wh_item_id?whItems.find(i=>i.id===item.wh_item_id):whItems.find(i=>i.name===item.name)
+      const cost=whIt?+(whIt.price||0):0
+      const salePrice=+(item.price||0)
+      const qty=+(item.qty||1)
+      map[key].cost=cost
+      map[key].sale=salePrice
+      map[key].qty+=qty
+      map[key].revenue+=salePrice*qty
+      if(!map[key].src&&whIt) map[key].src=whIt.src||'local'
+    })
+  })
+
+  // From retail orders (closed)
+  orders.filter(o=>o.status==='closed'&&o.items&&o.items.length).forEach(o=>{
+    o.items.forEach(item=>{
+      const key=item.wh_item_id||('name:'+item.name)
+      if(!map[key]) map[key]={
+        wh_item_id:item.wh_item_id||null,
+        name:item.name||'',
+        src:item.src||'local',
+        cost:0, sale:0, qty:0, revenue:0
+      }
+      const whIt=item.wh_item_id?whItems.find(i=>i.id===item.wh_item_id):whItems.find(i=>i.name===item.name)
+      const cost=whIt?+(whIt.price||0):0
+      const salePrice=+(item.price||0)
+      const qty=+(item.qty||1)
+      map[key].cost=cost
+      map[key].sale=salePrice
+      map[key].qty+=qty
+      map[key].revenue+=salePrice*qty
+      if(!map[key].src&&whIt) map[key].src=whIt.src||'local'
+    })
+  })
+
+  return Object.values(map).map(r=>{
+    const profit=r.revenue-(r.cost*r.qty)
+    const margin=r.sale>0?((r.sale-r.cost)/r.sale*100):0
+    return {...r, profit, margin}
+  }).sort((a,b)=>b.revenue-a.revenue)
+}
+
+function renderAnalytics(){
+  const threshold=+(localStorage.getItem('min_margin')||20)
+  const srcFilter=document.getElementById('an-filter-src').value
+  let rows=getSalesAnalytics()
+  if(srcFilter) rows=rows.filter(r=>r.src===srcFilter)
+
+  // Stats
+  const totalRev=rows.reduce((s,r)=>s+r.revenue,0)
+  const totalProfit=rows.reduce((s,r)=>s+r.profit,0)
+  const belowThreshold=rows.filter(r=>r.margin<threshold)
+  const avgMargin=rows.length?rows.reduce((s,r)=>s+r.margin,0)/rows.length:0
+  document.getElementById('an-stat-grid').innerHTML=`
+    <div class="stat-card"><div class="lbl">Выручка</div><div class="val" style="font-size:20px;color:#3b82f6">${fmt(totalRev)}</div><div class="sub">все позиции</div></div>
+    <div class="stat-card"><div class="lbl">Прибыль</div><div class="val" style="font-size:20px;color:var(--green)">${fmt(totalProfit)}</div><div class="sub">после закупа</div></div>
+    <div class="stat-card"><div class="lbl">Средняя маржа</div><div class="val" style="font-size:20px;color:var(--accent)">${avgMargin.toFixed(1)}%</div><div class="sub">по всем товарам</div></div>
+    <div class="stat-card"><div class="lbl">Ниже порога</div><div class="val" style="font-size:20px;color:${belowThreshold.length?'var(--red)':'var(--green)'}">${belowThreshold.length}</div><div class="sub">позиций из ${rows.length}</div></div>
+  `
+  document.getElementById('an-threshold-label').textContent=`Порог рентабельности: ${threshold}%`
+
+  const tbody=document.getElementById('an-tbody')
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="8" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о продажах. Оформите и отгрузите заказы.</td></tr>'
+    return
+  }
+  tbody.innerHTML=rows.map(r=>{
+    const low=r.margin<threshold
+    const rowStyle=low?'background:#fff5f5':'';
+    const marginStyle=low?'color:var(--red);font-weight:700':'color:var(--green);font-weight:600'
+    const srcBadge=r.src==='1c'
+      ?'<span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">1С</span>'
+      :'<span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Свой</span>'
+    return `<tr style="${rowStyle}">
+      <td>${r.name}${low?'<span style="margin-left:6px;font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:4px;padding:1px 6px">⚠ низкая маржа</span>':''}</td>
+      <td>${srcBadge}</td>
+      <td style="text-align:right">${fmt(r.cost)}</td>
+      <td style="text-align:right">${fmt(r.sale)}</td>
+      <td style="text-align:right;${marginStyle}">${r.margin.toFixed(1)}%</td>
+      <td style="text-align:right">${r.qty}</td>
+      <td style="text-align:right">${fmt(r.revenue)}</td>
+      <td style="text-align:right;${r.profit>=0?'color:var(--green)':'color:var(--red)'}">${fmt(r.profit)}</td>
+    </tr>`
+  }).join('')
+}
+
+function checkProfitabilityTasks(){
+  const threshold=+(localStorage.getItem('min_margin')||20)
+  const rows=getSalesAnalytics()
+  const below=rows.filter(r=>r.margin<threshold)
+  if(!below.length){
+    alert('✅ Все позиции в норме — рентабельность выше '+threshold+'%')
+    return
+  }
+  const tasks=S.get('tasks')
+  let created=0
+  below.forEach(r=>{
+    const marker='_profitability:'+(r.wh_item_id||r.name)
+    const exists=tasks.find(t=>t.title&&t.title.includes(marker))
+    if(!exists){
+      tasks.push({
+        id:S.nid('tasks'),
+        title:'Изменить стоимость товара: '+r.name+' ['+marker+']',
+        description:`Текущая маржа: ${r.margin.toFixed(1)}% (порог: ${threshold}%). Закуп: ${fmt(r.cost)}, Продажа: ${fmt(r.sale)}`,
+        priority:'high',
+        status:'pending',
+        created_at:new Date().toISOString()
+      })
+      created++
+    }
+  })
+  S.set('tasks',tasks)
+  renderAnalytics()
+  alert(`✅ Создано задач: ${created}\nУже существовало: ${below.length-created}\n\nПерейдите в раздел Задачи для просмотра.`)
+}
+
 ;(function(){
   const params=new URLSearchParams(location.search)
   if(params.get('order')){
