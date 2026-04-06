@@ -64,7 +64,18 @@ nav .nav-section{font-size:10px;font-weight:600;color:#4b5563;text-transform:upp
 #sidebar.expanded #sb-emp-label{opacity:1}
 
 /* ── LAYOUT ──────────────────────────────────────────── */
-#main{flex:1;overflow-y:auto;background:var(--bg)}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+#main-scroll{flex:1;overflow-y:auto}
+#topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-shrink:0;box-shadow:var(--shadow-sm);z-index:20}
+.topbar-emp{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px;border-radius:8px;transition:background .15s}
+.topbar-emp:hover{background:var(--border-light)}
+.topbar-emp-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
+.topbar-emp-info{line-height:1.3}
+.topbar-emp-name{font-size:12px;font-weight:600;color:var(--text)}
+.topbar-emp-role{font-size:10px;color:var(--text3)}
+.topbar-salary{display:flex;align-items:center;gap:6px;padding:5px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px}
+.topbar-salary .lbl{font-size:10px;color:#15803d;font-weight:500}
+.topbar-salary .val{font-size:13px;color:#15803d;font-weight:700}
 .page{display:none}.page.active{display:block}
 .page-pad{padding:28px}
 h1{font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px;letter-spacing:-.3px}
@@ -304,6 +315,20 @@ tr:hover td{background:#fafafa}
 </div>
 
 <div id="main">
+<div id="topbar">
+  <div class="topbar-salary" id="topbar-salary" style="display:none">
+    <span class="lbl">За месяц:</span>
+    <span class="val" id="topbar-sal-val">—</span>
+  </div>
+  <div class="topbar-emp" id="topbar-emp-btn" onclick="openEmpProfile()" title="Профиль сотрудника">
+    <div class="topbar-emp-avatar" id="topbar-emp-avatar">?</div>
+    <div class="topbar-emp-info">
+      <div class="topbar-emp-name" id="topbar-emp-name">Не выбран</div>
+      <div class="topbar-emp-role" id="topbar-emp-role">Нажмите для выбора</div>
+    </div>
+  </div>
+</div>
+<div id="main-scroll">
 
   <!-- DASHBOARD -->
   <div id="page-dashboard" class="page active page-pad">
@@ -1072,16 +1097,17 @@ tr:hover td{background:#fafafa}
           <button class="btn btn-p" style="font-size:12px;padding:6px 14px" onclick="openBranchModal()">+ Добавить точку</button>
         </div>
         <div class="card">
-          <table style="min-width:500px">
+          <table style="min-width:600px">
             <thead><tr>
               <th>Название точки</th>
               <th>Короткое имя склада</th>
               <th>Адрес</th>
+              <th>Склад 1С</th>
               <th style="width:100px">Сотрудников</th>
               <th style="width:80px"></th>
             </tr></thead>
             <tbody id="set-branches-tbody">
-              <tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text3)">Нет точек. Нажмите «+ Добавить точку»</td></tr>
+              <tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text3)">Нет точек. Нажмите «+ Добавить точку»</td></tr>
             </tbody>
           </table>
         </div>
@@ -1238,6 +1264,7 @@ tr:hover td{background:#fafafa}
     </div>
   </div>
 
+</div>
 </div><!-- /main -->
 
 <!-- MODALS -->
@@ -1779,7 +1806,12 @@ tr:hover td{background:#fafafa}
         <input id="branch-short" class="fc" placeholder="Напр: ЛЕН" maxlength="10">
         <p style="font-size:11px;color:var(--text3);margin-top:3px">Используется как префикс склада этой точки</p>
       </div>
-      <div class="fg" style="margin-bottom:0"><label>Адрес</label><input id="branch-address" class="fc" placeholder="ул. Ленина, 1"></div>
+      <div class="fg"><label>Адрес</label><input id="branch-address" class="fc" placeholder="ул. Ленина, 1"></div>
+      <div class="fg" style="margin-bottom:0">
+        <label>Склад 1С для синхронизации</label>
+        <input id="branch-1c-wh" class="fc" placeholder="Напр: Основной склад / WH-001">
+        <p style="font-size:11px;color:var(--text3);margin-top:3px">Имя или ID склада в 1С. Используется при списании товаров 1С.</p>
+      </div>
     </div>
     <div class="mft" style="gap:10px">
       <button class="btn btn-g" onclick="cm('m-branch')">Отмена</button>
@@ -1858,6 +1890,38 @@ tr:hover td{background:#fafafa}
   </div>
 </div>
 
+<!-- Employee profile modal -->
+<div class="overlay hidden" id="m-emp-profile">
+  <div class="modal" style="max-width:380px">
+    <div class="mhd">
+      <h3>Профиль сотрудника</h3>
+      <button class="btn-i" onclick="cm('m-emp-profile')"><svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div id="emp-profile-avatar" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;font-weight:700;flex-shrink:0">?</div>
+        <div>
+          <div id="emp-profile-name" style="font-size:16px;font-weight:700">—</div>
+          <div id="emp-profile-role" style="font-size:12px;color:var(--text3);margin-top:2px">—</div>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Номер телефона</label>
+        <input id="emp-profile-phone" class="fc" placeholder="+7 900 000-00-00">
+      </div>
+      <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px">
+        <div style="font-size:11px;color:#15803d;font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Заработано за месяц</div>
+        <div id="emp-profile-salary" style="font-size:22px;font-weight:800;color:#15803d">—</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:3px" id="emp-profile-salary-sub"></div>
+      </div>
+    </div>
+    <div class="mft" style="gap:10px">
+      <button class="btn" onclick="logoutEmp()" style="background:#fee2e2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px;font-weight:600">Выйти</button>
+      <button class="btn btn-p" onclick="saveEmpProfile()" style="flex:1;justify-content:center">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <!-- Add work modal -->
 <div class="overlay hidden" id="m-work">
   <div class="modal" style="max-width:460px">
@@ -1865,8 +1929,8 @@ tr:hover td{background:#fafafa}
     <div class="mbd">
       <div class="fg"><label>Наименование *</label><input id="wn"></div>
       <div class="fr"><div class="fg"><label>Цена услуги (₽)</label><input id="wp" type="number" placeholder="0"></div><div class="fg"><label>Гарантия (дни)</label><input id="ww" type="number" placeholder="14"></div></div>
-      <div class="fr"><div class="fg"><label>Запчасть</label><input id="wpart"></div><div class="fg"><label>Цена запчасти (₽)</label><input id="wpp" type="number" placeholder="0"></div></div>
-      <div class="fr"><div class="fg"><label>Артикул</label><input id="wsku"></div><div class="fg"><label>Исполнитель</label><input id="wexec"></div></div>
+      <div class="fr"><div class="fg" style="position:relative"><label>Запчасть</label><input id="wpart" class="fc" placeholder="Поиск по складу..." oninput="searchWhPart(this.value)" autocomplete="off"><div id="wpart-drop" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:8px;box-shadow:var(--shadow-lg);max-height:200px;overflow-y:auto;z-index:999"></div></div><div class="fg"><label>Цена запчасти (₽)</label><input id="wpp" type="number" placeholder="0" class="fc"></div></div>
+      <div class="fr"><div class="fg"><label>Артикул</label><input id="wsku" class="fc"></div><div class="fg"><label>Исполнитель</label><input id="wexec" class="fc" list="emp-list"></div></div>
     </div>
     <div class="mft"><button class="btn btn-g" onclick="cm('m-work')">Отмена</button><button class="btn btn-p" onclick="saveWork()">Добавить</button></div>
   </div>
@@ -1915,6 +1979,82 @@ function fdt(d){if(!d)return '';const dt=new Date(d);return dt.toLocaleDateStrin
 function eico(p,s=14){return `<svg style="width:${s}px;height:${s}px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p}</svg>`}
 const EICO=eico('<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>')
 const DICO=eico('<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>')
+
+// ── Topbar ────────────────────────────────────────────────────────────────────
+function calcMonthlySalary(empName){
+  if(!empName) return {total:0, count:0}
+  const now=new Date()
+  const monthStart=new Date(now.getFullYear(),now.getMonth(),1)
+  const orders=S.get('orders')||[]
+  const wholesale=S.get('wholesale')||[]
+  let total=0, count=0
+  orders.filter(o=>o.status==='closed'&&o.emp===empName).forEach(o=>{
+    const d=new Date(o.closed_at||o.created_at||0)
+    if(d>=monthStart){total+=+(o.total||0);count++}
+  })
+  wholesale.filter(w=>(w.status==='paid'||w.status==='closed')&&w.emp===empName).forEach(w=>{
+    const d=new Date(w.closed_at||w.created_at||0)
+    if(d>=monthStart){total+=+(w.total||0);count++}
+  })
+  return {total,count}
+}
+
+function renderTopbar(){
+  const empName=getCurEmp()
+  const staff=S.get('staff')||[]
+  const emp=staff.find(s=>s.name===empName)
+  const nameEl=document.getElementById('topbar-emp-name')
+  const roleEl=document.getElementById('topbar-emp-role')
+  const avatarEl=document.getElementById('topbar-emp-avatar')
+  const salaryBar=document.getElementById('topbar-salary')
+  const salVal=document.getElementById('topbar-sal-val')
+  if(empName){
+    nameEl.textContent=empName
+    roleEl.textContent=emp?emp.role||'Сотрудник':'Сотрудник'
+    avatarEl.textContent=empName.charAt(0).toUpperCase()
+    const {total,count}=calcMonthlySalary(empName)
+    salaryBar.style.display='flex'
+    salVal.textContent=Number(total).toLocaleString('ru')+' ₽'
+  } else {
+    nameEl.textContent='Не выбран'
+    roleEl.textContent='Нажмите для выбора'
+    avatarEl.textContent='?'
+    salaryBar.style.display='none'
+  }
+}
+
+function openEmpProfile(){
+  const empName=getCurEmp()
+  const staff=S.get('staff')||[]
+  const emp=staff.find(s=>s.name===empName)
+  document.getElementById('emp-profile-avatar').textContent=empName?empName.charAt(0).toUpperCase():'?'
+  document.getElementById('emp-profile-name').textContent=empName||'Сотрудник не выбран'
+  document.getElementById('emp-profile-role').textContent=emp?emp.role||'—':'—'
+  document.getElementById('emp-profile-phone').value=emp?emp.phone||'':''
+  const {total,count}=calcMonthlySalary(empName)
+  document.getElementById('emp-profile-salary').textContent=Number(total).toLocaleString('ru')+' ₽'
+  document.getElementById('emp-profile-salary-sub').textContent=count+' закрытых заказов в этом месяце'
+  om('m-emp-profile')
+}
+
+function saveEmpProfile(){
+  const empName=getCurEmp()
+  if(!empName){cm('m-emp-profile');return}
+  const phone=document.getElementById('emp-profile-phone').value.trim()
+  const staff=S.get('staff')||[]
+  const i=staff.findIndex(s=>s.name===empName)
+  if(i>=0){staff[i].phone=phone;S.set('staff',staff)}
+  cm('m-emp-profile')
+  renderTopbar()
+  syncEmpList()
+}
+
+function logoutEmp(){
+  localStorage.removeItem('cur_emp')
+  cm('m-emp-profile')
+  syncEmpList()
+  renderTopbar()
+}
 
 // ── Sidebar toggle ────────────────────────────────────────────────────────────
 function toggleSidebar(){
@@ -2895,6 +3035,7 @@ function openBranchModal(id){
   document.getElementById('branch-name').value=''
   document.getElementById('branch-short').value=''
   document.getElementById('branch-address').value=''
+  document.getElementById('branch-1c-wh').value=''
   if(id){
     const b=(S.get('branches')||[]).find(x=>x.id===id)
     if(b){
@@ -2902,6 +3043,7 @@ function openBranchModal(id){
       document.getElementById('branch-name').value=b.name
       document.getElementById('branch-short').value=b.short_name||''
       document.getElementById('branch-address').value=b.address||''
+      document.getElementById('branch-1c-wh').value=b.wh_1c||''
     }
   }
   om('m-branch')
@@ -2913,7 +3055,7 @@ function saveBranch(){
   if(!short){alert('Укажите короткое имя склада');return}
   const id=document.getElementById('branch-id').value
   const bs=S.get('branches')||[]
-  const obj={name,short_name:short,address:document.getElementById('branch-address').value.trim()}
+  const obj={name,short_name:short,address:document.getElementById('branch-address').value.trim(),wh_1c:document.getElementById('branch-1c-wh').value.trim()}
   if(id){const i=bs.findIndex(b=>b.id==id);if(i>=0)bs[i]={...bs[i],...obj};else bs.push({id:S.nid('branches'),...obj})}
   else bs.push({id:S.nid('branches'),...obj,created_at:new Date().toISOString()})
   S.set('branches',bs)
@@ -2932,7 +3074,7 @@ function renderBranchList(){
   const staff=S.get('staff')||[]
   const tbody=document.getElementById('set-branches-tbody')
   if(!bs.length){
-    tbody.innerHTML='<tr><td colspan="5" style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Нет точек. Нажмите «+ Добавить точку»</td></tr>'
+    tbody.innerHTML='<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Нет точек. Нажмите «+ Добавить точку»</td></tr>'
     return
   }
   tbody.innerHTML=bs.map(b=>{
@@ -2941,6 +3083,7 @@ function renderBranchList(){
       <td style="font-weight:600">${b.name}</td>
       <td><span style="background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:600">${b.short_name}</span></td>
       <td style="color:var(--text2)">${b.address||'—'}</td>
+      <td style="color:var(--text2);font-size:12px">${b.wh_1c||'—'}</td>
       <td style="text-align:center">${cnt ? `<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:8px;font-size:12px">${cnt} чел.</span>` : '<span style="color:var(--text3)">0</span>'}</td>
       <td>
         <button onclick="openBranchModal(${b.id})" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:12px;padding:2px 6px">Ред.</button>
@@ -3110,13 +3253,40 @@ function syncEmpList(){
 }
 function setCurEmp(v){
   localStorage.setItem('cur_emp',v)
-  // Если открыт заказ — подставим сотрудника
   const empInp=document.getElementById('oc-emp')
   if(empInp&&!empInp.value&&v) empInp.value=v
   const payEmp=document.getElementById('pay-emp')
   if(payEmp&&!payEmp.value&&v) payEmp.value=v
+  renderTopbar()
 }
 function getCurEmp(){ return localStorage.getItem('cur_emp')||'' }
+
+function searchWhPart(q){
+  const drop=document.getElementById('wpart-drop')
+  if(!q||q.length<1){drop.style.display='none';return}
+  const items=S.get('wh_items')||[]
+  const ql=q.toLowerCase()
+  const found=items.filter(i=>i.qty>0&&(
+    (i.name&&i.name.toLowerCase().includes(ql))||
+    (i.sku&&i.sku.toLowerCase().includes(ql))||
+    (i.barcode&&i.barcode.toLowerCase().includes(ql))
+  )).slice(0,12)
+  if(!found.length){drop.style.display='none';return}
+  drop.style.display='block'
+  drop.innerHTML=found.map(i=>`<div onclick="selectWhPart('${i.id}')" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;font-size:12px" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background=''">
+    <div><div style="font-weight:600">${i.name}</div><div style="color:#94a3b8;font-size:11px">${i.sku||'—'} · ${i.qty} шт.</div></div>
+    <div style="font-weight:700;color:var(--accent)">${Number(i.sale_price||i.price||0).toLocaleString('ru')} ₽</div>
+  </div>`).join('')
+}
+
+function selectWhPart(id){
+  const item=(S.get('wh_items')||[]).find(i=>i.id===id)
+  if(!item) return
+  document.getElementById('wpart').value=item.name
+  document.getElementById('wsku').value=item.sku||''
+  document.getElementById('wpp').value=item.sale_price||item.price||''
+  document.getElementById('wpart-drop').style.display='none'
+}
 
 // ── SYNC: warehouse selects (from branches) ────────────────────────────────
 function syncBranchSelects(){
@@ -4557,6 +4727,7 @@ function checkProfitabilityTasks(){
   initSidebar()
   syncEmpList()
   syncBranchSelects()
+  renderTopbar()
   renderDash()
 })()
 
