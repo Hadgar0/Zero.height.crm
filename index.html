@@ -1935,6 +1935,33 @@ tr:hover td{background:#fafafa}
           Активный сотрудник
         </label>
       </div>
+      <!-- Зарплата -->
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light)">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">💰 Конструктор зарплаты</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="fg" style="margin-bottom:0">
+            <label style="font-size:11px">Ставка за смену (₽)</label>
+            <input id="staff-sal-shift" type="number" class="fc" placeholder="По умолч." min="0" style="font-size:12px">
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label style="font-size:11px">Смен в месяц (план)</label>
+            <input id="staff-sal-shift-cnt" type="number" class="fc" placeholder="По умолч." min="1" max="31" style="font-size:12px">
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label style="font-size:11px">% аксессуары / запчасти</label>
+            <input id="staff-sal-acc" type="number" class="fc" placeholder="По умолч." min="0" max="100" step="0.5" style="font-size:12px">
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label style="font-size:11px">% ремонт</label>
+            <input id="staff-sal-repair" type="number" class="fc" placeholder="По умолч." min="0" max="100" step="0.5" style="font-size:12px">
+          </div>
+          <div class="fg" style="margin-bottom:0;grid-column:1/-1">
+            <label style="font-size:11px">% оптовые продажи</label>
+            <input id="staff-sal-wholesale" type="number" class="fc" placeholder="По умолч." min="0" max="100" step="0.5" style="font-size:12px">
+          </div>
+        </div>
+        <p style="font-size:10px;color:var(--text3);margin-top:6px">Пустое поле = использовать глобальные настройки из вкладки «Зарплата»</p>
+      </div>
     </div>
     <div class="mft" style="gap:10px">
       <button class="btn btn-g" onclick="cm('m-staff')">Отмена</button>
@@ -3174,6 +3201,8 @@ function openStaffModal(id){
   const bs=S.get('branches')||[]
   const sel=document.getElementById('staff-branch')
   sel.innerHTML='<option value="">— не привязан —</option>'+bs.map(b=>`<option value="${b.id}">${b.name}</option>`).join('')
+  // clear salary fields
+  ;['staff-sal-shift','staff-sal-shift-cnt','staff-sal-acc','staff-sal-repair','staff-sal-wholesale'].forEach(id=>document.getElementById(id).value='')
   if(id){
     const st=(S.get('staff')||[]).find(x=>x.id===id)
     if(st){
@@ -3183,6 +3212,13 @@ function openStaffModal(id){
       document.getElementById('staff-phone').value=st.phone||''
       document.getElementById('staff-active').checked=st.active!==false
       sel.value=st.branch_id||''
+      // salary
+      const sal=st.salary||{}
+      if(sal.shift!=null)      document.getElementById('staff-sal-shift').value=sal.shift
+      if(sal.shiftCnt!=null)   document.getElementById('staff-sal-shift-cnt').value=sal.shiftCnt
+      if(sal.accPct!=null)     document.getElementById('staff-sal-acc').value=sal.accPct
+      if(sal.repairPct!=null)  document.getElementById('staff-sal-repair').value=sal.repairPct
+      if(sal.wholePct!=null)   document.getElementById('staff-sal-wholesale').value=sal.wholePct
     }
   }
   om('m-staff')
@@ -3192,12 +3228,22 @@ function saveStaff(){
   if(!name){alert('Укажите ФИО');return}
   const id=document.getElementById('staff-id').value
   const arr=S.get('staff')||[]
+  // Parse salary — пустое поле = null (использовать глобальные)
+  const pf=v=>{ const s=document.getElementById(v).value.trim(); return s===''?null:+s }
+  const salary={
+    shift:    pf('staff-sal-shift'),
+    shiftCnt: pf('staff-sal-shift-cnt'),
+    accPct:   pf('staff-sal-acc'),
+    repairPct:pf('staff-sal-repair'),
+    wholePct: pf('staff-sal-wholesale'),
+  }
   const obj={
     name,
     role:     document.getElementById('staff-role').value,
     branch_id:document.getElementById('staff-branch').value||null,
     phone:    document.getElementById('staff-phone').value.trim(),
-    active:   document.getElementById('staff-active').checked
+    active:   document.getElementById('staff-active').checked,
+    salary,
   }
   if(id){const i=arr.findIndex(s=>s.id==id);if(i>=0)arr[i]={...arr[i],...obj};else arr.push({id:S.nid('staff'),...obj})}
   else arr.push({id:S.nid('staff'),...obj,created_at:new Date().toISOString()})
@@ -3332,7 +3378,18 @@ function saveSalarySettings(){
 
 function calcEmpSalary(empName, year, month){
   // month: 0-based JS month
-  const ss=getSalarySettings()
+  const global=getSalarySettings()
+  const staff=S.get('staff')||[]
+  const emp=staff.find(s=>s.name===empName)
+  const ind=emp&&emp.salary?emp.salary:{}
+  // Индивидуальные настройки перекрывают глобальные (null = использовать глобальные)
+  const ss={
+    shift:    ind.shift!=null    ? ind.shift    : global.shift,
+    shiftCnt: ind.shiftCnt!=null ? ind.shiftCnt : global.shiftCnt,
+    accPct:   ind.accPct!=null   ? ind.accPct   : global.accPct,
+    repairPct:ind.repairPct!=null? ind.repairPct: global.repairPct,
+    wholePct: ind.wholePct!=null ? ind.wholePct : global.wholePct,
+  }
   const start=new Date(year,month,1)
   const end=new Date(year,month+1,1)
   const orders=(S.get('orders')||[]).filter(o=>o.status==='closed'&&o.emp===empName)
