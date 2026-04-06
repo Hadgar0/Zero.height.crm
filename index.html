@@ -1173,79 +1173,128 @@ tr:hover td{background:#fafafa}
 
       <!-- ── Зарплата ── -->
       <div id="set-salary-sec" style="display:none">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:860px">
+        <div style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start">
 
-          <!-- Выход на смену -->
-          <div class="card">
-            <div class="card-hd"><h2>🕐 Выход на смену</h2></div>
-            <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
-              <div class="fg">
-                <label>Ставка за смену (₽)</label>
-                <input id="sal-shift" type="number" class="fc" placeholder="0" min="0">
-                <p style="font-size:11px;color:var(--text3);margin-top:4px">Фиксированная сумма за каждый выход</p>
+          <!-- LEFT: rule builder -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+
+            <!-- Секция: Выход на смену -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div>
+                  <h2>🕐 Выход на смену</h2>
+                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на кол-во смен → бонус ₽</p>
+                </div>
+                <button onclick="salAddRule('shift')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Смен (шт)</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-shift"></div>
+              </div>
+            </div>
+
+            <!-- Секция: Аксессуары -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div>
+                  <h2>📦 Аксессуары / запчасти</h2>
+                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на сумму продаж → бонус ₽</p>
+                </div>
+                <button onclick="salAddRule('acc')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-acc"></div>
+              </div>
+            </div>
+
+            <!-- Секция: Ремонт -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div>
+                  <h2>🔧 Ремонт</h2>
+                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на сумму работ → бонус ₽</p>
+                </div>
+                <button onclick="salAddRule('repair')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-repair"></div>
+              </div>
+            </div>
+
+            <!-- Секция: Опт -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div>
+                  <h2>🏭 Оптовые продажи</h2>
+                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на сумму оптовых заказов → бонус ₽</p>
+                </div>
+                <button onclick="salAddRule('wholesale')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-wholesale"></div>
+              </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="card">
+              <div class="card-hd"><h2>Расчёт за выбранный месяц</h2></div>
+              <div id="sal-preview-body" style="padding:18px">
+                <p style="color:var(--text3);font-size:13px">Выберите сотрудника справа</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: employee selector -->
+          <div class="card" style="position:sticky;top:16px">
+            <div class="card-hd"><h2>Выбор сотрудника</h2></div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+              <div class="fg" style="margin-bottom:0">
+                <label>Точка</label>
+                <select id="sal-sel-branch" class="fc" onchange="salFilterEmp()">
+                  <option value="">Все точки</option>
+                </select>
               </div>
               <div class="fg" style="margin-bottom:0">
-                <label>Смен в месяце (план)</label>
-                <input id="sal-shift-count" type="number" class="fc" placeholder="22" min="1" max="31">
+                <label>Сотрудник</label>
+                <select id="sal-sel-emp" class="fc" onchange="salEmpChanged()">
+                  <option value="">— выберите —</option>
+                </select>
               </div>
-            </div>
-          </div>
-
-          <!-- Аксессуары -->
-          <div class="card">
-            <div class="card-hd"><h2>📦 Продажа аксессуаров</h2></div>
-            <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
               <div class="fg" style="margin-bottom:0">
-                <label>% от суммы продажи</label>
-                <input id="sal-acc-pct" type="number" class="fc" placeholder="5" min="0" max="100" step="0.5">
-                <p style="font-size:11px;color:var(--text3);margin-top:4px">Начисляется с каждой продажи запчасти / аксессуара в заказе</p>
+                <label>Месяц</label>
+                <select id="sal-sel-month" class="fc" onchange="renderSalaryPreview()"></select>
+              </div>
+              <div style="border-top:1px solid var(--border-light);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+                <button class="btn btn-p" style="justify-content:center" onclick="saveSalaryRules()">Сохранить мотивацию</button>
+                <button class="btn" onclick="copySalaryRules()" style="justify-content:center;background:var(--border-light);border:1px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2)">Скопировать / выбрать шаблон</button>
+                <button onclick="deleteSalaryRules()" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:12px;font-weight:600;padding:4px 0;text-align:center">Удалить мотивацию</button>
               </div>
             </div>
           </div>
 
-          <!-- Опт -->
-          <div class="card">
-            <div class="card-hd"><h2>🏭 Оптовые продажи</h2></div>
-            <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
-              <div class="fg" style="margin-bottom:0">
-                <label>% от суммы оптового заказа</label>
-                <input id="sal-wholesale-pct" type="number" class="fc" placeholder="3" min="0" max="100" step="0.5">
-                <p style="font-size:11px;color:var(--text3);margin-top:4px">Начисляется с каждого закрытого оптового заказа</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ремонт -->
-          <div class="card">
-            <div class="card-hd"><h2>🔧 Ремонт</h2></div>
-            <div style="padding:18px;display:flex;flex-direction:column;gap:12px">
-              <div class="fg" style="margin-bottom:0">
-                <label>% от стоимости работ</label>
-                <input id="sal-repair-pct" type="number" class="fc" placeholder="10" min="0" max="100" step="0.5">
-                <p style="font-size:11px;color:var(--text3);margin-top:4px">Начисляется от суммы работ (не запчастей) в заказе</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Preview -->
-        <div class="card" style="max-width:860px;margin-top:4px">
-          <div class="card-hd" style="justify-content:space-between">
-            <h2>Предпросмотр расчёта</h2>
-            <div style="display:flex;gap:8px">
-              <select id="sal-preview-emp" class="ofbtn" style="padding:5px 12px" onchange="renderSalaryPreview()">
-                <option value="">Выберите сотрудника</option>
-              </select>
-              <select id="sal-preview-month" class="ofbtn" style="padding:5px 12px" onchange="renderSalaryPreview()"></select>
-            </div>
-          </div>
-          <div id="sal-preview-body" style="padding:18px">
-            <p style="color:var(--text3);font-size:13px">Выберите сотрудника для расчёта зарплаты</p>
-          </div>
-        </div>
-
-        <div style="max-width:860px;margin-top:4px">
-          <button class="btn btn-p" onclick="saveSalarySettings()">Сохранить настройки зарплаты</button>
         </div>
       </div>
 
@@ -2088,10 +2137,10 @@ const DICO=eico('<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1
 
 // ── Topbar ────────────────────────────────────────────────────────────────────
 function calcMonthlySalary(empName){
-  if(!empName) return {total:0, count:0}
+  if(!empName) return {total:0,count:0}
   const now=new Date()
-  const r=calcEmpSalary(empName, now.getFullYear(), now.getMonth())
-  return {total:r.total, count:r.shiftCount}
+  const r=calcEmpSalary(empName,now.getFullYear(),now.getMonth())
+  return {total:r.total,count:r.shiftCount}
 }
 
 function renderTopbar(){
@@ -3354,97 +3403,195 @@ function renderCatList(){
 }
 
 // ── КОНСТРУКТОР ЗАРПЛАТЫ ──────────────────────────────────────────────────────
-function getSalarySettings(){
+// Структура правила: {op:'gte'|'lte'|'eq', val:number, bonus:number}
+// Хранится в staff[i].sal_rules = {shift:[...], acc:[...], repair:[...], wholesale:[...]}
+
+let _salCurEmp = '' // текущий сотрудник в редакторе
+
+function getSalRules(empName){
+  if(!empName) return {shift:[],acc:[],repair:[],wholesale:[]}
+  const staff=S.get('staff')||[]
+  const emp=staff.find(s=>s.name===empName)
+  const r=emp&&emp.sal_rules?emp.sal_rules:{}
   return {
-    shift:    +(localStorage.getItem('sal_shift')||0),
-    shiftCnt: +(localStorage.getItem('sal_shift_cnt')||22),
-    accPct:   +(localStorage.getItem('sal_acc_pct')||0),
-    wholePct: +(localStorage.getItem('sal_wholesale_pct')||0),
-    repairPct:+(localStorage.getItem('sal_repair_pct')||0),
+    shift:     r.shift||[],
+    acc:       r.acc||[],
+    repair:    r.repair||[],
+    wholesale: r.wholesale||[],
   }
 }
 
-function saveSalarySettings(){
-  localStorage.setItem('sal_shift',           document.getElementById('sal-shift').value||'0')
-  localStorage.setItem('sal_shift_cnt',       document.getElementById('sal-shift-count').value||'22')
-  localStorage.setItem('sal_acc_pct',         document.getElementById('sal-acc-pct').value||'0')
-  localStorage.setItem('sal_wholesale_pct',   document.getElementById('sal-wholesale-pct').value||'0')
-  localStorage.setItem('sal_repair_pct',      document.getElementById('sal-repair-pct').value||'0')
-  const btn=document.querySelector('[onclick="saveSalarySettings()"]')
-  if(btn){const t=btn.textContent;btn.textContent='✓ Сохранено';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=t;btn.style.background=''},1500)}
+function _renderRuleRows(section){
+  const rules=getSalRules(_salCurEmp)[section]||[]
+  const el=document.getElementById('sal-rules-'+section)
+  if(!el) return
+  if(!rules.length){
+    el.innerHTML='<div style="padding:10px 0;font-size:12px;color:var(--text3)">Нет правил. Нажмите + чтобы добавить.</div>'
+    return
+  }
+  el.innerHTML=rules.map((r,i)=>`
+    <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light)">
+      <select onchange="salUpdateRule('${section}',${i},'op',this.value)" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text2)">
+        <option value="gte"${r.op==='gte'?' selected':''}>Больше или равно</option>
+        <option value="lte"${r.op==='lte'?' selected':''}>Меньше или равно</option>
+        <option value="eq"${r.op==='eq'?' selected':''}>Равно</option>
+      </select>
+      <input type="number" value="${r.val||''}" placeholder="0"
+        onchange="salUpdateRule('${section}',${i},'val',+this.value)"
+        style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%;text-align:right">
+      <input type="number" value="${r.bonus||''}" placeholder="0"
+        onchange="salUpdateRule('${section}',${i},'bonus',+this.value)"
+        style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%;text-align:right">
+      <button onclick="salRemoveRule('${section}',${i})" style="width:24px;height:24px;border-radius:50%;background:#fee2e2;border:none;cursor:pointer;color:#b91c1c;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
+    </div>`).join('')
+}
+
+function salAddRule(section){
+  if(!_salCurEmp){alert('Выберите сотрудника');return}
+  const staff=S.get('staff')||[]
+  const i=staff.findIndex(s=>s.name===_salCurEmp)
+  if(i<0) return
+  if(!staff[i].sal_rules) staff[i].sal_rules={}
+  if(!staff[i].sal_rules[section]) staff[i].sal_rules[section]=[]
+  staff[i].sal_rules[section].push({op:'gte',val:0,bonus:0})
+  S.set('staff',staff)
+  _renderRuleRows(section)
+}
+
+function salUpdateRule(section,idx,field,value){
+  if(!_salCurEmp) return
+  const staff=S.get('staff')||[]
+  const i=staff.findIndex(s=>s.name===_salCurEmp)
+  if(i<0||!staff[i].sal_rules||!staff[i].sal_rules[section]) return
+  staff[i].sal_rules[section][idx][field]=value
+  S.set('staff',staff)
+}
+
+function salRemoveRule(section,idx){
+  if(!_salCurEmp) return
+  const staff=S.get('staff')||[]
+  const i=staff.findIndex(s=>s.name===_salCurEmp)
+  if(i<0||!staff[i].sal_rules||!staff[i].sal_rules[section]) return
+  staff[i].sal_rules[section].splice(idx,1)
+  S.set('staff',staff)
+  _renderRuleRows(section)
+}
+
+function salRenderAll(){
+  ;['shift','acc','repair','wholesale'].forEach(_renderRuleRows)
+}
+
+function salEmpChanged(){
+  _salCurEmp=document.getElementById('sal-sel-emp').value||''
+  salRenderAll()
   renderSalaryPreview()
+}
+
+function salFilterEmp(){
+  const branchId=document.getElementById('sal-sel-branch').value
+  const staff=(S.get('staff')||[]).filter(s=>s.active!==false)
+  const filtered=branchId?staff.filter(s=>String(s.branch_id)===branchId):staff
+  const sel=document.getElementById('sal-sel-emp')
+  const cur=sel.value
+  sel.innerHTML='<option value="">— выберите —</option>'+filtered.map(s=>`<option value="${s.name}">${s.name} (${s.role||'—'})</option>`).join('')
+  if(cur) sel.value=cur
+}
+
+function saveSalaryRules(){
+  const btn=document.querySelector('[onclick="saveSalaryRules()"]')
+  if(btn){const t=btn.textContent;btn.textContent='✓ Сохранено';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=t;btn.style.background=''},1500)}
   renderTopbar()
 }
 
-function calcEmpSalary(empName, year, month){
-  // month: 0-based JS month
-  const global=getSalarySettings()
+function deleteSalaryRules(){
+  if(!_salCurEmp||!confirm('Удалить все правила для '+_salCurEmp+'?')) return
   const staff=S.get('staff')||[]
-  const emp=staff.find(s=>s.name===empName)
-  const ind=emp&&emp.salary?emp.salary:{}
-  // Индивидуальные настройки перекрывают глобальные (null = использовать глобальные)
-  const ss={
-    shift:    ind.shift!=null    ? ind.shift    : global.shift,
-    shiftCnt: ind.shiftCnt!=null ? ind.shiftCnt : global.shiftCnt,
-    accPct:   ind.accPct!=null   ? ind.accPct   : global.accPct,
-    repairPct:ind.repairPct!=null? ind.repairPct: global.repairPct,
-    wholePct: ind.wholePct!=null ? ind.wholePct : global.wholePct,
-  }
+  const i=staff.findIndex(s=>s.name===_salCurEmp)
+  if(i>=0){staff[i].sal_rules={};S.set('staff',staff)}
+  salRenderAll()
+  renderSalaryPreview()
+}
+
+function copySalaryRules(){
+  const staff=(S.get('staff')||[]).filter(s=>s.active!==false&&s.name!==_salCurEmp)
+  if(!staff.length){alert('Нет других сотрудников для копирования');return}
+  const names=staff.map((s,i)=>i+1+'. '+s.name).join('\n')
+  const choice=prompt('Скопировать правила от сотрудника:\n'+names+'\n\nВведите номер:')
+  if(!choice) return
+  const src=staff[+choice-1]
+  if(!src){alert('Неверный номер');return}
+  const allStaff=S.get('staff')||[]
+  const ti=allStaff.findIndex(s=>s.name===_salCurEmp)
+  if(ti<0) return
+  allStaff[ti].sal_rules=JSON.parse(JSON.stringify(src.sal_rules||{}))
+  S.set('staff',allStaff)
+  salRenderAll()
+  renderSalaryPreview()
+}
+
+function calcEmpSalary(empName, year, month){
   const start=new Date(year,month,1)
   const end=new Date(year,month+1,1)
+  const rules=getSalRules(empName)
   const orders=(S.get('orders')||[]).filter(o=>o.status==='closed'&&o.emp===empName)
   const wholesale=(S.get('wholesale')||[]).filter(w=>(w.status==='paid'||w.status==='closed')&&w.emp===empName)
 
-  let shiftEarned=0, accEarned=0, repairEarned=0, wholeEarned=0
   let shiftCount=0, accSales=0, repairSales=0, wholeSales=0
 
   orders.forEach(o=>{
     const d=new Date(o.closed_at||o.created_at||0)
     if(d<start||d>=end) return
-    shiftCount++ // каждый закрытый заказ = 1 смена (упрощённо)
+    shiftCount++
     ;(o.works||[]).forEach(w=>{
-      const pp=+(w.pp||0)  // запчасть / аксессуар
-      const p=+(w.p||0)    // работа / ремонт
-      if(pp>0){accSales+=pp; accEarned+=pp*ss.accPct/100}
-      if(p>0){repairSales+=p; repairEarned+=p*ss.repairPct/100}
+      const pp=+(w.pp||0)
+      const p=+(w.p||0)
+      if(pp>0) accSales+=pp
+      if(p>0) repairSales+=p
     })
   })
-
   wholesale.forEach(w=>{
     const d=new Date(w.closed_at||w.created_at||0)
     if(d<start||d>=end) return
-    const total=+(w.total||0)
-    wholeSales+=total
-    wholeEarned+=total*ss.wholePct/100
+    wholeSales+=+(w.total||0)
   })
 
-  // Ставка за смены
-  shiftEarned=ss.shift*ss.shiftCnt
+  // Применяем правила: находим все подходящие, суммируем бонусы
+  function applyRules(ruleArr, actual){
+    return ruleArr.reduce((sum,r)=>{
+      const v=+(r.val||0), b=+(r.bonus||0)
+      if(r.op==='gte'&&actual>=v) return sum+b
+      if(r.op==='lte'&&actual<=v) return sum+b
+      if(r.op==='eq'&&actual===v) return sum+b
+      return sum
+    },0)
+  }
 
+  const shiftEarned=applyRules(rules.shift, shiftCount)
+  const accEarned=applyRules(rules.acc, accSales)
+  const repairEarned=applyRules(rules.repair, repairSales)
+  const wholeEarned=applyRules(rules.wholesale, wholeSales)
   const total=shiftEarned+accEarned+repairEarned+wholeEarned
+
   return {total, shiftEarned, accEarned, repairEarned, wholeEarned,
-          shiftCount, accSales, repairSales, wholeSales, ss}
+          shiftCount, accSales, repairSales, wholeSales}
 }
 
 function initSalaryTab(){
-  // Загрузить сохранённые настройки
-  const ss=getSalarySettings()
-  document.getElementById('sal-shift').value=ss.shift||''
-  document.getElementById('sal-shift-count').value=ss.shiftCnt||22
-  document.getElementById('sal-acc-pct').value=ss.accPct||''
-  document.getElementById('sal-wholesale-pct').value=ss.wholePct||''
-  document.getElementById('sal-repair-pct').value=ss.repairPct||''
-
-  // Заполнить список сотрудников
   const staff=(S.get('staff')||[]).filter(s=>s.active!==false)
-  const empSel=document.getElementById('sal-preview-emp')
-  empSel.innerHTML='<option value="">Выберите сотрудника</option>'+
-    staff.map(s=>`<option value="${s.name}">${s.name} (${s.role||'—'})</option>`).join('')
-  const cur=getCurEmp()
-  if(cur) empSel.value=cur
+  const bs=S.get('branches')||[]
 
-  // Заполнить месяцы (последние 6)
-  const monthSel=document.getElementById('sal-preview-month')
+  // Ветки
+  const branchSel=document.getElementById('sal-sel-branch')
+  branchSel.innerHTML='<option value="">Все точки</option>'+bs.map(b=>`<option value="${b.id}">${b.name}</option>`).join('')
+
+  // Сотрудники
+  const empSel=document.getElementById('sal-sel-emp')
+  empSel.innerHTML='<option value="">— выберите —</option>'+staff.map(s=>`<option value="${s.name}">${s.name} (${s.role||'—'})</option>`).join('')
+  const cur=getCurEmp()
+  if(cur){empSel.value=cur;_salCurEmp=cur}
+
+  // Месяцы
+  const monthSel=document.getElementById('sal-sel-month')
   const now=new Date()
   const months=[]
   for(let i=0;i<6;i++){
@@ -3453,16 +3600,17 @@ function initSalaryTab(){
   }
   monthSel.innerHTML=months.map((x,i)=>`<option value="${x.y}-${x.m}"${i===0?' selected':''}>${x.label}</option>`).join('')
 
+  salRenderAll()
   renderSalaryPreview()
 }
 
 function renderSalaryPreview(){
-  const empName=document.getElementById('sal-preview-emp')?.value
-  const monthVal=document.getElementById('sal-preview-month')?.value
+  const empName=document.getElementById('sal-sel-emp')?.value
+  const monthVal=document.getElementById('sal-sel-month')?.value
   const body=document.getElementById('sal-preview-body')
   if(!body) return
   if(!empName||!monthVal){
-    body.innerHTML='<p style="color:var(--text3);font-size:13px">Выберите сотрудника для расчёта зарплаты</p>'
+    body.innerHTML='<p style="color:var(--text3);font-size:13px">Выберите сотрудника справа</p>'
     return
   }
   const [y,m]=monthVal.split('-').map(Number)
@@ -3470,20 +3618,21 @@ function renderSalaryPreview(){
   const row=(label,detail,earned,color)=>`
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-light)">
       <div><div style="font-size:13px;font-weight:600">${label}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${detail}</div></div>
-      <div style="font-size:15px;font-weight:700;color:${color||'var(--text)'}">${Number(earned).toLocaleString('ru')} ₽</div>
+      <div style="font-size:15px;font-weight:700;color:${color}">${Number(earned).toLocaleString('ru')} ₽</div>
     </div>`
   body.innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr;gap:0">
-      ${row('🕐 Ставка за смены',`${r.ss.shiftCnt} смен × ${Number(r.ss.shift).toLocaleString('ru')} ₽`,r.shiftEarned,'#6366f1')}
-      ${row('📦 Аксессуары / запчасти',`${r.ss.accPct}% от ${Number(r.accSales).toLocaleString('ru')} ₽ продаж`,r.accEarned,'#f59e0b')}
-      ${row('🔧 Ремонт',`${r.ss.repairPct}% от ${Number(r.repairSales).toLocaleString('ru')} ₽ работ`,r.repairEarned,'#3b82f6')}
-      ${row('🏭 Опт',`${r.ss.wholePct}% от ${Number(r.wholeSales).toLocaleString('ru')} ₽ оптовых продаж`,r.wholeEarned,'#10b981')}
-    </div>
+    ${row('🕐 Смены',`${r.shiftCount} смен`,r.shiftEarned,'#6366f1')}
+    ${row('📦 Аксессуары',`продаж: ${Number(r.accSales).toLocaleString('ru')} ₽`,r.accEarned,'#f59e0b')}
+    ${row('🔧 Ремонт',`работ: ${Number(r.repairSales).toLocaleString('ru')} ₽`,r.repairEarned,'#3b82f6')}
+    ${row('🏭 Опт',`продаж: ${Number(r.wholeSales).toLocaleString('ru')} ₽`,r.wholeEarned,'#10b981')}
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 0">
       <div style="font-size:15px;font-weight:700">Итого</div>
       <div style="font-size:22px;font-weight:800;color:var(--green)">${Number(r.total).toLocaleString('ru')} ₽</div>
     </div>`
 }
+
+// Legacy shim (используется в топбаре)
+function getSalarySettings(){ return {} }
 
 // ── SYNC: emp-list datalists + sidebar picker ────────────────────────────────
 function syncEmpList(){
