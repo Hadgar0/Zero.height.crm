@@ -3196,9 +3196,9 @@ function openOrder(o){
   document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'))
   document.getElementById('page-order').classList.add('active')
   document.getElementById('main').scrollTop=0
-  // Lock if paid
+  // Lock if paid or closed
   unlockOrderForm()
-  if(o.paid) lockOrderForm()
+  if(o.paid||o.status==='closed') lockOrderForm()
 }
 function closeOrder(){
   nav('deals', document.getElementById('nav-deals'))
@@ -5481,9 +5481,9 @@ function _renderShippedBar(){
 let _payMethod='cash'
 
 function openPayModal(source){
-  // Block if order already paid
-  if(source==='order'&&CUR&&CUR.paid){
-    alert('❌ Этот заказ уже оплачен. Повторная оплата невозможна.')
+  // Block if order already paid or closed
+  if(source==='order'&&CUR&&(CUR.paid||CUR.status==='closed')){
+    alert('❌ Этот заказ уже оплачен и закрыт. Повторная оплата невозможна.')
     return
   }
   _payMethod='cash'
