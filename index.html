@@ -913,47 +913,42 @@ tr:hover td{background:#fafafa}
       </button>
     </div>
     <div class="op-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1.5fr;gap:12px;margin-bottom:20px;align-items:start">
         <!-- Client -->
-        <div>
-          <div class="fg">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
-            <div style="display:flex;gap:4px;align-items:flex-start">
-              <div style="position:relative;flex:1">
-                <input id="wc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="wClientSearch(this.value)" onblur="setTimeout(closeWClientDrop,200)">
-                <div id="wc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
-              </div>
-              <button type="button" onclick="openQuickClientModalW()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
+        <div class="fg">
+          <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
+          <div style="display:flex;gap:4px;align-items:flex-start">
+            <div style="position:relative;flex:1">
+              <input id="wc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="wClientSearch(this.value)" onblur="setTimeout(closeWClientDrop,200)">
+              <div id="wc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
             </div>
-            <input type="hidden" id="wc-client-id">
+            <button type="button" onclick="openQuickClientModalW()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
           </div>
+          <input type="hidden" id="wc-client-id">
         </div>
         <!-- Warehouse -->
-        <div>
-          <div class="fg">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Склад списания</label>
-            <select id="wc-warehouse" class="fc">
-              <option value="main">Основной склад</option>
-              <option value="reserve">Резервный склад</option>
-              <option value="shop">Торговый зал</option>
-              <option value="service">Сервисный склад</option>
-            </select>
-          </div>
+        <div class="fg">
+          <label style="font-size:12px;color:#64748b;font-weight:400">Склад списания</label>
+          <select id="wc-warehouse" class="fc">
+            <option value="main">Основной склад</option>
+            <option value="reserve">Резервный склад</option>
+            <option value="shop">Торговый зал</option>
+            <option value="service">Сервисный склад</option>
+          </select>
         </div>
         <!-- Status -->
-        <div>
-          <div class="fg">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Статус</label>
-            <select id="wc-status" class="fc" onchange="wcStatusChange(this)">
-              <option value="awaiting_payment">🟠 Ожидает оплаты</option>
-              <option value="paid">🟢 Оплачен</option>
-              <option value="closed">⚫ Закрыт</option>
-            </select>
-          </div>
-          <div class="fg">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Комментарий</label>
-            <textarea id="wc-comment" class="fc" style="height:60px;resize:none"></textarea>
-          </div>
+        <div class="fg">
+          <label style="font-size:12px;color:#64748b;font-weight:400">Статус</label>
+          <select id="wc-status" class="fc" onchange="wcStatusChange(this)">
+            <option value="awaiting_payment">🟠 Ожидает оплаты</option>
+            <option value="paid">🟢 Оплачен</option>
+            <option value="closed">⚫ Закрыт</option>
+          </select>
+        </div>
+        <!-- Comment -->
+        <div class="fg">
+          <label style="font-size:12px;color:#64748b;font-weight:400">Комментарий</label>
+          <textarea id="wc-comment" class="fc" style="height:34px;resize:none;min-height:34px"></textarea>
         </div>
       </div>
 
