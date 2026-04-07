@@ -3196,9 +3196,50 @@ function openOrder(o){
   document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'))
   document.getElementById('page-order').classList.add('active')
   document.getElementById('main').scrollTop=0
+  // Lock if paid
+  unlockOrderForm()
+  if(o.paid) lockOrderForm()
 }
 function closeOrder(){
   nav('deals', document.getElementById('nav-deals'))
+}
+
+function lockOrderForm(){
+  // Disable all inputs/selects/textareas inside the order page
+  document.querySelectorAll('#page-order input, #page-order select, #page-order textarea').forEach(el=>{
+    el.disabled=true
+    el.style.background='#f8fafc'
+    el.style.color='#9ca3af'
+    el.style.cursor='not-allowed'
+  })
+  // Hide save button, add-work buttons
+  const saveBtn=document.getElementById('oc-save-btn')
+  if(saveBtn) saveBtn.style.display='none'
+  document.querySelectorAll('.work-add-btn').forEach(b=>b.style.display='none')
+  // Hide delete buttons in works table
+  document.querySelectorAll('#works-tbody .btn-i').forEach(b=>b.style.display='none')
+  // Show paid banner
+  let banner=document.getElementById('oc-paid-banner')
+  if(!banner){
+    banner=document.createElement('div')
+    banner.id='oc-paid-banner'
+    banner.style.cssText='background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 18px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:#16a34a;margin:10px 20px 0;flex-shrink:0'
+    banner.innerHTML='<svg style="width:18px;height:18px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Заказ оплачен и закрыт. Редактирование недоступно.'
+    const body=document.querySelector('.op-body')
+    if(body) body.insertBefore(banner, body.firstChild)
+  }
+  banner.style.display='flex'
+}
+
+function unlockOrderForm(){
+  document.querySelectorAll('#page-order input, #page-order select, #page-order textarea').forEach(el=>{
+    el.disabled=false; el.style.background=''; el.style.color=''; el.style.cursor=''
+  })
+  const saveBtn=document.getElementById('oc-save-btn')
+  if(saveBtn) saveBtn.style.display=''
+  document.querySelectorAll('.work-add-btn').forEach(b=>b.style.display='')
+  const banner=document.getElementById('oc-paid-banner')
+  if(banner) banner.style.display='none'
 }
 function collectOrder(){
   return {
@@ -5511,10 +5552,11 @@ function confirmPayment(){
     if(sel) sel.value='paid'
     saveWholesale()
   } else if(source==='order'&&CUR){
-    CUR.status='awaiting_payment'; CUR.payment_method=_payMethod
+    CUR.status='closed'; CUR.payment_method=_payMethod; CUR.paid=true; CUR.paid_at=new Date().toISOString()
     const sel=document.getElementById('oc-status')
-    if(sel) sel.value='awaiting_payment'
+    if(sel) sel.value='closed'
     saveOrder()
+    lockOrderForm()
   }
   cm('m-pay')
   const methodLabel={cash:'наличные',card:'карта',transfer:'перевод'}
