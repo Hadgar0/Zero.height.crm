@@ -4285,9 +4285,7 @@ function pselSelectRow(id, tr){
   const item=(S.get('wh_items')||[]).find(i=>String(i.id)===String(id))
   if(!item) return
   _pselSelected=item
-  // Highlight selected row
-  document.querySelectorAll('#psel-results tr').forEach(r=>r.style.background='')
-  tr.style.background='#eff6ff'
+  confirmPartSelect()
 }
 
 function confirmPartSelect(){
