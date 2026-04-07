@@ -1059,6 +1059,7 @@ tr:hover td{background:#fafafa}
         <button class="set-tab" onclick="setTab(this,'set-staff-sec')" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">👤 Сотрудники</button>
         <button class="set-tab" onclick="setTab(this,'set-cats-sec')" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">📊 Маржинальность</button>
         <button class="set-tab" onclick="setTab(this,'set-salary-sec')" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">💰 Зарплата</button>
+        <button class="set-tab" onclick="setTab(this,'set-works-sec');renderWorksList()" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">🔧 Работы</button>
       </div>
 
       <!-- ── Организация ── -->
@@ -1310,6 +1311,47 @@ tr:hover td{background:#fafafa}
             </div>
           </div>
 
+        </div>
+      </div>
+
+      <!-- ── Работы по ремонту ── -->
+      <div id="set-works-sec" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
+          <h2 style="font-size:15px;font-weight:700;margin:0">Виды работ / Прайс-лист</h2>
+          <div style="display:flex;gap:8px">
+            <button onclick="seedDefaultWorks()" style="background:#f1f5f9;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text2)">↺ Сбросить к стандарту</button>
+            <button onclick="openAddWorkItem()" style="background:var(--accent);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer">+ Добавить работу</button>
+          </div>
+        </div>
+
+        <!-- Add form (hidden by default) -->
+        <div id="wi-add-form" class="card" style="display:none;margin-bottom:16px">
+          <div class="card-hd"><h2>Новый вид работы</h2></div>
+          <div style="padding:16px;display:grid;grid-template-columns:1fr 160px auto;gap:10px;align-items:end">
+            <div class="fg" style="margin:0">
+              <label>Наименование</label>
+              <input id="wi-name" class="fc" placeholder="Замена дисплея в сборе...">
+            </div>
+            <div class="fg" style="margin:0">
+              <label>Цена, ₽</label>
+              <input id="wi-price" type="number" class="fc" placeholder="0" min="0" style="text-align:right">
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onclick="saveWorkItem()" class="btn btn-p" style="font-size:12px;padding:7px 16px">Сохранить</button>
+              <button onclick="closeAddWorkItem()" class="btn btn-g" style="font-size:12px;padding:7px 12px">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="padding:0 18px 6px">
+            <div style="display:grid;grid-template-columns:1fr 120px 80px;gap:8px;padding:10px 0 8px;border-bottom:2px solid var(--border-light)">
+              <span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">Наименование работы</span>
+              <span style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;text-align:right">Цена, ₽</span>
+              <span></span>
+            </div>
+            <div id="set-works-list"></div>
+          </div>
         </div>
       </div>
 
@@ -3856,6 +3898,126 @@ function renderSalaryPreview(){
 
 // Legacy shim (используется в топбаре)
 function getSalarySettings(){ return {} }
+
+// ── РАБОТЫ ПО РЕМОНТУ (Прайс-лист) ──────────────────────────────────────────
+const DEFAULT_WORKS=[
+  // Замены
+  {name:'Замена дисплея в сборе - КОПИЯ',price:0},
+  {name:'Замена дисплея в сборе - КОПИЯ А+',price:0},
+  {name:'Замена дисплея в сборе - ORIG',price:0},
+  {name:'Замена дисплея в сборе (оригинальная матрица)',price:0},
+  {name:'Замена стекла (переклейка дисплея)',price:0},
+  {name:'Замена аккумулятора',price:0},
+  {name:'Замена аккумулятора - PLUS',price:0},
+  {name:'Замена вибромотора',price:0},
+  {name:'Замена датчика освещения/приближения',price:0},
+  {name:'Замена задней крышки в сборе',price:0},
+  {name:'Замена кнопки включения',price:0},
+  {name:'Замена кнопки переключения вибро',price:0},
+  {name:'Замена кнопок громкости',price:0},
+  {name:'Замена контроллера USB U2 Tristar',price:0},
+  {name:'Замена микрофона',price:0},
+  {name:'Замена основной камеры',price:0},
+  {name:'Замена передней камеры',price:0},
+  {name:'Замена полифонического динамика',price:0},
+  {name:'Замена разъема зарядки',price:0},
+  {name:'Замена сеточки на слуховой динамик',price:0},
+  {name:'Замена сим-лотка',price:0},
+  {name:'Замена слухового динамика',price:0},
+  {name:'Замена стекла задней крышки',price:0},
+  {name:'Замена стекла камеры',price:0},
+  {name:'Замена NFC антенны',price:0},
+  {name:'Замена Wi-Fi/Bluetooth антенны',price:0},
+  // Прочие работы
+  {name:'Проклейка корпуса (восстановление влагозащиты)',price:0},
+  {name:'Активация и настройка Apple ID',price:0},
+  {name:'Внешняя чистка (без разбора устройства)',price:0},
+  {name:'Восстановление после попадания влаги',price:0},
+  {name:'Восстановление слоёв платы',price:0},
+  {name:'Обновление ПО',price:0},
+  {name:'Обтяжка гидрогелевой защитой',price:0},
+  {name:'Пайка контроллера аккумулятора (устранение ошибки)',price:0},
+  {name:'Перенос данных',price:0},
+  // Разборка/сборка и прочее
+  {name:'Разбор / сбор',price:0},
+  {name:'Ремонт с деталью клиента',price:0},
+  {name:'Срочный ремонт',price:0},
+  // Чистки
+  {name:'Чистка динамика',price:0},
+  {name:'Чистка переключателя бесшумного звонка (без разбора)',price:0},
+  {name:'Чистка разъема зарядки/наушников (без разбора устройства)',price:0},
+  {name:'Чистка сеточки верхнего микрофона',price:0},
+  {name:'Чистка сеточки нижнего микрофона',price:0},
+  {name:'Чистка сеточки полифонического динамика',price:0},
+  {name:'Чистка сеточки фронтального микрофона и слухового динамика',price:0},
+  {name:'Чистка стекла основной камеры',price:0},
+]
+
+function getPriceList(){ return S.get('price_list')||[] }
+
+function seedDefaultWorks(){
+  if(!confirm('Заменить текущий список стандартным? Пользовательские цены будут сброшены.')) return
+  S.set('price_list', DEFAULT_WORKS.map((w,i)=>({id:i+1,...w})))
+  renderWorksList()
+}
+
+function renderWorksList(){
+  // Seed if empty
+  if(!getPriceList().length) S.set('price_list', DEFAULT_WORKS.map((w,i)=>({id:i+1,...w})))
+  const list=getPriceList()
+  const el=document.getElementById('set-works-list')
+  if(!el) return
+  if(!list.length){
+    el.innerHTML='<div style="padding:24px;text-align:center;font-size:13px;color:var(--text3)">Список пуст. Нажмите «+ Добавить работу»</div>'
+    return
+  }
+  el.innerHTML=list.map((w,idx)=>`
+    <div style="display:grid;grid-template-columns:1fr 120px 80px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border-light)${idx===list.length-1?';border-bottom:none':''}">
+      <div style="font-size:13px;color:var(--text)">${w.name}</div>
+      <div style="text-align:right">
+        <input type="number" value="${w.price||0}" min="0" placeholder="0"
+               onchange="updateWorkPrice(${w.id},this.value)"
+               style="width:100%;text-align:right;border:1px solid var(--border-light);border-radius:6px;padding:4px 8px;font-size:13px;font-family:inherit;color:var(--text);background:var(--bg);outline:none"
+               onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border-light)'">
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <button onclick="deleteWorkItem(${w.id})" style="background:none;border:none;cursor:pointer;color:var(--red);font-size:12px;padding:4px 8px;border-radius:6px;font-weight:600" onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='none'">Удал.</button>
+      </div>
+    </div>`).join('')
+}
+
+function updateWorkPrice(id, val){
+  const list=getPriceList()
+  const i=list.findIndex(w=>w.id===id)
+  if(i>=0){list[i].price=+(val||0);S.set('price_list',list)}
+}
+
+function openAddWorkItem(){
+  document.getElementById('wi-add-form').style.display='block'
+  document.getElementById('wi-name').value=''
+  document.getElementById('wi-price').value=''
+  document.getElementById('wi-name').focus()
+}
+function closeAddWorkItem(){
+  document.getElementById('wi-add-form').style.display='none'
+}
+function saveWorkItem(){
+  const name=document.getElementById('wi-name').value.trim()
+  if(!name){alert('Введите название работы');return}
+  const price=+(document.getElementById('wi-price').value||0)
+  const list=getPriceList()
+  const maxId=list.length?Math.max(...list.map(w=>w.id||0)):0
+  list.push({id:maxId+1,name,price})
+  S.set('price_list',list)
+  closeAddWorkItem()
+  renderWorksList()
+}
+function deleteWorkItem(id){
+  if(!confirm('Удалить эту работу из прайс-листа?')) return
+  const list=getPriceList().filter(w=>w.id!==id)
+  S.set('price_list',list)
+  renderWorksList()
+}
 
 // ── SYNC: emp-list datalists + sidebar picker ────────────────────────────────
 function syncEmpList(){
