@@ -5481,6 +5481,11 @@ function _renderShippedBar(){
 let _payMethod='cash'
 
 function openPayModal(source){
+  // Block if order already paid
+  if(source==='order'&&CUR&&CUR.paid){
+    alert('❌ Этот заказ уже оплачен. Повторная оплата невозможна.')
+    return
+  }
   _payMethod='cash'
   let amount=0, num='', obj=''
   if(source==='wholesale'&&WCUR){
