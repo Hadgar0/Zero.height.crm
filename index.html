@@ -3198,11 +3198,13 @@ function openOrder(o){
   document.getElementById('main').scrollTop=0
   // Lock if paid or closed
   unlockOrderForm()
-  if(o.paid||o.status==='closed') lockOrderForm()
+  if(isOrderPaid(o)) lockOrderForm()
 }
 function closeOrder(){
   nav('deals', document.getElementById('nav-deals'))
 }
+
+function isOrderPaid(o){ return !!(o && (o.paid || o.status==='closed' || o.status==='cancelled' || o.payment_method)) }
 
 function lockOrderForm(){
   // Disable all inputs/selects/textareas inside the order page
@@ -5482,7 +5484,7 @@ let _payMethod='cash'
 
 function openPayModal(source){
   // Block if order already paid or closed
-  if(source==='order'&&CUR&&(CUR.paid||CUR.status==='closed')){
+  if(source==='order'&&isOrderPaid(CUR)){
     alert('❌ Этот заказ уже оплачен и закрыт. Повторная оплата невозможна.')
     return
   }
@@ -5543,7 +5545,7 @@ function confirmPayment(){
   // Hard check against stored order — prevent any double payment
   if(source==='order'&&CUR){
     const stored=(S.get('orders')||[]).find(o=>o.id===CUR.id)
-    if(stored&&(stored.paid||stored.status==='closed')){
+    if(isOrderPaid(stored)){
       alert('❌ Этот заказ уже оплачен и закрыт. Повторная оплата невозможна.')
       cm('m-pay')
       lockOrderForm()
