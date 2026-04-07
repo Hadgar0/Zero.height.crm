@@ -4271,7 +4271,7 @@ function renderPartList(){
   empty.style.display='none'
   tbody.innerHTML=items.map(i=>{
     const sel=_pselSelected&&String(_pselSelected.id)===String(i.id)
-    return `<tr onclick="pselSelectRow(${i.id},this)" style="cursor:pointer;border-bottom:1px solid #f3f4f6;background:${sel?'#eff6ff':''}" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${sel?'#eff6ff':''}'">
+    return `<tr onclick="pselSelectRow(${i.id})" style="cursor:pointer;border-bottom:1px solid #f3f4f6" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background=''">
       <td style="padding:10px 16px;font-size:13px;font-weight:500;color:#111827">${i.name}</td>
       <td style="padding:10px 12px;font-size:12px;color:#6b7280">${i.sku||'—'}</td>
       <td style="padding:10px 12px;font-size:12px;color:#6b7280">${i.cat||'—'}</td>
@@ -4281,23 +4281,30 @@ function renderPartList(){
   }).join('')
 }
 
-function pselSelectRow(id, tr){
+function pselSelectRow(id){
   const item=(S.get('wh_items')||[]).find(i=>String(i.id)===String(id))
   if(!item) return
-  _pselSelected=item
-  confirmPartSelect()
+  // Fill work modal fields
+  const elName=document.getElementById('wpart')
+  const elSku=document.getElementById('wsku')
+  const elPp=document.getElementById('wpp')
+  const elInfo=document.getElementById('wpart-selected-info')
+  if(elName) elName.value=item.name
+  if(elSku)  elSku.value=item.sku||''
+  if(elPp)   elPp.value=+(item.sale_price||item.price||0)
+  if(elInfo){
+    elInfo.style.display='block'
+    elInfo.textContent='✓ '+item.name+' · '+Number(item.sale_price||item.price||0).toLocaleString('ru')+' ₽ · '+(+(item.qty||0))+' шт. на складе'
+  }
+  // Close modal immediately
+  const modal=document.getElementById('m-part-select')
+  if(modal) modal.classList.add('hidden')
 }
 
 function confirmPartSelect(){
-  if(!_pselSelected){ alert('Выберите запчасть из списка'); return }
-  document.getElementById('wpart').value=_pselSelected.name
-  document.getElementById('wsku').value=_pselSelected.sku||''
-  document.getElementById('wpp').value=_pselSelected.sale_price||_pselSelected.price||0
-  // Show info badge
-  const info=document.getElementById('wpart-selected-info')
-  info.style.display='block'
-  info.textContent=`✓ ${_pselSelected.name} · ${Number(_pselSelected.sale_price||_pselSelected.price||0).toLocaleString('ru')} ₽ · ${+((_pselSelected.qty||0))} шт. на складе`
-  cm('m-part-select')
+  // OK button fallback — not needed but kept for footer button
+  const modal=document.getElementById('m-part-select')
+  if(modal) modal.classList.add('hidden')
 }
 
 // ── SYNC: warehouse selects (from branches) ────────────────────────────────
