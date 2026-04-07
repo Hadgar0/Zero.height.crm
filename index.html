@@ -594,7 +594,7 @@ tr:hover td{background:#fafafa}
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         Сохранить
       </button>
-      <button onclick="openPayModal('order')" class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 14px;font-weight:600">
+      <button id="oc-pay-btn" onclick="openPayModal('order')" class="btn" style="background:#f59e0b;color:#fff;font-size:12px;padding:6px 14px;font-weight:600">
         <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Оплата
       </button>
@@ -3212,9 +3212,11 @@ function lockOrderForm(){
     el.style.color='#9ca3af'
     el.style.cursor='not-allowed'
   })
-  // Hide save button, add-work buttons
+  // Hide save button, pay button, add-work buttons
   const saveBtn=document.getElementById('oc-save-btn')
   if(saveBtn) saveBtn.style.display='none'
+  const payBtn=document.getElementById('oc-pay-btn')
+  if(payBtn){ payBtn.disabled=true; payBtn.style.background='#d1d5db'; payBtn.style.cursor='not-allowed'; payBtn.title='Заказ уже оплачен' }
   document.querySelectorAll('.work-add-btn').forEach(b=>b.style.display='none')
   // Hide delete buttons in works table
   document.querySelectorAll('#works-tbody .btn-i').forEach(b=>b.style.display='none')
@@ -3237,6 +3239,8 @@ function unlockOrderForm(){
   })
   const saveBtn=document.getElementById('oc-save-btn')
   if(saveBtn) saveBtn.style.display=''
+  const payBtn=document.getElementById('oc-pay-btn')
+  if(payBtn){ payBtn.disabled=false; payBtn.style.background='#f59e0b'; payBtn.style.cursor=''; payBtn.title='' }
   document.querySelectorAll('.work-add-btn').forEach(b=>b.style.display='')
   const banner=document.getElementById('oc-paid-banner')
   if(banner) banner.style.display='none'
