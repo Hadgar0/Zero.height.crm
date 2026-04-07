@@ -2151,7 +2151,9 @@ tr:hover td{background:#fafafa}
         <div style="display:flex;gap:0;position:relative">
           <input id="wn" class="fc" placeholder="Поиск по прайс-листу..." autocomplete="off"
                  style="border-radius:8px 0 0 8px;border-right:none;flex:1"
-                 oninput="searchPriceListWork(this.value)" onfocus="searchPriceListWork(this.value)">
+                 oninput="searchPriceListWork(this.value)"
+                 onfocus="searchPriceListWork(this.value)"
+                 onblur="closeWnDrop()">
           <div id="wn-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:40px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:300;max-height:200px;overflow-y:auto"></div>
           <button onclick="openWorkPriceList()" title="Прайс-лист" style="width:40px;background:#f8fafc;border:1.5px solid #e2e8f0;border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
@@ -3206,12 +3208,21 @@ function wmWarSync(which){
   if(which==='12'&&document.getElementById('w-war12').checked) document.getElementById('w-war6').checked=false
 }
 function searchPriceListWork(val){
+  // Автосев прайса если пустой
+  let pl=S.get('price_list')||[]
+  if(!pl.length){ pl=DEFAULT_WORKS.map((w,i)=>({id:i+1,...w})); S.set('price_list',pl) }
   const drop=document.getElementById('wn-drop')
-  const items=(S.get('price_list')||[]).filter(x=>x.name&&(!val||x.name.toLowerCase().includes(val.toLowerCase()))).slice(0,15)
-  if(!items.length){drop.style.display='none';return}
-  drop.innerHTML=items.map(x=>`<div onclick="wmSelectWork('${x.name.replace(/'/g,"\\'")}',${+(x.price||0)})" style="padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''"><span>${x.name}</span><span style="color:#6b7280;margin-left:12px;flex-shrink:0">${Number(x.price||0).toLocaleString('ru')} ₽</span></div>`).join('')
+  if(!drop) return
+  const q=(val||'').toLowerCase().trim()
+  const items=pl.filter(x=>x.name&&(!q||x.name.toLowerCase().includes(q))).slice(0,20)
+  if(!items.length){ drop.style.display='none'; return }
+  drop.innerHTML=items.map(x=>{
+    const safeName=x.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'")
+    return `<div onmousedown="wmSelectWork('${safeName}',${+(x.price||0)})" style="padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''"><span>${x.name}</span><span style="color:#9ca3af;margin-left:12px;flex-shrink:0;font-size:12px">${x.price?Number(x.price).toLocaleString('ru')+' ₽':''}</span></div>`
+  }).join('')
   drop.style.display='block'
 }
+function closeWnDrop(){ setTimeout(()=>{ const d=document.getElementById('wn-drop'); if(d) d.style.display='none' },150) }
 function wmSelectWork(name, price){
   document.getElementById('wn').value=name
   document.getElementById('wp').value=price
