@@ -2187,13 +2187,15 @@ tr:hover td{background:#fafafa}
       <!-- Запчасть (shown after work selected) -->
       <div id="wpart-section" style="display:none;flex-direction:column;gap:8px">
         <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:4px"><span style="color:#ef4444">*</span> Запчасть</label>
-        <div style="display:flex;gap:8px;align-items:stretch;position:relative">
-          <input id="wpart" class="fc" placeholder="Выберите запчасть" autocomplete="off"
-                 oninput="searchWhPart(this.value)" style="flex:1">
-          <div id="wpart-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:44px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:300;max-height:180px;overflow-y:auto"></div>
-          <button onclick="wmAddNewPart()" style="width:36px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:20px;color:#374151;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+        <div style="display:flex;gap:8px;align-items:stretch">
+          <input id="wpart" class="fc" placeholder="Выберите запчасть" readonly
+                 onclick="openPartSelectModal()"
+                 style="flex:1;cursor:pointer;background:#fafafa">
+          <input type="hidden" id="wpart-drop">
+          <button onclick="openPartSelectModal()" style="width:36px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#374151;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
         </div>
         <button id="w-unregistered-btn" onclick="wmToggleUnregistered()" style="align-self:flex-start;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:500;color:#374151;cursor:pointer">Запчасть не оприходована</button>
+        <div id="wpart-selected-info" style="display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;font-size:12px;color:#166534"></div>
         <input type="hidden" id="wpp">
         <input type="hidden" id="wsku">
       </div>
@@ -2229,6 +2231,104 @@ tr:hover td{background:#fafafa}
 
       <!-- Add button -->
       <button onclick="saveWork()" style="width:100%;background:#f59e0b;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:2px" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">Добавить</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Part Select Modal ── -->
+<div class="overlay hidden" id="m-part-select">
+  <div style="background:#fff;border-radius:12px;width:95vw;max-width:900px;height:85vh;display:flex;flex-direction:column;box-shadow:0 24px 80px rgba(0,0,0,.2);overflow:hidden">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e2e8f0;flex-shrink:0">
+      <h3 style="font-size:15px;font-weight:700;margin:0;color:#111827">Выберите запчасть</h3>
+      <button onclick="cm('m-part-select')" style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:22px;line-height:1;padding:2px 8px">×</button>
+    </div>
+
+    <!-- Top filter bar -->
+    <div style="padding:12px 20px;border-bottom:1px solid #e2e8f0;background:#f9fafb;flex-shrink:0;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:#6b7280;white-space:nowrap">Привязка к выбранной услуге:</span>
+          <select id="psel-work" class="fc" style="font-size:12px;padding:4px 8px;min-width:200px" onchange="renderPartList()"></select>
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;cursor:pointer;white-space:nowrap">
+          <input type="checkbox" id="psel-no-bind" onchange="renderPartList()" style="accent-color:#6366f1">
+          Показать без привязки к выбранной услуге или модели
+        </label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
+          <span style="font-size:12px;color:#6b7280;white-space:nowrap">Фильтровать по модели:</span>
+          <select id="psel-model" class="fc" style="font-size:12px;padding:4px 8px;min-width:120px" onchange="renderPartList()">
+            <option value="">Все модели</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:12px;color:#6b7280;white-space:nowrap;flex-shrink:0">Наименование, артикул или штрих-код:</span>
+        <input id="psel-q" class="fc" placeholder="Начните вводить..." oninput="renderPartList()" autocomplete="off" style="flex:1;font-size:13px;padding:6px 10px">
+      </div>
+    </div>
+
+    <!-- Body: sidebar + results -->
+    <div style="display:flex;flex:1;overflow:hidden">
+      <!-- Left sidebar filters -->
+      <div style="width:210px;flex-shrink:0;border-right:1px solid #e2e8f0;overflow-y:auto;background:#fafafa">
+        <!-- Фильтр по закупке -->
+        <div style="border-bottom:1px solid #e2e8f0">
+          <button onclick="pselToggle('psel-f-purchase',this)" style="width:100%;text-align:left;background:none;border:none;padding:10px 16px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;display:flex;align-items:center;gap:6px">
+            <span id="psel-ico-purchase">∨</span> Фильтр по закупке:
+          </button>
+          <div id="psel-f-purchase" style="display:none;padding:4px 16px 10px"></div>
+        </div>
+        <!-- Фильтр по поставщику -->
+        <div style="border-bottom:1px solid #e2e8f0">
+          <button onclick="pselToggle('psel-f-supplier',this)" style="width:100%;text-align:left;background:none;border:none;padding:10px 16px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;display:flex;align-items:center;gap:6px">
+            <span id="psel-ico-supplier">∨</span> Фильтр по поставщику:
+          </button>
+          <div id="psel-f-supplier" style="display:none;padding:4px 16px 10px"></div>
+        </div>
+        <!-- Фильтр по группе -->
+        <div style="border-bottom:1px solid #e2e8f0">
+          <button onclick="pselToggle('psel-f-group',this)" style="width:100%;text-align:left;background:none;border:none;padding:10px 16px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;display:flex;align-items:center;gap:6px">
+            <span id="psel-ico-group">∨</span> Фильтр по группе запчастей:
+          </button>
+          <div id="psel-f-group" style="display:none;padding:4px 16px 10px"></div>
+        </div>
+        <!-- Фильтр по типу -->
+        <div>
+          <button onclick="pselToggle('psel-f-type',this)" style="width:100%;text-align:left;background:none;border:none;padding:10px 16px;font-size:12px;font-weight:600;color:#374151;cursor:pointer;display:flex;align-items:center;gap:6px">
+            <span id="psel-ico-type">∧</span> Фильтр по типу
+          </button>
+          <div id="psel-f-type" style="padding:4px 16px 10px;display:flex;flex-direction:column;gap:8px">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="acc" onchange="renderPartList()" style="accent-color:#6366f1"> Аксессуар / Товар</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="part" checked onchange="renderPartList()" style="accent-color:#6366f1"> Запчасть</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="consumable" checked onchange="renderPartList()" style="accent-color:#6366f1"> Расходники</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="device" onchange="renderPartList()" style="accent-color:#6366f1"> Устройство</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: results table -->
+      <div style="flex:1;overflow-y:auto">
+        <table style="width:100%;border-collapse:collapse">
+          <thead style="position:sticky;top:0;background:#f9fafb;z-index:1">
+            <tr>
+              <th style="padding:10px 16px;font-size:11px;font-weight:700;color:#6b7280;text-align:left;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:.4px">Наименование</th>
+              <th style="padding:10px 12px;font-size:11px;font-weight:700;color:#6b7280;text-align:left;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap">Артикул</th>
+              <th style="padding:10px 12px;font-size:11px;font-weight:700;color:#6b7280;text-align:left;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:.4px">Категория</th>
+              <th style="padding:10px 12px;font-size:11px;font-weight:700;color:#6b7280;text-align:right;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:.4px">Кол-во</th>
+              <th style="padding:10px 12px;font-size:11px;font-weight:700;color:#6b7280;text-align:right;border-bottom:1px solid #e2e8f0;text-transform:uppercase;letter-spacing:.4px">Цена</th>
+            </tr>
+          </thead>
+          <tbody id="psel-results"></tbody>
+        </table>
+        <div id="psel-empty" style="display:none;padding:40px;text-align:center;color:#9ca3af;font-size:13px">Нет позиций на складе. Добавьте товары в раздел «Склад».</div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="padding:12px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;background:#fff">
+      <button onclick="cm('m-part-select')" class="btn btn-g" style="padding:8px 20px">Отмена</button>
+      <button onclick="confirmPartSelect()" class="btn btn-p" style="padding:8px 24px">OK</button>
     </div>
   </div>
 </div>
@@ -4053,31 +4153,150 @@ function setCurEmp(v){
 }
 function getCurEmp(){ return localStorage.getItem('cur_emp')||'' }
 
-function searchWhPart(q){
-  const drop=document.getElementById('wpart-drop')
-  if(!q||q.length<1){drop.style.display='none';return}
-  const items=S.get('wh_items')||[]
-  const ql=q.toLowerCase()
-  const found=items.filter(i=>i.qty>0&&(
-    (i.name&&i.name.toLowerCase().includes(ql))||
-    (i.sku&&i.sku.toLowerCase().includes(ql))||
-    (i.barcode&&i.barcode.toLowerCase().includes(ql))
-  )).slice(0,12)
-  if(!found.length){drop.style.display='none';return}
-  drop.style.display='block'
-  drop.innerHTML=found.map(i=>`<div onclick="selectWhPart('${i.id}')" style="padding:8px 12px;cursor:pointer;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:center;font-size:12px" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background=''">
-    <div><div style="font-weight:600">${i.name}</div><div style="color:#94a3b8;font-size:11px">${i.sku||'—'} · ${i.qty} шт.</div></div>
-    <div style="font-weight:700;color:var(--accent)">${Number(i.sale_price||i.price||0).toLocaleString('ru')} ₽</div>
-  </div>`).join('')
-}
+function searchWhPart(q){ /* legacy — replaced by modal */ }
 
 function selectWhPart(id){
-  const item=(S.get('wh_items')||[]).find(i=>i.id===id)
+  const item=(S.get('wh_items')||[]).find(i=>String(i.id)===String(id))
   if(!item) return
   document.getElementById('wpart').value=item.name
   document.getElementById('wsku').value=item.sku||''
   document.getElementById('wpp').value=item.sale_price||item.price||''
-  document.getElementById('wpart-drop').style.display='none'
+}
+
+// ── PART SELECT MODAL ────────────────────────────────────────────────────────
+let _pselSelected=null
+
+function openPartSelectModal(){
+  _pselSelected=null
+  // Fill "Привязка к услуге" dropdown with price_list items
+  const pl=S.get('price_list')||[]
+  const curWork=document.getElementById('wn').value||''
+  const workSel=document.getElementById('psel-work')
+  workSel.innerHTML='<option value="">— не выбрана —</option>'+pl.map(w=>`<option value="${w.id}"${w.name===curWork?' selected':''}>${w.name}</option>`).join('')
+
+  // Fill "Фильтровать по модели" with unique models from wh_items
+  const items=S.get('wh_items')||[]
+  const models=[...new Set(items.map(i=>i.model||'').filter(Boolean))].sort()
+  const curModel=document.getElementById('oc-model')?.value||''
+  const modelSel=document.getElementById('psel-model')
+  modelSel.innerHTML='<option value="">Все модели</option>'+models.map(m=>`<option value="${m}"${m===curModel?' selected':''}>${m}</option>`).join('')
+
+  // Reset search
+  document.getElementById('psel-q').value=''
+  document.getElementById('psel-no-bind').checked=false
+
+  // Fill sidebar filters dynamically
+  pselBuildSidebar(items)
+
+  renderPartList()
+  om('m-part-select')
+}
+
+function pselBuildSidebar(items){
+  const suppliers=[...new Set(items.map(i=>i.supplier||'').filter(Boolean))].sort()
+  const groups=[...new Set(items.map(i=>i.cat||'').filter(Boolean))].sort()
+
+  const supEl=document.getElementById('psel-f-supplier')
+  supEl.innerHTML=suppliers.length
+    ? suppliers.map(s=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:6px"><input type="checkbox" class="psel-sup" value="${s}" checked onchange="renderPartList()" style="accent-color:#6366f1"> ${s}</label>`).join('')
+    : '<span style="font-size:12px;color:#9ca3af">Нет данных</span>'
+
+  const grpEl=document.getElementById('psel-f-group')
+  grpEl.innerHTML=groups.length
+    ? groups.map(g=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:6px"><input type="checkbox" class="psel-grp" value="${g}" checked onchange="renderPartList()" style="accent-color:#6366f1"> ${g}</label>`).join('')
+    : '<span style="font-size:12px;color:#9ca3af">Нет данных</span>'
+}
+
+function pselToggle(id, btn){
+  const el=document.getElementById(id)
+  const key=id.replace('psel-f-','')
+  const ico=document.getElementById('psel-ico-'+key)
+  if(el.style.display==='none'){ el.style.display='flex'; el.style.flexDirection='column'; if(ico) ico.textContent='∧' }
+  else { el.style.display='none'; if(ico) ico.textContent='∨' }
+}
+
+function renderPartList(){
+  const q=(document.getElementById('psel-q')?.value||'').toLowerCase().trim()
+  const noFilter=document.getElementById('psel-no-bind')?.checked
+  const modelFilter=document.getElementById('psel-model')?.value||''
+
+  // Type filter
+  const checkedTypes=[...document.querySelectorAll('.psel-type:checked')].map(c=>c.value)
+  // Supplier filter
+  const checkedSup=[...document.querySelectorAll('.psel-sup:checked')].map(c=>c.value)
+  // Group filter
+  const checkedGrp=[...document.querySelectorAll('.psel-grp:checked')].map(c=>c.value)
+
+  let items=S.get('wh_items')||[]
+
+  // Only in stock
+  items=items.filter(i=>+(i.qty||0)>0)
+
+  // Search
+  if(q) items=items.filter(i=>
+    (i.name&&i.name.toLowerCase().includes(q))||
+    (i.sku&&i.sku.toLowerCase().includes(q))||
+    (i.barcode&&i.barcode.toLowerCase().includes(q))
+  )
+
+  // Model filter
+  if(modelFilter&&!noFilter) items=items.filter(i=>!i.model||i.model===modelFilter)
+
+  // Type filter (map cat to type key)
+  if(checkedTypes.length<4) items=items.filter(i=>{
+    const c=(i.cat||'').toLowerCase()
+    if(c.includes('аксесс')||c.includes('товар')) return checkedTypes.includes('acc')
+    if(c.includes('запч')) return checkedTypes.includes('part')
+    if(c.includes('расход')) return checkedTypes.includes('consumable')
+    if(c.includes('устройств')) return checkedTypes.includes('device')
+    return checkedTypes.includes('part') // default to part
+  })
+
+  // Supplier filter
+  if(checkedSup.length>0) items=items.filter(i=>!i.supplier||checkedSup.includes(i.supplier))
+
+  // Group filter
+  if(checkedGrp.length>0) items=items.filter(i=>!i.cat||checkedGrp.includes(i.cat))
+
+  const tbody=document.getElementById('psel-results')
+  const empty=document.getElementById('psel-empty')
+  if(!items.length){
+    tbody.innerHTML=''
+    empty.style.display='block'
+    return
+  }
+  empty.style.display='none'
+  tbody.innerHTML=items.map(i=>{
+    const sel=_pselSelected&&String(_pselSelected.id)===String(i.id)
+    return `<tr onclick="pselSelectRow(${i.id},this)" style="cursor:pointer;border-bottom:1px solid #f3f4f6;background:${sel?'#eff6ff':''}" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='${sel?'#eff6ff':''}'">
+      <td style="padding:10px 16px;font-size:13px;font-weight:500;color:#111827">${i.name}</td>
+      <td style="padding:10px 12px;font-size:12px;color:#6b7280">${i.sku||'—'}</td>
+      <td style="padding:10px 12px;font-size:12px;color:#6b7280">${i.cat||'—'}</td>
+      <td style="padding:10px 12px;font-size:12px;text-align:right;color:#374151;font-weight:600">${+(i.qty||0)} шт.</td>
+      <td style="padding:10px 12px;font-size:13px;text-align:right;font-weight:700;color:#6366f1">${Number(i.sale_price||i.price||0).toLocaleString('ru')} ₽</td>
+    </tr>`
+  }).join('')
+}
+
+function pselSelectRow(id, tr){
+  const item=(S.get('wh_items')||[]).find(i=>String(i.id)===String(id))
+  if(!item) return
+  _pselSelected=item
+  // Highlight selected row
+  document.querySelectorAll('#psel-results tr').forEach(r=>r.style.background='')
+  tr.style.background='#eff6ff'
+}
+
+function confirmPartSelect(){
+  if(!_pselSelected){ alert('Выберите запчасть из списка'); return }
+  document.getElementById('wpart').value=_pselSelected.name
+  document.getElementById('wsku').value=_pselSelected.sku||''
+  document.getElementById('wpp').value=_pselSelected.sale_price||_pselSelected.price||0
+  // Show info badge
+  const info=document.getElementById('wpart-selected-info')
+  info.style.display='block'
+  info.textContent=`✓ ${_pselSelected.name} · ${Number(_pselSelected.sale_price||_pselSelected.price||0).toLocaleString('ru')} ₽ · ${+((_pselSelected.qty||0))} шт. на складе`
+  cm('m-part-select')
 }
 
 // ── SYNC: warehouse selects (from branches) ────────────────────────────────
