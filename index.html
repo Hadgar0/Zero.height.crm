@@ -2103,27 +2103,21 @@ tr:hover td{background:#fafafa}
 
     <div style="padding:0 20px 20px;display:flex;flex-direction:column;gap:14px">
 
-      <!-- Работа -->
+      <!-- Работа (searchable dropdown from price list) -->
       <div>
         <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><span style="color:#ef4444">*</span> Работа</label>
         <div style="display:flex;gap:0;position:relative">
-          <input id="wn" class="fc" placeholder="" autocomplete="off"
+          <input id="wn" class="fc" placeholder="Поиск по прайс-листу..." autocomplete="off"
                  style="border-radius:8px 0 0 8px;border-right:none;flex:1"
-                 oninput="searchPriceListWork(this.value)">
+                 oninput="searchPriceListWork(this.value)" onfocus="searchPriceListWork(this.value)">
           <div id="wn-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:40px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:300;max-height:200px;overflow-y:auto"></div>
-          <button onclick="openWorkPriceList()" title="Прайс-лист" style="width:40px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            <svg style="width:16px;height:16px;color:#6b7280" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button onclick="openWorkPriceList()" title="Прайс-лист" style="width:40px;background:#f8fafc;border:1.5px solid #e2e8f0;border-left:none;border-radius:0 8px 8px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2">
               <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
               <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
             </svg>
           </button>
         </div>
-      </div>
-
-      <!-- Цена услуги -->
-      <div>
-        <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:block">Цена услуги, ₽</label>
-        <input id="wp" type="number" class="fc" placeholder="0" style="text-align:right">
       </div>
 
       <!-- Checkboxes 2x2 -->
@@ -2146,12 +2140,38 @@ tr:hover td{background:#fafafa}
         </label>
       </div>
 
+      <!-- Запчасть (shown after work selected) -->
+      <div id="wpart-section" style="display:none;flex-direction:column;gap:8px">
+        <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:4px"><span style="color:#ef4444">*</span> Запчасть</label>
+        <div style="display:flex;gap:8px;align-items:stretch;position:relative">
+          <input id="wpart" class="fc" placeholder="Выберите запчасть" autocomplete="off"
+                 oninput="searchWhPart(this.value)" style="flex:1">
+          <div id="wpart-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:44px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:300;max-height:180px;overflow-y:auto"></div>
+          <button onclick="wmAddNewPart()" style="width:36px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:20px;color:#374151;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+        </div>
+        <button id="w-unregistered-btn" onclick="wmToggleUnregistered()" style="align-self:flex-start;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:500;color:#374151;cursor:pointer">Запчасть не оприходована</button>
+        <input type="hidden" id="wpp">
+        <input type="hidden" id="wsku">
+      </div>
+
+      <!-- Стоимость услуги | Гарантия (дни) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:block">Стоимость услуги</label>
+          <input id="wp" type="number" class="fc" placeholder="0" style="text-align:right">
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:block">Гарантия (дни)</label>
+          <input id="ww" type="number" class="fc" placeholder="90" value="90" style="text-align:right">
+        </div>
+      </div>
+
       <!-- Исполнитель -->
       <div>
         <label style="font-size:12px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:4px"><span style="color:#ef4444">*</span> Исполнитель</label>
         <div style="position:relative">
           <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;z-index:1">
-            <svg style="width:15px;height:15px;color:#f59e0b" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </span>
           <select id="wexec" class="fc" style="padding-left:32px"></select>
         </div>
@@ -2163,14 +2183,8 @@ tr:hover td{background:#fafafa}
         <input id="w-outsource" type="number" class="fc" placeholder="0" value="0" style="text-align:right">
       </div>
 
-      <!-- Hidden legacy fields -->
-      <input type="hidden" id="ww">
-      <input type="hidden" id="wpart">
-      <input type="hidden" id="wpp">
-      <input type="hidden" id="wsku">
-
       <!-- Add button -->
-      <button onclick="saveWork()" style="width:100%;background:#f59e0b;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:4px" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">Добавить</button>
+      <button onclick="saveWork()" style="width:100%;background:#f59e0b;color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;margin-top:2px" onmouseover="this.style.background='#d97706'" onmouseout="this.style.background='#f59e0b'">Добавить</button>
     </div>
   </div>
 </div>
@@ -3131,6 +3145,11 @@ function addWork(t){
   document.getElementById('w-war12').checked=false
   document.getElementById('w-warranty').checked=false
   document.getElementById('w-outsource').value=0
+  document.getElementById('wpart-section').style.display='none'
+  document.getElementById('wpart').value=''
+  document.getElementById('wpp').value=''
+  document.getElementById('wsku').value=''
+  _wmUnregistered=false
   // Populate executor select
   const sel=document.getElementById('wexec')
   const staff=(S.get('staff')||[]).filter(s=>s.active!==false)
@@ -3146,19 +3165,40 @@ function wmWarSync(which){
 }
 function searchPriceListWork(val){
   const drop=document.getElementById('wn-drop')
-  if(!val||val.length<1){drop.style.display='none';return}
-  const items=(S.get('price_list')||[]).filter(x=>x.name&&x.name.toLowerCase().includes(val.toLowerCase())).slice(0,10)
+  const items=(S.get('price_list')||[]).filter(x=>x.name&&(!val||x.name.toLowerCase().includes(val.toLowerCase()))).slice(0,15)
   if(!items.length){drop.style.display='none';return}
-  drop.innerHTML=items.map(x=>`<div onclick="wmSelectWork('${x.name.replace(/'/g,"\\'")}',${+(x.price||0)})" style="padding:8px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f1f5f9" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">${x.name} <span style="color:#6b7280;float:right">${Number(x.price||0).toLocaleString('ru')} ₽</span></div>`).join('')
+  drop.innerHTML=items.map(x=>`<div onclick="wmSelectWork('${x.name.replace(/'/g,"\\'")}',${+(x.price||0)})" style="padding:9px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''"><span>${x.name}</span><span style="color:#6b7280;margin-left:12px;flex-shrink:0">${Number(x.price||0).toLocaleString('ru')} ₽</span></div>`).join('')
   drop.style.display='block'
 }
 function wmSelectWork(name, price){
   document.getElementById('wn').value=name
   document.getElementById('wp').value=price
   document.getElementById('wn-drop').style.display='none'
+  // Show part section after selecting a work
+  const ps=document.getElementById('wpart-section')
+  ps.style.display='flex'
+  document.getElementById('wpart').value=''
+  document.getElementById('wpp').value=''
+  document.getElementById('w-unregistered-btn').style.background='#f1f5f9'
+  document.getElementById('w-unregistered-btn').style.color='#374151'
 }
 function openWorkPriceList(){
-  alert('Прайс-лист: настройте в разделе "Прайс-лист"')
+  // Show all price list items in dropdown
+  document.getElementById('wn').focus()
+  searchPriceListWork('')
+}
+let _wmUnregistered=false
+function wmToggleUnregistered(){
+  _wmUnregistered=!_wmUnregistered
+  const btn=document.getElementById('w-unregistered-btn')
+  btn.style.background=_wmUnregistered?'#fef3c7':'#f1f5f9'
+  btn.style.color=_wmUnregistered?'#92400e':'#374151'
+  btn.style.borderColor=_wmUnregistered?'#fde68a':'#e2e8f0'
+}
+function wmAddNewPart(){
+  const name=document.getElementById('wpart').value.trim()
+  if(!name){alert('Введите название запчасти');return}
+  alert('Запчасть "'+name+'" будет добавлена при сохранении')
 }
 function saveWork(){
   const n=document.getElementById('wn').value.trim();if(!n){alert('Укажите название');return}
@@ -3167,8 +3207,9 @@ function saveWork(){
   else if(document.getElementById('w-war6').checked) warDays=180
   const isWarranty=document.getElementById('w-warranty').checked
   const outsource=+(document.getElementById('w-outsource').value||0)
+  const partUnregistered=_wmUnregistered
   if(!CUR.works)CUR.works=[]
-  CUR.works.push({type:wtype,n,p:document.getElementById('wp').value||0,war:warDays,warranty_service:isWarranty,outsource,part:document.getElementById('wpart').value,pp:document.getElementById('wpp').value||0,sku:document.getElementById('wsku').value,exec:document.getElementById('wexec').value})
+  CUR.works.push({type:wtype,n,p:document.getElementById('wp').value||0,war:warDays,warranty_service:isWarranty,outsource,part_unregistered:partUnregistered,part:document.getElementById('wpart').value,pp:document.getElementById('wpp').value||0,sku:document.getElementById('wsku').value,exec:document.getElementById('wexec').value})
   cm('m-work');renderWorks()
   document.querySelectorAll('.ot').forEach(t=>{if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes('ot-works'))otab(t,'ot-works')})
 }
