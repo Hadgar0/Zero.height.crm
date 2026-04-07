@@ -913,7 +913,7 @@ tr:hover td{background:#fafafa}
       </button>
     </div>
     <div class="op-body">
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1.5fr auto;gap:12px;margin-bottom:20px;align-items:start">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;margin-bottom:20px;align-items:end">
         <!-- Client -->
         <div class="fg">
           <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
@@ -925,6 +925,7 @@ tr:hover td{background:#fafafa}
             <button type="button" onclick="openQuickClientModalW()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
           </div>
           <input type="hidden" id="wc-client-id">
+          <textarea id="wc-comment" class="fc" style="display:none"></textarea>
         </div>
         <!-- Warehouse -->
         <div class="fg">
@@ -945,13 +946,8 @@ tr:hover td{background:#fafafa}
             <option value="closed">⚫ Закрыт</option>
           </select>
         </div>
-        <!-- Comment -->
-        <div class="fg">
-          <label style="font-size:12px;color:#64748b;font-weight:400">Комментарий</label>
-          <textarea id="wc-comment" class="fc" style="height:34px;resize:none;min-height:34px"></textarea>
-        </div>
         <!-- Total -->
-        <div style="padding-top:2px;text-align:right;white-space:nowrap">
+        <div style="padding-bottom:4px;text-align:right;white-space:nowrap">
           <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.1px;margin-bottom:4px">Сумма по заказу:</div>
           <div style="font-size:15px;font-weight:700;color:#6366f1" id="wc-total-top">0 руб.</div>
         </div>
