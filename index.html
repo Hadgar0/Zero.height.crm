@@ -613,11 +613,11 @@ tr:hover td{background:#fafafa}
     <!-- ── Main form ── -->
     <div class="op-body">
 
-      <!-- Full-width row form -->
-      <div class="oc-form-grid">
+      <!-- Form: left sidebar + right grid (like CrmFix) -->
+      <div style="display:flex;background:var(--surface);border-bottom:1px solid var(--border)">
 
-        <!-- Row 1: Клиент | Устройство | Модель | Цвет -->
-        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr 1fr;align-items:end">
+        <!-- LEFT sidebar: Клиент, Принимающий, Источник, Кто закрыл -->
+        <div style="width:270px;flex-shrink:0;border-right:1px solid var(--border-light);padding:12px 14px;display:flex;flex-direction:column;gap:10px">
           <div class="oc-fg">
             <label>Клиент <span style="color:#94a3b8;font-weight:400;font-size:11px">ⓘ</span> :</label>
             <div style="display:flex;gap:4px;align-items:flex-start">
@@ -630,61 +630,10 @@ tr:hover td{background:#fafafa}
             <input type="hidden" id="oc-client-id">
           </div>
           <div class="oc-fg">
-            <label>Устройство</label>
-            <input id="oc-device" class="fc" placeholder="iPhone 14 Pro" list="device-list" autocomplete="off">
-            <datalist id="device-list">
-              <option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option>
-              <option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option>
-              <option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option>
-              <option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option>
-              <option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option>
-              <option>Samsung Galaxy S24 Ultra</option><option>Samsung Galaxy S24+</option><option>Samsung Galaxy S24</option>
-              <option>Samsung Galaxy S23 Ultra</option><option>Samsung Galaxy S23+</option><option>Samsung Galaxy S23</option>
-              <option>iPad Pro 12.9"</option><option>iPad Pro 11"</option><option>iPad Air</option><option>iPad mini</option><option>iPad 11</option>
-              <option>MacBook Pro</option><option>MacBook Air</option><option>iMac</option>
-            </datalist>
-          </div>
-          <div class="oc-fg">
-            <label>Модель</label>
-            <input id="oc-model" class="fc" placeholder="—">
-          </div>
-          <div class="oc-fg">
-            <label>Цвет устройства</label>
-            <input id="oc-color" class="fc" placeholder="—">
-          </div>
-        </div>
-
-        <!-- Row 2: Принимающий | Статус | Ориентировочная готовность | Сумма -->
-        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr 1fr;align-items:end">
-          <div class="oc-fg">
             <label>Принимающий сотрудник СЦ</label>
             <input id="oc-emp" class="fc" placeholder="ФИО сотрудника" list="emp-list">
             <datalist id="emp-list"></datalist>
           </div>
-          <div class="oc-fg">
-            <label>Статус заказа</label>
-            <select id="oc-status" class="fc">
-              <option value="open">Новый</option>
-              <option value="in_work">В работе</option>
-              <option value="ready">Готов к выдаче</option>
-              <option value="awaiting_payment">Ожидает оплаты (пост-оплата)</option>
-              <option value="closed">Закрыт</option>
-              <option value="cancelled">Отменён</option>
-            </select>
-          </div>
-          <div class="oc-fg">
-            <label>Ориентировочная готовность &nbsp;<a href="#" onclick="document.getElementById('oc-ready').focus();return false" style="color:#2563eb;font-size:11px;text-decoration:none;font-weight:400">заполнить время</a></label>
-            <input id="oc-ready" type="datetime-local" class="fc">
-          </div>
-          <div style="padding-bottom:4px">
-            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">Итого по заказу</div>
-            <div style="font-size:13px;color:#111827;font-weight:600;margin-bottom:2px">Сумма работ: <strong id="oc-total" style="color:#6366f1">0 руб.</strong></div>
-            <div style="font-size:12px;color:#374151">Аванс: <span id="oc-adv-show">0 руб.</span></div>
-          </div>
-        </div>
-
-        <!-- Row 3: Источник | Цена | Кто закрыл -->
-        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr 1fr;align-items:end">
           <div class="oc-fg">
             <label>Источник</label>
             <select id="oc-src" class="fc">
@@ -700,48 +649,104 @@ tr:hover td{background:#fafafa}
             </select>
           </div>
           <div class="oc-fg">
-            <label>Ориентировочная цена (руб.)</label>
-            <input id="oc-price" type="number" class="fc" placeholder="0">
-          </div>
-          <div class="oc-fg">
             <label>Кто закрыл заказ</label>
             <input id="oc-closer" class="fc" placeholder="—" list="emp-list">
           </div>
-          <div></div>
         </div>
-      </div>
 
-      <!-- ── Work add buttons (2×2 grid) ── -->
-      <div style="background:#f8fafc;border-bottom:1px solid #e2e8f0;padding:12px 20px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;max-width:800px">
-          <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="addWork('Работа')" class="work-add-btn">
-              <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-              Добавить работу
-            </button>
-            <span class="work-pct">+10% <span title="Процент исполнителя" style="cursor:help">ⓘ</span></span>
+        <!-- RIGHT section: device info grid + buttons -->
+        <div style="flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:10px;min-width:0">
+
+          <!-- Row 1: Устройство | Модель | Цвет -->
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;align-items:end">
+            <div class="oc-fg">
+              <label>Устройство</label>
+              <input id="oc-device" class="fc" placeholder="iPhone 14 Pro" list="device-list" autocomplete="off">
+              <datalist id="device-list">
+                <option>iPhone 16 Pro Max</option><option>iPhone 16 Pro</option><option>iPhone 16</option>
+                <option>iPhone 15 Pro Max</option><option>iPhone 15 Pro</option><option>iPhone 15</option>
+                <option>iPhone 14 Pro Max</option><option>iPhone 14 Pro</option><option>iPhone 14</option>
+                <option>iPhone 13 Pro Max</option><option>iPhone 13 Pro</option><option>iPhone 13</option>
+                <option>iPhone 12 Pro Max</option><option>iPhone 12 Pro</option><option>iPhone 12</option>
+                <option>Samsung Galaxy S24 Ultra</option><option>Samsung Galaxy S24+</option><option>Samsung Galaxy S24</option>
+                <option>Samsung Galaxy S23 Ultra</option><option>Samsung Galaxy S23+</option><option>Samsung Galaxy S23</option>
+                <option>iPad Pro 12.9"</option><option>iPad Pro 11"</option><option>iPad Air</option><option>iPad mini</option><option>iPad 11</option>
+                <option>MacBook Pro</option><option>MacBook Air</option><option>iMac</option>
+              </datalist>
+            </div>
+            <div class="oc-fg">
+              <label>Модель</label>
+              <input id="oc-model" class="fc" placeholder="—">
+            </div>
+            <div class="oc-fg">
+              <label>Цвет устройства</label>
+              <input id="oc-color" class="fc" placeholder="—">
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="addWork('Чистка')" class="work-add-btn">
-              <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M3 3l18 18M8.56 2.9A7 7 0 0 1 19 9v1M14 9a2 2 0 0 1-2 2"/><path d="M5 9v1a7 7 0 0 0 9.13 6.69M20 5l-3 3"/></svg>
-              Добавить чистку
-            </button>
-            <span class="work-pct">+7% <span title="Процент исполнителя" style="cursor:help">ⓘ</span></span>
+
+          <!-- Row 2: Статус | Готовность | Сумма -->
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;align-items:end">
+            <div class="oc-fg">
+              <label>Статус заказа</label>
+              <select id="oc-status" class="fc">
+                <option value="open">Новый</option>
+                <option value="in_work">В работе</option>
+                <option value="ready">Готов к выдаче</option>
+                <option value="awaiting_payment">Ожидает оплаты (пост-оплата)</option>
+                <option value="closed">Закрыт</option>
+                <option value="cancelled">Отменён</option>
+              </select>
+            </div>
+            <div class="oc-fg">
+              <label>Ориентировочная готовность &nbsp;<a href="#" onclick="document.getElementById('oc-ready').focus();return false" style="color:#2563eb;font-size:11px;text-decoration:none;font-weight:400">заполнить время</a></label>
+              <input id="oc-ready" type="datetime-local" class="fc">
+            </div>
+            <div style="padding-bottom:2px">
+              <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px;margin-bottom:6px">Сумма работ по заказу:</div>
+              <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:2px"><strong id="oc-total" style="color:#6366f1">0 руб.</strong></div>
+              <div style="font-size:12px;color:#6b7280">Принято авансом: <span id="oc-adv-show">0 руб.</span></div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="addWork('Бронирование')" class="work-add-btn">
-              <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              Добавить бронирование
-            </button>
-            <span class="work-pct">+10% <span title="Процент исполнителя" style="cursor:help">ⓘ</span></span>
+
+          <!-- Row 3: Цена + кнопки добавления работ -->
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;align-items:end">
+            <div class="oc-fg">
+              <label>Ориентировочная цена (руб.)</label>
+              <input id="oc-price" type="number" class="fc" placeholder="0">
+            </div>
+            <!-- Buttons 2×2 spanning 2 cols -->
+            <div style="grid-column:2/4;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+              <div style="display:flex;align-items:center;gap:6px">
+                <button onclick="addWork('Работа')" class="work-add-btn">
+                  <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                  Добавить работу
+                </button>
+                <span class="work-pct">+10%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <button onclick="addWork('Чистка')" class="work-add-btn">
+                  <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M3 3l18 18M8.56 2.9A7 7 0 0 1 19 9v1M14 9a2 2 0 0 1-2 2"/><path d="M5 9v1a7 7 0 0 0 9.13 6.69M20 5l-3 3"/></svg>
+                  Добавить чистку
+                </button>
+                <span class="work-pct">+7%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <button onclick="addWork('Бронирование')" class="work-add-btn">
+                  <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  Добавить бронирование
+                </button>
+                <span class="work-pct">+10%</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px">
+                <button onclick="addWork('Аксессуар')" class="work-add-btn">
+                  <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                  Добавить аксессуар
+                </button>
+                <span class="work-pct">+10%</span>
+              </div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="addWork('Аксессуар')" class="work-add-btn">
-              <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-              Добавить аксессуар
-            </button>
-            <span class="work-pct">+10% <span title="Процент исполнителя" style="cursor:help">ⓘ</span></span>
-          </div>
+
         </div>
       </div>
 
