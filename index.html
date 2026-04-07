@@ -616,8 +616,8 @@ tr:hover td{background:#fafafa}
       <!-- Full-width row form -->
       <div class="oc-form-grid">
 
-        <!-- Row 1: Клиент | Устройство | Модель | Цвет | Сумма -->
-        <div class="oc-form-row" style="grid-template-columns:1.2fr 1.5fr 1fr 1fr auto;align-items:end">
+        <!-- Row 1: Клиент | Устройство | Модель | Цвет -->
+        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr 1fr;align-items:end">
           <div class="oc-fg">
             <label>Клиент <span style="color:#94a3b8;font-weight:400;font-size:11px">ⓘ</span> :</label>
             <div style="display:flex;gap:4px;align-items:flex-start">
@@ -652,14 +652,10 @@ tr:hover td{background:#fafafa}
             <label>Цвет устройства</label>
             <input id="oc-color" class="fc" placeholder="—">
           </div>
-          <div style="text-align:right;padding-bottom:2px;white-space:nowrap;min-width:200px">
-            <div style="font-size:12px;color:#374151;margin-bottom:3px">Сумма работ по заказу: <strong id="oc-total">0 руб.</strong></div>
-            <div style="font-size:12px;color:#374151">Принято авансом: <span id="oc-adv-show">0 руб.</span></div>
-          </div>
         </div>
 
-        <!-- Row 2: Принимающий | Статус | Ориентировочная готовность -->
-        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr">
+        <!-- Row 2: Принимающий | Статус | Ориентировочная готовность | Сумма -->
+        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr 1fr;align-items:end">
           <div class="oc-fg">
             <label>Принимающий сотрудник СЦ</label>
             <input id="oc-emp" class="fc" placeholder="ФИО сотрудника" list="emp-list">
@@ -680,10 +676,15 @@ tr:hover td{background:#fafafa}
             <label>Ориентировочная готовность &nbsp;<a href="#" onclick="document.getElementById('oc-ready').focus();return false" style="color:#2563eb;font-size:11px;text-decoration:none;font-weight:400">заполнить время</a></label>
             <input id="oc-ready" type="datetime-local" class="fc">
           </div>
+          <div style="padding-bottom:4px">
+            <div style="font-size:12px;color:#6b7280;margin-bottom:4px">Итого по заказу</div>
+            <div style="font-size:13px;color:#111827;font-weight:600;margin-bottom:2px">Сумма работ: <strong id="oc-total" style="color:#6366f1">0 руб.</strong></div>
+            <div style="font-size:12px;color:#374151">Аванс: <span id="oc-adv-show">0 руб.</span></div>
+          </div>
         </div>
 
         <!-- Row 3: Источник | Цена | Кто закрыл -->
-        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="oc-form-row" style="grid-template-columns:1fr 1fr 1fr 1fr;align-items:end">
           <div class="oc-fg">
             <label>Источник</label>
             <select id="oc-src" class="fc">
@@ -706,6 +707,7 @@ tr:hover td{background:#fafafa}
             <label>Кто закрыл заказ</label>
             <input id="oc-closer" class="fc" placeholder="—" list="emp-list">
           </div>
+          <div></div>
         </div>
       </div>
 
