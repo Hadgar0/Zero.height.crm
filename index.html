@@ -1181,14 +1181,11 @@ tr:hover td{background:#fafafa}
             <!-- Секция: Выход на смену -->
             <div class="card">
               <div class="card-hd" style="justify-content:space-between">
-                <div>
-                  <h2>🕐 Выход на смену</h2>
-                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на кол-во смен → бонус ₽</p>
-                </div>
+                <div><h2>🕐 Выход на смену</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Если смен ≥ / ≤ значения → бонус ₽</p></div>
                 <button onclick="salAddRule('shift')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
               </div>
               <div style="padding:0 18px 6px">
-                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Смен (шт)</span>
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
@@ -1201,57 +1198,99 @@ tr:hover td{background:#fafafa}
             <!-- Секция: Аксессуары -->
             <div class="card">
               <div class="card-hd" style="justify-content:space-between">
-                <div>
-                  <h2>📦 Аксессуары / запчасти</h2>
-                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на сумму продаж → бонус ₽</p>
-                </div>
+                <div><h2>🎧 Аксессуары</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Если сумма продаж ≥ / ≤ → % с продаж</p></div>
                 <button onclick="salAddRule('acc')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
               </div>
               <div style="padding:0 18px 6px">
-                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
-                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">% с продаж</span>
                   <span></span>
                 </div>
                 <div id="sal-rules-acc"></div>
               </div>
             </div>
 
-            <!-- Секция: Ремонт -->
+            <!-- Секция: Запчасти -->
             <div class="card">
               <div class="card-hd" style="justify-content:space-between">
-                <div>
-                  <h2>🔧 Ремонт</h2>
-                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на сумму работ → бонус ₽</p>
-                </div>
-                <button onclick="salAddRule('repair')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+                <div><h2>🔩 Запчасти</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Если сумма продаж ≥ / ≤ → % с продаж</p></div>
+                <button onclick="salAddRule('parts')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
               </div>
               <div style="padding:0 18px 6px">
-                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
-                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">% с продаж</span>
                   <span></span>
                 </div>
-                <div id="sal-rules-repair"></div>
+                <div id="sal-rules-parts"></div>
+              </div>
+            </div>
+
+            <!-- Секция: Ремонт — Принимающий -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div><h2>🔧 Ремонт — Принимающий</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Сотрудник, принявший заказ (o.emp) → % с суммы работ</p></div>
+                <button onclick="salAddRule('repair_accept')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">% с работ</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-repair_accept"></div>
+              </div>
+            </div>
+
+            <!-- Секция: Ремонт — Исполнитель -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div><h2>🔧 Ремонт — Исполнитель</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Исполнитель работы (w.exec) → % с суммы своих работ</p></div>
+                <button onclick="salAddRule('repair_exec')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">% с работ</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-repair_exec"></div>
+              </div>
+            </div>
+
+            <!-- Секция: Ремонт — Выдающий -->
+            <div class="card">
+              <div class="card-hd" style="justify-content:space-between">
+                <div><h2>🔧 Ремонт — Выдающий</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Сотрудник, выдавший заказ (o.closer) → % с суммы работ</p></div>
+                <button onclick="salAddRule('repair_handover')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+              </div>
+              <div style="padding:0 18px 6px">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">% с работ</span>
+                  <span></span>
+                </div>
+                <div id="sal-rules-repair_handover"></div>
               </div>
             </div>
 
             <!-- Секция: Опт -->
             <div class="card">
               <div class="card-hd" style="justify-content:space-between">
-                <div>
-                  <h2>🏭 Оптовые продажи</h2>
-                  <p style="font-size:11px;color:var(--text3);margin-top:2px">Условие на сумму оптовых заказов → бонус ₽</p>
-                </div>
+                <div><h2>🏭 Оптовые продажи</h2><p style="font-size:11px;color:var(--text3);margin-top:2px">Если сумма опт ≥ / ≤ → % с продаж</p></div>
                 <button onclick="salAddRule('wholesale')" style="width:28px;height:28px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
               </div>
               <div style="padding:0 18px 6px">
-                <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
+                <div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;padding:6px 0 4px;border-bottom:1px solid var(--border-light)">
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Условие</span>
                   <span style="font-size:11px;color:var(--text3);font-weight:600">Сумма, ₽</span>
-                  <span style="font-size:11px;color:var(--text3);font-weight:600">Бонус, ₽</span>
+                  <span style="font-size:11px;color:var(--text3);font-weight:600">% с продаж</span>
                   <span></span>
                 </div>
                 <div id="sal-rules-wholesale"></div>
@@ -3403,47 +3442,55 @@ function renderCatList(){
 }
 
 // ── КОНСТРУКТОР ЗАРПЛАТЫ ──────────────────────────────────────────────────────
-// Структура правила: {op:'gte'|'lte'|'eq', val:number, bonus:number}
-// Хранится в staff[i].sal_rules = {shift:[...], acc:[...], repair:[...], wholesale:[...]}
+// shift: {op, val(смен), bonus(₽)}
+// acc/parts/repair/wholesale: {op, val(сумма ₽), pct(% с продаж)}
 
-let _salCurEmp = '' // текущий сотрудник в редакторе
+let _salCurEmp = ''
+
+const _SAL_PCT_SECTIONS = ['acc','parts','repair_accept','repair_exec','repair_handover','wholesale'] // % с продаж
+const _SAL_SHIFT_SECTIONS = ['shift'] // фикс. бонус ₽
 
 function getSalRules(empName){
-  if(!empName) return {shift:[],acc:[],repair:[],wholesale:[]}
+  if(!empName) return {shift:[],acc:[],parts:[],repair_accept:[],repair_exec:[],repair_handover:[],wholesale:[]}
   const staff=S.get('staff')||[]
   const emp=staff.find(s=>s.name===empName)
   const r=emp&&emp.sal_rules?emp.sal_rules:{}
-  return {
-    shift:     r.shift||[],
-    acc:       r.acc||[],
-    repair:    r.repair||[],
-    wholesale: r.wholesale||[],
-  }
+  return {shift:r.shift||[], acc:r.acc||[], parts:r.parts||[], repair_accept:r.repair_accept||[], repair_exec:r.repair_exec||[], repair_handover:r.repair_handover||[], wholesale:r.wholesale||[]}
 }
 
 function _renderRuleRows(section){
   const rules=getSalRules(_salCurEmp)[section]||[]
   const el=document.getElementById('sal-rules-'+section)
   if(!el) return
+  const isPct=_SAL_PCT_SECTIONS.includes(section)
   if(!rules.length){
     el.innerHTML='<div style="padding:10px 0;font-size:12px;color:var(--text3)">Нет правил. Нажмите + чтобы добавить.</div>'
     return
   }
-  el.innerHTML=rules.map((r,i)=>`
-    <div style="display:grid;grid-template-columns:180px 110px 1fr 28px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--border-light)">
+  el.innerHTML=rules.map((r,i)=>{
+    const bonusField=isPct
+      ? `<div style="display:flex;align-items:center;gap:4px">
+           <input type="number" value="${r.pct!=null?r.pct:''}" placeholder="0" step="0.5" min="0" max="100"
+             onchange="salUpdateRule('${section}',${i},'pct',+this.value)"
+             style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%;text-align:right">
+           <span style="font-size:12px;color:var(--text3);white-space:nowrap">%</span>
+         </div>`
+      : `<input type="number" value="${r.bonus!=null?r.bonus:''}" placeholder="0"
+           onchange="salUpdateRule('${section}',${i},'bonus',+this.value)"
+           style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%;text-align:right">`
+    return `<div style="display:grid;grid-template-columns:170px 100px 1fr 28px;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--border-light)">
       <select onchange="salUpdateRule('${section}',${i},'op',this.value)" style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--text2)">
         <option value="gte"${r.op==='gte'?' selected':''}>Больше или равно</option>
         <option value="lte"${r.op==='lte'?' selected':''}>Меньше или равно</option>
         <option value="eq"${r.op==='eq'?' selected':''}>Равно</option>
       </select>
-      <input type="number" value="${r.val||''}" placeholder="0"
+      <input type="number" value="${r.val!=null?r.val:''}" placeholder="0"
         onchange="salUpdateRule('${section}',${i},'val',+this.value)"
         style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%;text-align:right">
-      <input type="number" value="${r.bonus||''}" placeholder="0"
-        onchange="salUpdateRule('${section}',${i},'bonus',+this.value)"
-        style="border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:12px;width:100%;text-align:right">
+      ${bonusField}
       <button onclick="salRemoveRule('${section}',${i})" style="width:24px;height:24px;border-radius:50%;background:#fee2e2;border:none;cursor:pointer;color:#b91c1c;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center">×</button>
-    </div>`).join('')
+    </div>`
+  }).join('')
 }
 
 function salAddRule(section){
@@ -3453,7 +3500,8 @@ function salAddRule(section){
   if(i<0) return
   if(!staff[i].sal_rules) staff[i].sal_rules={}
   if(!staff[i].sal_rules[section]) staff[i].sal_rules[section]=[]
-  staff[i].sal_rules[section].push({op:'gte',val:0,bonus:0})
+  const isPct=_SAL_PCT_SECTIONS.includes(section)
+  staff[i].sal_rules[section].push(isPct?{op:'gte',val:0,pct:0}:{op:'gte',val:0,bonus:0})
   S.set('staff',staff)
   _renderRuleRows(section)
 }
@@ -3465,6 +3513,7 @@ function salUpdateRule(section,idx,field,value){
   if(i<0||!staff[i].sal_rules||!staff[i].sal_rules[section]) return
   staff[i].sal_rules[section][idx][field]=value
   S.set('staff',staff)
+  renderSalaryPreview()
 }
 
 function salRemoveRule(section,idx){
@@ -3475,10 +3524,11 @@ function salRemoveRule(section,idx){
   staff[i].sal_rules[section].splice(idx,1)
   S.set('staff',staff)
   _renderRuleRows(section)
+  renderSalaryPreview()
 }
 
 function salRenderAll(){
-  ;['shift','acc','repair','wholesale'].forEach(_renderRuleRows)
+  ;['shift','acc','parts','repair_accept','repair_exec','repair_handover','wholesale'].forEach(_renderRuleRows)
 }
 
 function salEmpChanged(){
@@ -3533,20 +3583,37 @@ function calcEmpSalary(empName, year, month){
   const start=new Date(year,month,1)
   const end=new Date(year,month+1,1)
   const rules=getSalRules(empName)
-  const orders=(S.get('orders')||[]).filter(o=>o.status==='closed'&&o.emp===empName)
+  const allOrders=(S.get('orders')||[]).filter(o=>o.status==='closed')
   const wholesale=(S.get('wholesale')||[]).filter(w=>(w.status==='paid'||w.status==='closed')&&w.emp===empName)
+  const whItems=S.get('wh_items')||[]
 
-  let shiftCount=0, accSales=0, repairSales=0, wholeSales=0
+  let shiftCount=0, accSales=0, partsSales=0
+  let repairAcceptSales=0, repairExecSales=0, repairHandoverSales=0
+  let wholeSales=0
 
-  orders.forEach(o=>{
+  allOrders.forEach(o=>{
     const d=new Date(o.closed_at||o.created_at||0)
     if(d<start||d>=end) return
-    shiftCount++
+    const isAcceptor=o.emp===empName
+    const isHandover=o.closer===empName
+
+    // Смены и товары считаем только для принимающего
+    if(isAcceptor) shiftCount++
+
     ;(o.works||[]).forEach(w=>{
-      const pp=+(w.pp||0)
-      const p=+(w.p||0)
-      if(pp>0) accSales+=pp
-      if(p>0) repairSales+=p
+      const pp=+(w.pp||0), p=+(w.p||0)
+      // Аксессуары/запчасти — только принимающему
+      if(isAcceptor&&pp>0){
+        const whi=whItems.find(i=>i.sku===w.sku||i.name===w.part)
+        if(whi&&whi.cat&&whi.cat.toLowerCase().includes('аксесс')) accSales+=pp
+        else partsSales+=pp
+      }
+      // Ремонт — каждому по роли
+      if(p>0){
+        if(isAcceptor) repairAcceptSales+=p
+        if(w.exec===empName) repairExecSales+=p
+        if(isHandover) repairHandoverSales+=p
+      }
     })
   })
   wholesale.forEach(w=>{
@@ -3555,25 +3622,37 @@ function calcEmpSalary(empName, year, month){
     wholeSales+=+(w.total||0)
   })
 
-  // Применяем правила: находим все подходящие, суммируем бонусы
-  function applyRules(ruleArr, actual){
+  // shift → фикс. бонус (bonus); остальные → % с суммы (pct)
+  function applyShiftRules(ruleArr, actual){
     return ruleArr.reduce((sum,r)=>{
       const v=+(r.val||0), b=+(r.bonus||0)
-      if(r.op==='gte'&&actual>=v) return sum+b
-      if(r.op==='lte'&&actual<=v) return sum+b
-      if(r.op==='eq'&&actual===v) return sum+b
-      return sum
+      const match=(r.op==='gte'&&actual>=v)||(r.op==='lte'&&actual<=v)||(r.op==='eq'&&actual===v)
+      return match?sum+b:sum
     },0)
   }
+  function applyPctRules(ruleArr, actual){
+    let bestPct=0
+    ruleArr.forEach(r=>{
+      const v=+(r.val||0), pct=+(r.pct||0)
+      const match=(r.op==='gte'&&actual>=v)||(r.op==='lte'&&actual<=v)||(r.op==='eq'&&actual===v)
+      if(match&&pct>bestPct) bestPct=pct
+    })
+    return actual*bestPct/100
+  }
 
-  const shiftEarned=applyRules(rules.shift, shiftCount)
-  const accEarned=applyRules(rules.acc, accSales)
-  const repairEarned=applyRules(rules.repair, repairSales)
-  const wholeEarned=applyRules(rules.wholesale, wholeSales)
-  const total=shiftEarned+accEarned+repairEarned+wholeEarned
+  const shiftEarned=applyShiftRules(rules.shift, shiftCount)
+  const accEarned=applyPctRules(rules.acc, accSales)
+  const partsEarned=applyPctRules(rules.parts, partsSales)
+  const repairAcceptEarned=applyPctRules(rules.repair_accept, repairAcceptSales)
+  const repairExecEarned=applyPctRules(rules.repair_exec, repairExecSales)
+  const repairHandoverEarned=applyPctRules(rules.repair_handover, repairHandoverSales)
+  const wholeEarned=applyPctRules(rules.wholesale, wholeSales)
+  const total=shiftEarned+accEarned+partsEarned+repairAcceptEarned+repairExecEarned+repairHandoverEarned+wholeEarned
 
-  return {total, shiftEarned, accEarned, repairEarned, wholeEarned,
-          shiftCount, accSales, repairSales, wholeSales}
+  return {total, shiftEarned, accEarned, partsEarned,
+          repairAcceptEarned, repairExecEarned, repairHandoverEarned, wholeEarned,
+          shiftCount, accSales, partsSales,
+          repairAcceptSales, repairExecSales, repairHandoverSales, wholeSales}
 }
 
 function initSalaryTab(){
@@ -3621,9 +3700,12 @@ function renderSalaryPreview(){
       <div style="font-size:15px;font-weight:700;color:${color}">${Number(earned).toLocaleString('ru')} ₽</div>
     </div>`
   body.innerHTML=`
-    ${row('🕐 Смены',`${r.shiftCount} смен`,r.shiftEarned,'#6366f1')}
-    ${row('📦 Аксессуары',`продаж: ${Number(r.accSales).toLocaleString('ru')} ₽`,r.accEarned,'#f59e0b')}
-    ${row('🔧 Ремонт',`работ: ${Number(r.repairSales).toLocaleString('ru')} ₽`,r.repairEarned,'#3b82f6')}
+    ${row('🕐 Смены',`${r.shiftCount} смен → бонус`,r.shiftEarned,'#6366f1')}
+    ${row('🎧 Аксессуары',`продаж: ${Number(r.accSales).toLocaleString('ru')} ₽`,r.accEarned,'#f59e0b')}
+    ${row('🔩 Запчасти',`продаж: ${Number(r.partsSales).toLocaleString('ru')} ₽`,r.partsEarned,'#f97316')}
+    ${row('🔧 Ремонт (принимающий)',`работ: ${Number(r.repairAcceptSales).toLocaleString('ru')} ₽`,r.repairAcceptEarned,'#3b82f6')}
+    ${row('🔧 Ремонт (исполнитель)',`работ: ${Number(r.repairExecSales).toLocaleString('ru')} ₽`,r.repairExecEarned,'#2563eb')}
+    ${row('🔧 Ремонт (выдающий)',`работ: ${Number(r.repairHandoverSales).toLocaleString('ru')} ₽`,r.repairHandoverEarned,'#1d4ed8')}
     ${row('🏭 Опт',`продаж: ${Number(r.wholeSales).toLocaleString('ru')} ₽`,r.wholeEarned,'#10b981')}
     <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 0">
       <div style="font-size:15px;font-weight:700">Итого</div>
