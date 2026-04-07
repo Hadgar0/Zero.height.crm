@@ -5587,10 +5587,13 @@ function confirmPayment(){
   }
   const txs=S.get('cash_tx')||[]; txs.unshift(tx); S.set('cash_tx',txs)
   if(source==='wholesale'&&WCUR){
-    WCUR.status='paid'; WCUR.payment_method=_payMethod
+    WCUR.status='closed'; WCUR.paid=true; WCUR.paid_at=new Date().toISOString(); WCUR.payment_method=_payMethod
     const sel=document.getElementById('wc-status')
-    if(sel) sel.value='paid'
+    if(sel) sel.value='closed'
     saveWholesale()
+    // Lock pay button
+    const wcPayBtn=document.getElementById('wc-pay-btn')
+    if(wcPayBtn){ wcPayBtn.disabled=true; wcPayBtn.style.background='#d1d5db'; wcPayBtn.style.cursor='not-allowed'; wcPayBtn.title='Заказ уже оплачен' }
   } else if(source==='order'&&CUR){
     CUR.status='closed'; CUR.payment_method=_payMethod; CUR.paid=true; CUR.paid_at=new Date().toISOString()
     const sel=document.getElementById('oc-status')
