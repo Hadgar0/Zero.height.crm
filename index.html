@@ -11,27 +11,27 @@
    ZERO.HEIGHT.CRM — MODERN DESIGN SYSTEM
    ═══════════════════════════════════════════════════════ */
 :root{
-  --bg:#f0f2f8;
+  --bg:#f4f4f5;
   --surface:#fff;
-  --sidebar:#13111e;
-  --sidebar-border:rgba(255,255,255,.06);
-  --accent:#6366f1;
-  --accent-dark:#4f46e5;
-  --accent-light:#ede9fe;
-  --accent2:#8b5cf6;
+  --sidebar:#111111;
+  --sidebar-border:rgba(255,255,255,.07);
+  --accent:#dc2626;
+  --accent-dark:#b91c1c;
+  --accent-light:#fee2e2;
+  --accent2:#ef4444;
   --green:#10b981;
   --amber:#f59e0b;
-  --red:#ef4444;
+  --red:#dc2626;
   --border:#e5e7eb;
-  --border-light:#f3f4f6;
-  --text:#111827;
+  --border-light:#f0f0f0;
+  --text:#111111;
   --text2:#4b5563;
   --text3:#9ca3af;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
-  --shadow:0 2px 8px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
-  --shadow-lg:0 8px 30px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.06);
-  --radius:12px;
-  --radius-sm:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07);
+  --shadow:0 2px 8px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05);
+  --shadow-lg:0 8px 30px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.07);
+  --radius:10px;
+  --radius-sm:7px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden;font-size:13px}
@@ -41,14 +41,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Roboto,sans-s
 #sidebar.expanded{width:192px}
 .sb-logo{padding:12px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--sidebar-border);cursor:pointer;flex-shrink:0;white-space:nowrap}
 .sb-logo:hover{background:rgba(255,255,255,.05)}
-.sb-logo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sb-logo-icon{width:30px;height:30px;border-radius:8px;background:#dc2626;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .sb-logo h1{font-size:12px;font-weight:700;color:#f9fafb;line-height:1.2;opacity:0;transition:opacity .15s}
 .sb-logo p{font-size:10px;color:#6b7280;margin-top:1px;opacity:0;transition:opacity .15s}
 #sidebar.expanded .sb-logo h1,#sidebar.expanded .sb-logo p{opacity:1}
 nav{padding:8px 6px;flex:1;display:flex;flex-direction:column;gap:1px;overflow:hidden}
 nav a{display:flex;align-items:center;gap:9px;padding:9px 8px;border-radius:9px;text-decoration:none;color:#9ca3af;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;position:relative}
-nav a:hover{background:rgba(255,255,255,.07);color:#e5e7eb}
-nav a.active{background:linear-gradient(135deg,rgba(99,102,241,.3),rgba(139,92,246,.2));color:#c4b5fd;border:1px solid rgba(139,92,246,.25)}
+nav a:hover{background:rgba(220,38,38,.1);color:#fca5a5}
+nav a.active{background:rgba(220,38,38,.15);color:#fca5a5;border-left:3px solid #dc2626;border-radius:0 9px 9px 0}
 nav a svg{width:16px;height:16px;flex-shrink:0;opacity:.8}
 nav a.active svg{opacity:1}
 /* Текст пунктов меню скрыт в collapsed */
@@ -56,20 +56,20 @@ nav a .nav-label{opacity:0;transition:opacity .15s;pointer-events:none}
 #sidebar.expanded nav a .nav-label{opacity:1}
 /* Tooltip в collapsed режиме */
 #sidebar:not(.expanded) nav a:hover::after{content:attr(data-tip);position:absolute;left:54px;top:50%;transform:translateY(-50%);background:#1e293b;color:#e2e8f0;font-size:11px;font-weight:500;padding:4px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-nav .nav-section{font-size:10px;font-weight:600;color:#4b5563;text-transform:uppercase;letter-spacing:.6px;padding:8px 8px 3px;margin-top:4px;white-space:nowrap;overflow:hidden;opacity:0;transition:opacity .15s;height:0;transition:height .2s,opacity .15s}
+nav .nav-section{font-size:9px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:1px;padding:10px 8px 3px;margin-top:4px;white-space:nowrap;overflow:hidden;opacity:0;transition:opacity .15s;height:0;transition:height .2s,opacity .15s}
 #sidebar.expanded nav .nav-section{opacity:1;height:auto}
 .sb-ver{padding:8px 10px;font-size:10px;color:#4b5563;border-top:1px solid var(--sidebar-border);display:flex;align-items:center;justify-content:space-between;white-space:nowrap;overflow:hidden}
-.sb-ver span{background:rgba(99,102,241,.15);color:#a5b4fc;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;opacity:0;transition:opacity .15s}
+.sb-ver span{background:rgba(220,38,38,.18);color:#fca5a5;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600;opacity:0;transition:opacity .15s}
 #sidebar.expanded .sb-ver span{opacity:1}
 #sidebar.expanded #sb-emp-label{opacity:1}
 
 /* ── LAYOUT ──────────────────────────────────────────── */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
 #main-scroll{flex:1;overflow-y:auto}
-#topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-shrink:0;box-shadow:var(--shadow-sm);z-index:20}
+#topbar{background:var(--surface);border-bottom:2px solid var(--accent);padding:0 24px;height:48px;display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-shrink:0;box-shadow:var(--shadow-sm);z-index:20}
 .topbar-emp{display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 12px;border-radius:8px;transition:background .15s}
 .topbar-emp:hover{background:var(--border-light)}
-.topbar-emp-avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
+.topbar-emp-avatar{width:30px;height:30px;border-radius:50%;background:#dc2626;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
 .topbar-emp-info{line-height:1.3}
 .topbar-emp-name{font-size:12px;font-weight:600;color:var(--text)}
 .topbar-emp-role{font-size:10px;color:var(--text3)}
@@ -78,11 +78,11 @@ nav .nav-section{font-size:10px;font-weight:600;color:#4b5563;text-transform:upp
 .topbar-salary .val{font-size:13px;color:#15803d;font-weight:700}
 .page{display:none}.page.active{display:block}
 .page-pad{padding:28px}
-h1{font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px;letter-spacing:-.3px}
+h1{font-size:22px;font-weight:800;color:#111;margin-bottom:18px;letter-spacing:-.4px;border-left:4px solid var(--accent);padding-left:12px}
 
 /* ── STAT CARDS ──────────────────────────────────────── */
 .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border-light);transition:box-shadow .2s,transform .2s}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border-light);border-top:3px solid var(--accent);transition:box-shadow .2s,transform .2s}
 .stat-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px)}
 .stat-card .lbl{font-size:11px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
 .stat-card .val{font-size:26px;font-weight:800;margin-top:6px;letter-spacing:-.5px}
@@ -91,38 +91,38 @@ h1{font-size:20px;font-weight:700;color:var(--text);margin-bottom:18px;letter-sp
 
 /* ── CARDS ───────────────────────────────────────────── */
 .card{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border-light);overflow:hidden;margin-bottom:16px}
-.card-hd{padding:14px 18px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:8px}
-.card-hd h2{font-size:14px;font-weight:600;flex:1}
-.cw{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border-light);margin-bottom:16px}
-.cw h3{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text2)}
+.card-hd{padding:14px 18px;border-bottom:2px solid var(--border-light);display:flex;align-items:center;gap:8px;border-left:3px solid var(--accent)}
+.card-hd h2{font-size:14px;font-weight:700;flex:1}
+.cw{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--border-light);margin-bottom:16px;border-top:3px solid var(--border)}
+.cw h3{font-size:13px;font-weight:700;margin-bottom:14px;color:var(--text);text-transform:uppercase;letter-spacing:.3px;font-size:11px}
 
 /* ── TABLES ──────────────────────────────────────────── */
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:10px 14px;color:var(--text3);font-weight:500;background:#f9fafb;border-bottom:1px solid var(--border)}
+th{text-align:left;padding:10px 14px;color:#374151;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.4px;background:#f4f4f5;border-bottom:2px solid var(--border)}
 td{padding:10px 14px;border-bottom:1px solid var(--border-light)}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#fafafa}
 .oth{padding:10px 12px;font-size:12px;font-weight:500;color:var(--text3);text-align:left;cursor:pointer;white-space:nowrap;user-select:none}
 .oth:hover{color:var(--text)}
 .orow td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--border-light);white-space:nowrap;cursor:pointer;transition:background .1s}
-.orow:hover td{background:#f5f3ff}
+.orow:hover td{background:#fff5f5}
 .orow.pink td{background:#fff1f2}
 .orow.pink:hover td{background:#fce7f3}
 
 /* ── BADGES ──────────────────────────────────────────── */
 .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.1px}
 .bg{background:#d1fae5;color:#065f46}
-.bb{background:#e0e7ff;color:#4338ca}
+.bb{background:#f3f4f6;color:#374151}
 .by{background:#fef3c7;color:#92400e}
 .br{background:#fee2e2;color:#991b1b}
 .bgr{background:#f3f4f6;color:#4b5563}
-.bv{background:#f5f3ff;color:#6d28d9}
+.bv{background:#f3f4f6;color:#1f2937}
 .ba{background:#fff7ed;color:#c2410c}
 .sdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0}
 
 /* ── BUTTONS ─────────────────────────────────────────── */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;border:none;cursor:pointer;transition:all .15s;white-space:nowrap}
-.btn-p{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(99,102,241,.3)}.btn-p:hover{background:var(--accent-dark);box-shadow:0 4px 12px rgba(99,102,241,.4)}
+.btn-p{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(220,38,38,.3)}.btn-p:hover{background:var(--accent-dark);box-shadow:0 4px 12px rgba(220,38,38,.4)}
 .btn-g{background:var(--surface);color:var(--text2);border:1px solid var(--border)}.btn-g:hover{background:#f9fafb;border-color:#d1d5db}
 .btn-i{padding:5px;background:transparent;border:none;cursor:pointer;color:var(--text3);border-radius:6px;transition:.15s}.btn-i:hover{background:#f3f4f6;color:var(--accent)}
 .btn-i.d:hover{background:#fef2f2;color:var(--red)}
@@ -130,7 +130,7 @@ tr:hover td{background:#fafafa}
 /* ── FILTERS / FORM CONTROLS ─────────────────────────── */
 .filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
 .filters input,.filters select{padding:7px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;outline:none;background:var(--surface);font-family:inherit;color:var(--text)}
-.filters input:focus,.filters select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.filters input:focus,.filters select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
 .sw{position:relative}.sw input{padding-left:34px}
 .sw svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text3)}
 
@@ -144,7 +144,7 @@ tr:hover td{background:#fafafa}
 .fg{margin-bottom:14px}
 .fg label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;letter-spacing:.1px}
 .fg input,.fg select,.fg textarea,.fg .fc{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;outline:none;font-family:inherit;color:var(--text);background:var(--surface);transition:border-color .15s,box-shadow .15s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
 .fg textarea{height:80px;resize:none}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .mft{display:flex;justify-content:flex-end;gap:8px;padding:14px 22px;border-top:1px solid var(--border-light)}
@@ -189,8 +189,8 @@ tr:hover td{background:#fafafa}
 
 /* ── ORDERS / FILTER BTNS ────────────────────────────── */
 .ofbtn{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 11px;font-size:12px;cursor:pointer;color:var(--text2);white-space:nowrap;transition:all .15s;font-family:inherit}
-.ofbtn:hover{background:#f5f3ff;border-color:#c4b5fd;color:var(--accent)}
-.ofbtn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(99,102,241,.3)}
+.ofbtn:hover{background:#fff5f5;border-color:#fca5a5;color:var(--accent)}
+.ofbtn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px rgba(220,38,38,.3)}
 
 /* ── PLUS MENU ───────────────────────────────────────── */
 .plus-wrap{position:relative;flex-shrink:0}
@@ -199,12 +199,12 @@ tr:hover td{background:#fafafa}
 .plus-menu{display:none;position:absolute;top:36px;left:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);z-index:300;min-width:240px;padding:6px;overflow:hidden}
 .plus-wrap:hover .plus-menu{display:block}
 .pmitem{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:none;padding:9px 12px;font-size:13px;color:var(--text);cursor:pointer;font-family:inherit;border-radius:8px;transition:background .1s}
-.pmitem:hover{background:#f5f3ff;color:var(--accent)}
+.pmitem:hover{background:#fff5f5;color:var(--accent)}
 
 /* ── QUICK SALE ──────────────────────────────────────── */
 .qs-card{border:1px solid var(--border);border-radius:10px;padding:11px 13px;cursor:pointer;position:relative;background:var(--surface);transition:all .15s;user-select:none}
-.qs-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.1);transform:translateY(-1px)}
-.qs-card.selected{border-color:var(--accent);background:#f5f3ff;box-shadow:0 0 0 3px rgba(99,102,241,.15)}
+.qs-card:hover{border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,.1);transform:translateY(-1px)}
+.qs-card.selected{border-color:var(--accent);background:#fff5f5;box-shadow:0 0 0 3px rgba(220,38,38,.15)}
 .qs-card.defect{border-color:#fca5a5;background:#fff7f7}
 .qs-badge-brak{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px}
 .qs-card-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
@@ -215,21 +215,21 @@ tr:hover td{background:#fafafa}
 .qs-card-qty.zero{color:var(--red)}
 .qs-qty-ctrl{display:flex;align-items:center;gap:6px;margin-top:6px}
 .qs-qty-ctrl button{width:22px;height:22px;border-radius:50%;border:1px solid var(--border);background:#f3f4f6;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.1s}
-.qs-qty-ctrl button:hover{background:#e0e7ff;border-color:var(--accent)}
+.qs-qty-ctrl button:hover{background:#fee2e2;border-color:var(--accent)}
 
 /* ── PAGINATION ──────────────────────────────────────── */
 .pgbtn{background:var(--surface);border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:.15s}
-.pgbtn:hover{background:#f5f3ff;border-color:var(--accent);color:var(--accent)}
+.pgbtn:hover{background:#fff5f5;border-color:var(--accent);color:var(--accent)}
 .pgnum{width:28px;height:28px;border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;background:var(--surface);display:flex;align-items:center;justify-content:center;color:var(--text2);transition:.15s}
-.pgnum:hover{background:#f5f3ff;border-color:var(--accent);color:var(--accent)}
-.pgnum.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(99,102,241,.3)}
+.pgnum:hover{background:#fff5f5;border-color:var(--accent);color:var(--accent)}
+.pgnum.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 6px rgba(220,38,38,.3)}
 
 /* ── ORDER PAGE ──────────────────────────────────────── */
 .op-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 18px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.05)}
 .op-num{font-size:14px;font-weight:700;color:var(--text);flex:1;min-width:0}
 .op-body{padding:0;background:var(--bg)}
 .fc{width:100%;border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 11px;font-size:13px;outline:none;font-family:inherit;background:var(--surface);color:var(--text);transition:border-color .15s,box-shadow .15s}
-.fc:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.fc:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(220,38,38,.12)}
 .ot{padding:10px 15px;background:none;border:none;border-bottom:3px solid transparent;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;margin-bottom:-2px;white-space:nowrap;transition:color .15s}
 .ot:hover{color:var(--text2)}
 .ot.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -312,7 +312,7 @@ tr:hover td{background:#fafafa}
   <div style="padding:6px 8px;border-top:1px solid var(--sidebar-border);overflow:hidden">
     <div style="font-size:9px;color:#4b5563;text-transform:uppercase;letter-spacing:.5px;font-weight:600;padding:0 2px;margin-bottom:4px;white-space:nowrap;opacity:0;transition:opacity .15s" id="sb-emp-label">Сотрудник</div>
     <select id="sb-cur-emp" onchange="setCurEmp(this.value)" title="Выбрать сотрудника"
-      style="width:100%;background:#1e1b2e;border:1px solid rgba(255,255,255,.1);color:#e2e8f0;border-radius:8px;padding:6px 4px;font-size:11px;cursor:pointer;outline:none;min-width:0">
+      style="width:100%;background:#1a1a1a;border:1px solid rgba(255,255,255,.12);color:#e2e8f0;border-radius:8px;padding:6px 4px;font-size:11px;cursor:pointer;outline:none;min-width:0">
       <option value="">👤</option>
     </select>
   </div>
@@ -512,7 +512,7 @@ tr:hover td{background:#fafafa}
         <button id="wh-site-prices-btn" class="btn btn-g" style="font-size:12px" onclick="toggleWhSitePrices()">
           💰 Цены для сайта
         </button>
-        <button class="btn" style="font-size:12px;background:#6366f1;color:#fff;border:none" onclick="window.open('shop.html','_blank')">
+        <button class="btn" style="font-size:12px;background:#dc2626;color:#fff;border:none" onclick="window.open('shop.html','_blank')">
           🛒 Открыть витрину
         </button>
       </div>
@@ -555,7 +555,7 @@ tr:hover td{background:#fafafa}
             <th class="oth" style="text-align:right">Цена (₽)</th>
             <th class="oth" style="text-align:right">Сумма (₽)</th>
             <th class="oth wh-site-th" style="display:none;text-align:right;color:#3b82f6;font-size:11px">Розница ₽</th>
-            <th class="oth wh-site-th" style="display:none;text-align:right;color:#8b5cf6;font-size:11px">Опт ₽</th>
+            <th class="oth wh-site-th" style="display:none;text-align:right;color:#ef4444;font-size:11px">Опт ₽</th>
             <th class="oth wh-site-th" style="display:none;text-align:right;color:#f59e0b;font-size:11px">VIP ₽</th>
             <th class="oth">Источник</th>
             <th class="oth">Брак</th>
@@ -717,7 +717,7 @@ tr:hover td{background:#fafafa}
             </div>
             <div style="padding-bottom:2px">
               <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px;margin-bottom:6px">Сумма работ по заказу:</div>
-              <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:2px"><strong id="oc-total" style="color:#6366f1">0 руб.</strong></div>
+              <div style="font-size:13px;font-weight:700;color:#111827;margin-bottom:2px"><strong id="oc-total" style="color:#dc2626">0 руб.</strong></div>
               <div style="font-size:12px;color:#6b7280">Принято авансом: <span id="oc-adv-show">0 руб.</span></div>
             </div>
           </div>
@@ -971,7 +971,7 @@ tr:hover td{background:#fafafa}
           </div>
           <div>
             <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px;margin-bottom:4px">Сумма по заказу</div>
-            <div style="font-size:18px;font-weight:700;color:#6366f1" id="wc-total-top">0 руб.</div>
+            <div style="font-size:18px;font-weight:700;color:#dc2626" id="wc-total-top">0 руб.</div>
           </div>
         </div>
       </div>
@@ -1430,7 +1430,7 @@ tr:hover td{background:#fafafa}
       <button class="btn btn-g" style="padding:6px 10px" title="Группировка">
         <svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
       </button>
-      <button onclick="confirmAllCash()" style="width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(99,102,241,.3)" title="Подтвердить всё">
+      <button onclick="confirmAllCash()" style="width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;cursor:pointer;color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(220,38,38,.3)" title="Подтвердить всё">
         <svg style="width:15px;height:15px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
       </button>
       <div style="margin-left:auto">
@@ -2325,7 +2325,7 @@ tr:hover td{background:#fafafa}
           <select id="psel-work" class="fc" style="font-size:12px;padding:4px 8px;min-width:200px" onchange="renderPartList()"></select>
         </div>
         <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#374151;cursor:pointer;white-space:nowrap">
-          <input type="checkbox" id="psel-no-bind" onchange="renderPartList()" style="accent-color:#6366f1">
+          <input type="checkbox" id="psel-no-bind" onchange="renderPartList()" style="accent-color:#dc2626">
           Показать без привязки к выбранной услуге или модели
         </label>
         <div style="display:flex;align-items:center;gap:8px;margin-left:auto">
@@ -2372,10 +2372,10 @@ tr:hover td{background:#fafafa}
             <span id="psel-ico-type">∧</span> Фильтр по типу
           </button>
           <div id="psel-f-type" style="padding:4px 16px 10px;display:flex;flex-direction:column;gap:8px">
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="acc" onchange="renderPartList()" style="accent-color:#6366f1"> Аксессуар / Товар</label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="part" checked onchange="renderPartList()" style="accent-color:#6366f1"> Запчасть</label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="consumable" checked onchange="renderPartList()" style="accent-color:#6366f1"> Расходники</label>
-            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="device" onchange="renderPartList()" style="accent-color:#6366f1"> Устройство</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="acc" onchange="renderPartList()" style="accent-color:#dc2626"> Аксессуар / Товар</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="part" checked onchange="renderPartList()" style="accent-color:#dc2626"> Запчасть</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="consumable" checked onchange="renderPartList()" style="accent-color:#dc2626"> Расходники</label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer"><input type="checkbox" class="psel-type" value="device" onchange="renderPartList()" style="accent-color:#dc2626"> Устройство</label>
           </div>
         </div>
       </div>
@@ -2443,7 +2443,7 @@ if(!localStorage.getItem('seeded')){
 const SM={new:{l:'Новая',c:'bgr'},qualification:{l:'Квалификация',c:'bb'},proposal:{l:'КП отправлено',c:'bv'},negotiation:{l:'Переговоры',c:'ba'},won:{l:'Выиграна',c:'bg'},lost:{l:'Проиграна',c:'br'}}
 const PM={high:{l:'Высокий',c:'br'},medium:{l:'Средний',c:'by'},low:{l:'Низкий',c:'bg'}}
 const CLM={active:{l:'Активный',c:'bg'},lead:{l:'Лид',c:'bb'},inactive:{l:'Неактивный',c:'bgr'}}
-const SHM={new:'background:#f1f5f9;color:#475569;border-color:#e2e8f0',qualification:'background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe',proposal:'background:#ede9fe;color:#6d28d9;border-color:#ddd6fe',negotiation:'background:#fef3c7;color:#b45309;border-color:#fde68a',won:'background:#dcfce7;color:#15803d;border-color:#bbf7d0',lost:'background:#fee2e2;color:#b91c1c;border-color:#fecaca'}
+const SHM={new:'background:#f1f5f9;color:#475569;border-color:#e2e8f0',qualification:'background:#dbeafe;color:#1d4ed8;border-color:#bfdbfe',proposal:'background:#fee2e2;color:#991b1b;border-color:#fecaca',negotiation:'background:#fef3c7;color:#b45309;border-color:#fde68a',won:'background:#dcfce7;color:#15803d;border-color:#bbf7d0',lost:'background:#fee2e2;color:#b91c1c;border-color:#fecaca'}
 function fmt(n){return n?Number(n).toLocaleString('ru')+' ₽':'—'}
 function fdt(d){if(!d)return '';const dt=new Date(d);return dt.toLocaleDateString('ru',{day:'numeric',month:'short'})+' '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})}
 function eico(p,s=14){return `<svg style="width:${s}px;height:${s}px;vertical-align:middle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${p}</svg>`}
@@ -2555,7 +2555,7 @@ function renderDash(){
   const allDeals=[...deals,...orders.map(o=>({...o,title:o.device||o.client||'Заказ',amount:o.total||o.est_price||0,stage:'won',status:'closed'}))]
   const stats=[
     {l:'Всего клиентов',v:clients.length,s:clients.filter(c=>c.status==='active').length+' активных',bg:'#3b82f6'},
-    {l:'Открытых заказов',v:deals.filter(d=>d.status==='open').length,s:deals.length+' всего',bg:'#8b5cf6'},
+    {l:'Открытых заказов',v:deals.filter(d=>d.status==='open').length,s:deals.length+' всего',bg:'#ef4444'},
     {l:'Выручка',v:fmt(deals.filter(d=>d.stage==='won').reduce((s,d)=>s+(+d.amount||0),0)),s:'закрытые',bg:'#22c55e'},
     {l:'Воронка',v:fmt(deals.filter(d=>d.status==='open').reduce((s,d)=>s+(+d.amount||0),0)),s:'открытые',bg:'#f59e0b'},
     {l:'Задач',v:tasks.filter(t=>t.status==='pending').length,s:'ожидают',bg:'#06b6d4'},
@@ -2563,8 +2563,8 @@ function renderDash(){
   ]
   const icons=['👥','📋','💰','📊','✅','⚠️']
   const bgs=[
-    'linear-gradient(135deg,#6366f1,#4f46e5)',
-    'linear-gradient(135deg,#8b5cf6,#7c3aed)',
+    'linear-gradient(135deg,#dc2626,#b91c1c)',
+    'linear-gradient(135deg,#ef4444,#991b1b)',
     'linear-gradient(135deg,#10b981,#059669)',
     'linear-gradient(135deg,#f59e0b,#d97706)',
     'linear-gradient(135deg,#06b6d4,#0891b2)',
@@ -2574,11 +2574,11 @@ function renderDash(){
     <div class="stat-card">
       <div class="ico" style="background:${bgs[i]};color:#fff;font-size:15px">${icons[i]}</div>
       <div class="lbl">${s.l}</div>
-      <div class="val" style="color:${['#6366f1','#8b5cf6','#10b981','#f59e0b','#06b6d4','#ef4444'][i]}">${s.v}</div>
+      <div class="val" style="color:${['#dc2626','#ef4444','#10b981','#f59e0b','#06b6d4','#ef4444'][i]}">${s.v}</div>
       <div class="sub">${s.s}</div>
     </div>`).join('')
   const sc=Object.keys(SM).map(k=>deals.filter(d=>d.stage===k).length),mx=Math.max(...sc,1)
-  const chartColors=['#6366f1','#8b5cf6','#06b6d4','#10b981','#f59e0b','#ef4444']
+  const chartColors=['#dc2626','#ef4444','#06b6d4','#10b981','#f59e0b','#ef4444']
   document.getElementById('funnel-chart').innerHTML=Object.keys(SM).map((k,i)=>`<div class="bi"><div class="bv2">${sc[i]}</div><div class="br2" style="height:${Math.max(sc[i]/mx*100,4)}px;background:${chartColors[i%chartColors.length]};border-radius:5px 5px 0 0"></div><div class="bl">${SM[k].l.split(' ')[0]}</div></div>`).join('')
   const pc=['high','medium','low'].map(p=>tasks.filter(t=>t.priority===p&&t.status!=='completed').length),mpx=Math.max(...pc,1)
   const pc2=['#ef4444','#f59e0b','#10b981']
@@ -2656,7 +2656,7 @@ function renderClients(){
       <td>${lastBuy}</td>
       <td>
         <span class="badge ${m.c}">${m.l}</span>
-        ${c.shop_status==='retail'?'<span class="badge" style="background:#eff6ff;color:#2563eb;margin-left:4px">💳 Розница</span>':c.shop_status==='opt'?'<span class="badge" style="background:#f5f3ff;color:#7c3aed;margin-left:4px">📦 Опт</span>':c.shop_status==='vip'?'<span class="badge" style="background:#fefce8;color:#a16207;margin-left:4px">⭐ VIP</span>':''}
+        ${c.shop_status==='retail'?'<span class="badge" style="background:#eff6ff;color:#2563eb;margin-left:4px">💳 Розница</span>':c.shop_status==='opt'?'<span class="badge" style="background:#fff5f5;color:#991b1b;margin-left:4px">📦 Опт</span>':c.shop_status==='vip'?'<span class="badge" style="background:#fefce8;color:#a16207;margin-left:4px">⭐ VIP</span>':''}
       </td>
       <td style="white-space:nowrap" onclick="event.stopPropagation()">
         <button class="btn-i" onclick="openClientModal(${c.id})">${EICO}</button>
@@ -2909,7 +2909,7 @@ function renderDeals(){
   const TYPE_BADGE={
     repair:    {label:'🔧 Ремонт',    bg:'#eff6ff',color:'#1d4ed8'},
     wholesale: {label:'📦 Опт',       bg:'#fef3c7',color:'#92400e'},
-    deal:      {label:'💼 Сделка',    bg:'#f5f3ff',color:'#6d28d9'},
+    deal:      {label:'💼 Сделка',    bg:'#fff5f5',color:'#991b1b'},
   }
   document.getElementById('orders-tbody').innerHTML=slice.length?slice.map(o=>{
     const sd=STATUS_DOT[o.status]||STATUS_DOT.open
@@ -3532,7 +3532,7 @@ function renderTasks(){
     const shopBtn=t.shop_order_id?`<button onclick="taskToWholesale(${t.id})" style="flex:none;background:#f0fdf4;border:1.5px solid #86efac;color:#16a34a;border-radius:8px;font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;white-space:nowrap;margin-right:4px">🛒 Оформить опт</button>`:'';
     return `<div class="ti"><div class="tc ${done?'done':''}" onclick="toggleTask(${t.id})"></div>
       <div style="flex:1;min-width:0"><div class="ttl ${done?'done':''}">${t.shop_order_id?'🛒 ':''}${t.title}</div>
-      <div class="tmt">${t.client_id?cn(t.client_id):''}${t.deal_id?' · '+dn(t.deal_id):''}${t.due?` <span class="${ov?'ov':''}">${ov?'⚠ просрочено: ':''}${fdt(t.due)}</span>`:''}${t.shop_order_id?` <span style="color:#6366f1;font-size:10px;font-weight:600">· Заказ с сайта</span>`:''}</div></div>
+      <div class="tmt">${t.client_id?cn(t.client_id):''}${t.deal_id?' · '+dn(t.deal_id):''}${t.due?` <span class="${ov?'ov':''}">${ov?'⚠ просрочено: ':''}${fdt(t.due)}</span>`:''}${t.shop_order_id?` <span style="color:#dc2626;font-size:10px;font-weight:600">· Заказ с сайта</span>`:''}</div></div>
       ${shopBtn}
       <span class="badge ${pm.c}" style="white-space:nowrap;margin-right:4px">${pm.l}</span>
       <button class="btn-i" onclick="openTaskModal(${t.id})">${EICO}</button>
@@ -3742,7 +3742,7 @@ function renderBranchList(){
     const cnt=staff.filter(s=>s.branch_id===b.id).length
     return `<tr>
       <td style="font-weight:600">${b.name}</td>
-      <td><span style="background:#ede9fe;color:#6d28d9;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:600">${b.short_name}</span></td>
+      <td><span style="background:#fee2e2;color:#991b1b;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:600">${b.short_name}</span></td>
       <td style="color:var(--text2)">${b.address||'—'}</td>
       <td style="color:var(--text2);font-size:12px">${b.wh_1c||'—'}</td>
       <td style="text-align:center">${cnt ? `<span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:8px;font-size:12px">${cnt} чел.</span>` : '<span style="color:var(--text3)">0</span>'}</td>
@@ -3866,8 +3866,8 @@ function renderStaffList(){
     tbody.innerHTML='<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Нет сотрудников</td></tr>'
     return
   }
-  const roleBg={Менеджер:'#dbeafe',Мастер:'#d1fae5',Кассир:'#fef3c7',Администратор:'#ede9fe',Курьер:'#fee2e2',Управляющий:'#fdf4ff',Директор:'#f3f4f6'}
-  const roleColor={Менеджер:'#1d4ed8',Мастер:'#065f46',Кассир:'#92400e',Администратор:'#6d28d9',Курьер:'#991b1b',Управляющий:'#7e22ce',Директор:'#374151'}
+  const roleBg={Менеджер:'#dbeafe',Мастер:'#d1fae5',Кассир:'#fef3c7',Администратор:'#fee2e2',Курьер:'#fee2e2',Управляющий:'#fff5f5',Директор:'#f3f4f6'}
+  const roleColor={Менеджер:'#1d4ed8',Мастер:'#065f46',Кассир:'#92400e',Администратор:'#991b1b',Курьер:'#991b1b',Управляющий:'#991b1b',Директор:'#374151'}
   tbody.innerHTML=filtered.map(s=>`<tr style="${s.active===false?'opacity:.55':''}">
     <td style="font-weight:600">${s.name}</td>
     <td><span style="background:${roleBg[s.role]||'#f1f5f9'};color:${roleColor[s.role]||'#374151'};padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">${s.role||'—'}</span></td>
@@ -3937,7 +3937,7 @@ function renderCatList(){
   tbody.innerHTML=cats.map(c=>`<tr>
     <td style="font-weight:600">${c.name}</td>
     <td style="text-align:right">
-      <span style="background:#ede9fe;color:#6d28d9;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700">${c.margin}%</span>
+      <span style="background:#fee2e2;color:#991b1b;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700">${c.margin}%</span>
     </td>
     <td>
       <button onclick="openCatModal('${c.id}')" style="background:none;border:none;cursor:pointer;color:var(--accent);font-size:12px;padding:2px 6px">Ред.</button>
@@ -4226,7 +4226,7 @@ function renderSalaryPreview(){
       <div style="font-size:15px;font-weight:700;color:${color}">${Number(earned).toLocaleString('ru')} ₽</div>
     </div>`
   body.innerHTML=`
-    ${row('🕐 Смены',`${r.shiftCount} смен → бонус`,r.shiftEarned,'#6366f1')}
+    ${row('🕐 Смены',`${r.shiftCount} смен → бонус`,r.shiftEarned,'#dc2626')}
     ${row('🎧 Аксессуары',`продаж: ${Number(r.accSales).toLocaleString('ru')} ₽`,r.accEarned,'#f59e0b')}
     ${row('🔩 Запчасти',`продаж: ${Number(r.partsSales).toLocaleString('ru')} ₽`,r.partsEarned,'#f97316')}
     ${row('🔧 Ремонт (принимающий)',`работ: ${Number(r.repairAcceptSales).toLocaleString('ru')} ₽`,r.repairAcceptEarned,'#3b82f6')}
@@ -4476,12 +4476,12 @@ function pselBuildSidebar(items){
 
   const supEl=document.getElementById('psel-f-supplier')
   supEl.innerHTML=suppliers.length
-    ? suppliers.map(s=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:6px"><input type="checkbox" class="psel-sup" value="${s}" checked onchange="renderPartList()" style="accent-color:#6366f1"> ${s}</label>`).join('')
+    ? suppliers.map(s=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:6px"><input type="checkbox" class="psel-sup" value="${s}" checked onchange="renderPartList()" style="accent-color:#dc2626"> ${s}</label>`).join('')
     : '<span style="font-size:12px;color:#9ca3af">Нет данных</span>'
 
   const grpEl=document.getElementById('psel-f-group')
   grpEl.innerHTML=groups.length
-    ? groups.map(g=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:6px"><input type="checkbox" class="psel-grp" value="${g}" checked onchange="renderPartList()" style="accent-color:#6366f1"> ${g}</label>`).join('')
+    ? groups.map(g=>`<label style="display:flex;align-items:center;gap:8px;font-size:12px;cursor:pointer;margin-bottom:6px"><input type="checkbox" class="psel-grp" value="${g}" checked onchange="renderPartList()" style="accent-color:#dc2626"> ${g}</label>`).join('')
     : '<span style="font-size:12px;color:#9ca3af">Нет данных</span>'
 }
 
@@ -4551,7 +4551,7 @@ function renderPartList(){
       <td style="padding:10px 12px;font-size:12px;color:#6b7280">${i.sku||'—'}</td>
       <td style="padding:10px 12px;font-size:12px;color:#6b7280">${i.cat||'—'}</td>
       <td style="padding:10px 12px;font-size:12px;text-align:right;color:#374151;font-weight:600">${+(i.qty||0)} шт.</td>
-      <td style="padding:10px 12px;font-size:13px;text-align:right;font-weight:700;color:#6366f1">${Number(i.sale_price||i.price||0).toLocaleString('ru')} ₽</td>
+      <td style="padding:10px 12px;font-size:13px;text-align:right;font-weight:700;color:#dc2626">${Number(i.sale_price||i.price||0).toLocaleString('ru')} ₽</td>
     </tr>`
   }).join('')
 }
@@ -4658,7 +4658,7 @@ function renderCash(){
     const cardAmt=t.method==='card'&&!isExp?(+t.amount||0):0
     const b2pAmt=t.method==='best2pay'&&!isExp?(+t.amount||0):0
     const retAmt=t.method==='return_card'?(+t.amount||0):0
-    return `<tr style="border-bottom:1px solid var(--border-light);transition:background .1s" onmouseenter="this.style.background='#f5f3ff'" onmouseleave="this.style.background=''">
+    return `<tr style="border-bottom:1px solid var(--border-light);transition:background .1s" onmouseenter="this.style.background='#fff5f5'" onmouseleave="this.style.background=''">
       <td style="padding:9px 12px;width:36px">
         <div onclick="toggleCashConfirm('${t.id}')" style="width:18px;height:18px;border-radius:50%;border:2px solid ${isConf?'var(--green)':'#d1d5db'};background:${isConf?'var(--green)':'transparent'};cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s">
           ${isConf?'<svg style="width:10px;height:10px" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}
@@ -4861,7 +4861,7 @@ function renderWarehouse(){
     <td style="padding:9px 14px;font-size:13px;text-align:right">${Number(it.price||0).toLocaleString('ru')}</td>
     <td style="padding:9px 14px;font-size:13px;text-align:right;font-weight:500">${(it.qty*Number(it.price||0)).toLocaleString('ru')}</td>
     ${priceInp(it.id,'price_retail',it.price_retail,'#3b82f6')}
-    ${priceInp(it.id,'price_opt',it.price_opt,'#8b5cf6')}
+    ${priceInp(it.id,'price_opt',it.price_opt,'#ef4444')}
     ${priceInp(it.id,'price_vip',it.price_vip,'#f59e0b')}
     <td style="padding:9px 14px">${srcBadge(it.src)}</td>
     <td style="padding:9px 14px;font-size:12px;color:#dc2626">${it.defect||0}</td>
@@ -5443,7 +5443,7 @@ function renderWhPicker(q){
       const isOut=it.qty<=0
       return `<div onclick="${isOut?'alert(\'Товар отсутствует на складе\')':'addFromWhItem('+it.id+')'}"
         style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid #f1f5f9;cursor:${isOut?'not-allowed':'pointer'};opacity:${isOut?'.45':'1'};transition:background .1s"
-        onmouseenter="if(${!isOut})this.style.background='#f5f3ff'" onmouseleave="this.style.background=''">
+        onmouseenter="if(${!isOut})this.style.background='#fff5f5'" onmouseleave="this.style.background=''">
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.name}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">${it.sku?'Арт: <b>'+it.sku+'</b>':''}${it.barcode?' · '+it.barcode:''}</div>
@@ -5453,7 +5453,7 @@ function renderWhPicker(q){
           <div style="font-size:12px;color:var(--text3)">${(it.sale_price||it.price||0).toLocaleString('ru')} ₽</div>
         </div>
         ${alreadyQty
-          ?`<div style="background:#ede9fe;color:#6d28d9;font-size:11px;font-weight:600;border-radius:8px;padding:2px 8px;flex-shrink:0;text-align:center">${alreadyQty} в заказе<br><span style="font-weight:400;font-size:10px">доступно: ${available}</span></div>`
+          ?`<div style="background:#fee2e2;color:#991b1b;font-size:11px;font-weight:600;border-radius:8px;padding:2px 8px;flex-shrink:0;text-align:center">${alreadyQty} в заказе<br><span style="font-weight:400;font-size:10px">доступно: ${available}</span></div>`
           :'<div style="width:70px;flex-shrink:0"></div>'}
       </div>`
     }).join('')
@@ -6028,7 +6028,7 @@ function renderAnalytics(){
       ?'<span style="background:#dbeafe;color:#1d4ed8;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">1С</span>'
       :'<span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Свой</span>'
     const catBadge=r.cat?`<span style="background:#f3f4f6;color:#6b7280;border-radius:4px;padding:2px 7px;font-size:11px;margin-left:4px">${r.cat}</span>`:''
-    const thrBadge=`<span style="background:#ede9fe;color:#7c3aed;border-radius:4px;padding:2px 6px;font-size:10px;margin-left:4px">${thr}%</span>`
+    const thrBadge=`<span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 6px;font-size:10px;margin-left:4px">${thr}%</span>`
     return `<tr style="${rowStyle}">
       <td>${r.name}${catBadge}${low?'<span style="margin-left:6px;font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:4px;padding:1px 6px">⚠ низкая маржа</span>':''}</td>
       <td>${srcBadge}</td>
