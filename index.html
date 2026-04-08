@@ -913,9 +913,9 @@ tr:hover td{background:#fafafa}
       </button>
     </div>
     <div class="op-body">
-      <div style="display:grid;grid-template-columns:1fr 200px 180px;gap:16px;margin-bottom:20px;align-items:start">
+      <div style="display:flex;gap:16px;margin-bottom:20px;align-items:start;flex-wrap:nowrap">
         <!-- LEFT: Клиент + Сотрудник -->
-        <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;flex-direction:column;gap:8px;width:260px;flex-shrink:0">
           <div class="fg" style="margin:0">
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px">Клиент</label>
             <div style="display:flex;gap:4px">
@@ -934,7 +934,7 @@ tr:hover td{background:#fafafa}
           <textarea id="wc-comment" class="fc" style="display:none"></textarea>
         </div>
         <!-- MIDDLE: Склад + Статус -->
-        <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;flex-direction:column;gap:8px;width:190px;flex-shrink:0">
           <div class="fg" style="margin:0">
             <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px">Склад списания</label>
             <select id="wc-warehouse" class="fc">
@@ -954,7 +954,7 @@ tr:hover td{background:#fafafa}
           </div>
         </div>
         <!-- RIGHT: Дата + Сумма -->
-        <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
+        <div style="display:flex;flex-direction:column;gap:8px;text-align:right;width:160px;flex-shrink:0">
           <div>
             <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px;margin-bottom:4px">Дата</div>
             <div style="font-size:13px;color:#374151;font-weight:500" id="wc-date-disp">—</div>
