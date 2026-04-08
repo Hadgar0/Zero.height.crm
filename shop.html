@@ -182,10 +182,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
         <label>Телефон <span style="color:#ef4444">*</span></label>
         <input id="co-phone" placeholder="+7 900 000-00-00" type="tel" oninput="onCoPhoneInput()">
       </div>
-      <div class="fg" id="co-name-wrap">
-        <label>Имя <span style="color:#ef4444">*</span></label>
-        <input id="co-name" placeholder="Иван Иванов">
-      </div>
       <div id="co-client-found" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:14px"></div>
       <div class="fg" style="margin-bottom:0">
         <label>Комментарий</label>
@@ -211,10 +207,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
       <div class="fg">
         <label>Телефон <span style="color:#ef4444">*</span></label>
         <input id="auth-phone" placeholder="+7 900 000-00-00" type="tel" oninput="onAuthPhoneInput()">
-      </div>
-      <div class="fg" id="auth-name-wrap">
-        <label>Ваше имя <span style="color:#ef4444">*</span></label>
-        <input id="auth-name" placeholder="Иван Иванов">
       </div>
       <div id="auth-client-found" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:4px"></div>
     </div>
@@ -278,9 +270,7 @@ function userStatus(){ return _user?(_user.status||'retail'):'retail' }
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 function openAuthModal(){
   document.getElementById('auth-phone').value=_user?_user.phone:''
-  document.getElementById('auth-name').value=_user?_user.name:''
   document.getElementById('auth-client-found').style.display='none'
-  document.getElementById('auth-name-wrap').style.display=_user?'none':''
   if(_user) _showAuthFound(_user.name,_user.status)
   document.getElementById('m-auth').classList.remove('hidden')
 }
@@ -289,19 +279,13 @@ function onAuthPhoneInput(){
   if(phone.replace(/\D/g,'').length<7){document.getElementById('auth-client-found').style.display='none';return}
   const clients=JSON.parse(localStorage.getItem('clients')||'[]')
   const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  if(found){
-    document.getElementById('auth-name').value=found.name
-    document.getElementById('auth-name-wrap').style.display='none'
-    _showAuthFound(found.name,found.shop_status||'retail')
-  } else {
-    document.getElementById('auth-name-wrap').style.display=''
-    document.getElementById('auth-client-found').style.display='none'
-  }
+  if(found) _showAuthFound(found.name,found.shop_status||'retail')
+  else document.getElementById('auth-client-found').style.display='none'
 }
 function _showAuthFound(name,status){
   const icons={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
   const el=document.getElementById('auth-client-found')
-  el.innerHTML='👤 '+name+' &nbsp;·&nbsp; '+(icons[status]||icons.retail)
+  el.innerHTML='👤 '+(name||'')+(name?' &nbsp;·&nbsp; ':'')+( icons[status]||icons.retail)
   el.style.display='block'
 }
 function submitAuth(){
@@ -309,10 +293,8 @@ function submitAuth(){
   if(!phone){alert('Укажите телефон');return}
   const clients=JSON.parse(localStorage.getItem('clients')||'[]')
   const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  let name=found?found.name:document.getElementById('auth-name').value.trim()
-  if(!name){alert('Укажите имя');return}
   const status=found&&found.shop_status?found.shop_status:'retail'
-  _user={name,phone,company:found?found.company||'':'',status}
+  _user={name:found?found.name:phone,phone,company:found?found.company||'':'',status}
   localStorage.setItem('shop_user',JSON.stringify(_user))
   document.getElementById('m-auth').classList.add('hidden')
   updateAuthUI();renderShop()
@@ -410,49 +392,37 @@ function cartAdd(id, btn){
 function openCheckout(){
   if(!_cart.length){ alert('Корзина пуста'); return }
   document.getElementById('co-phone').value=_user?_user.phone:''
-  document.getElementById('co-name').value=_user?_user.name:''
   document.getElementById('co-comment').value=''
   document.getElementById('co-client-found').style.display='none'
-  document.getElementById('co-name-wrap').style.display=_user?'none':''
   document.getElementById('checkout-success').style.display='none'
   document.getElementById('checkout-form-wrap').style.display=''
   document.getElementById('checkout-submit-btn').style.display=''
   document.getElementById('m-checkout').classList.remove('hidden')
-  if(_user) _showClientFound(_user.name, _user.status)
+  if(_user) _showClientFound(_user.name,_user.status)
 }
 function closeCheckout(){ document.getElementById('m-checkout').classList.add('hidden') }
 
 function onCoPhoneInput(){
   const phone=document.getElementById('co-phone').value.trim()
-  if(phone.replace(/\D/g,'').length<7){ document.getElementById('co-client-found').style.display='none'; return }
+  if(phone.replace(/\D/g,'').length<7){document.getElementById('co-client-found').style.display='none';return}
   const clients=JSON.parse(localStorage.getItem('clients')||'[]')
   const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  if(found){
-    document.getElementById('co-name').value=found.name
-    document.getElementById('co-name-wrap').style.display='none'
-    _showClientFound(found.name, found.shop_status||'retail')
-  } else {
-    document.getElementById('co-name-wrap').style.display=''
-    document.getElementById('co-client-found').style.display='none'
-  }
+  if(found) _showClientFound(found.name,found.shop_status||'retail')
+  else document.getElementById('co-client-found').style.display='none'
 }
-function _showClientFound(name, status){
+function _showClientFound(name,status){
   const icons={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
   const el=document.getElementById('co-client-found')
-  el.innerHTML=`👤 ${name} &nbsp;·&nbsp; ${icons[status]||icons.retail}`
+  el.innerHTML='👤 '+(name||phone)+' &nbsp;·&nbsp; '+(icons[status]||icons.retail)
   el.style.display='block'
 }
 
 function submitCheckout(){
   const phone=document.getElementById('co-phone').value.trim()
-  if(!phone){ alert('Укажите телефон'); return }
-  let name=document.getElementById('co-name').value.trim()
-
+  if(!phone){alert('Укажите телефон');return}
   const clients=JSON.parse(localStorage.getItem('clients')||'[]')
   const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  if(found) name=found.name
-  if(!name){ alert('Укажите ваше имя'); document.getElementById('co-name-wrap').style.display=''; return }
-
+  const name=found?found.name:phone
   const status=found&&found.shop_status?found.shop_status:'retail'
   const allItems=JSON.parse(localStorage.getItem('wh_items')||'[]')
 
