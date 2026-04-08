@@ -271,38 +271,38 @@ tr:hover td{background:#fafafa}
   </div>
   <nav>
     <div class="nav-section">Главное</div>
-    <a class="active" data-tip="Дашборд" onclick="nav('dashboard',this)">
+    <a class="active" data-tip="Дашборд" data-page="dashboard" onclick="nav('dashboard',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
       <span class="nav-label">Дашборд</span>
     </a>
-    <a data-tip="Клиенты" onclick="nav('clients',this)">
+    <a data-tip="Клиенты" data-page="clients" onclick="nav('clients',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
       <span class="nav-label">Клиенты</span>
     </a>
-    <a id="nav-deals" data-tip="Заказы" onclick="nav('deals',this)">
+    <a id="nav-deals" data-tip="Заказы" data-page="deals" onclick="nav('deals',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span class="nav-label">Заказы</span>
     </a>
-    <a data-tip="Задачи" onclick="nav('tasks',this)">
+    <a data-tip="Задачи" data-page="tasks" onclick="nav('tasks',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       <span class="nav-label">Задачи</span>
     </a>
-    <div class="nav-section">Финансы</div>
-    <a data-tip="Касса" onclick="nav('cash',this)">
+    <div class="nav-section" data-nav-sec="finance">Финансы</div>
+    <a data-tip="Касса" data-page="cash" onclick="nav('cash',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
       <span class="nav-label">Касса</span>
     </a>
-    <div class="nav-section">Склад</div>
-    <a data-tip="Склад" onclick="nav('warehouse',this)">
+    <div class="nav-section" data-nav-sec="warehouse">Склад</div>
+    <a data-tip="Склад" data-page="warehouse" onclick="nav('warehouse',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       <span class="nav-label">Склад</span>
     </a>
-    <a data-tip="Аналитика" onclick="nav('analytics',this)">
+    <a data-tip="Аналитика" data-page="analytics" onclick="nav('analytics',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       <span class="nav-label">Аналитика</span>
     </a>
-    <div class="nav-section">Система</div>
-    <a id="nav-settings" data-tip="Настройки" onclick="nav('settings',this)">
+    <div class="nav-section" data-nav-sec="system">Система</div>
+    <a id="nav-settings" data-tip="Настройки" data-page="settings" onclick="nav('settings',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span class="nav-label">Настройки</span>
     </a>
@@ -2039,12 +2039,13 @@ tr:hover td{background:#fafafa}
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div class="fg">
           <label>Роль</label>
-          <select id="staff-role" class="fc">
+          <select id="staff-role" class="fc" onchange="staffRoleChange(this.value)">
             <option value="Менеджер">Менеджер</option>
             <option value="Мастер">Мастер</option>
             <option value="Кассир">Кассир</option>
             <option value="Администратор">Администратор</option>
             <option value="Курьер">Курьер</option>
+            <option value="Управляющий">Управляющий</option>
             <option value="Директор">Директор</option>
           </select>
         </div>
@@ -2088,6 +2089,33 @@ tr:hover td{background:#fafafa}
           </div>
         </div>
         <p style="font-size:10px;color:var(--text3);margin-top:6px">Пустое поле = использовать глобальные настройки из вкладки «Зарплата»</p>
+      </div>
+      <!-- Доступы — скрыты для Директора/Управляющего -->
+      <div id="staff-access-section" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border-light)">
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">🔑 Доступы сотрудника</div>
+        <!-- Разделы системы -->
+        <div style="margin-bottom:12px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">Разделы системы</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="dashboard" style="accent-color:var(--accent)"> Дашборд</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="clients" style="accent-color:var(--accent)"> Клиенты</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="deals" style="accent-color:var(--accent)"> Заказы</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="tasks" style="accent-color:var(--accent)"> Задачи</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="cash" style="accent-color:var(--accent)"> Касса</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="warehouse" style="accent-color:var(--accent)"> Склад</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="analytics" style="accent-color:var(--accent)"> Аналитика</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="salary" style="accent-color:var(--accent)"> Онлайн ЗП</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-page-cb" value="settings" style="accent-color:var(--accent)"> Настройки</label>
+          </div>
+        </div>
+        <!-- Доступные склады -->
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">Доступные склады</div>
+          <div id="staff-wh-access" style="display:flex;flex-wrap:wrap;gap:8px">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+        <p style="font-size:10px;color:var(--text3);margin-top:8px">Для роли «Директор» и «Управляющий» доступ ко всем разделам предоставляется автоматически</p>
       </div>
     </div>
     <div class="mft" style="gap:10px">
@@ -3644,7 +3672,15 @@ function openStaffModal(id){
   const sel=document.getElementById('staff-branch')
   sel.innerHTML='<option value="">— не привязан —</option>'+bs.map(b=>`<option value="${b.id}">${b.name}</option>`).join('')
   // clear salary fields
-  ;['staff-sal-shift','staff-sal-shift-cnt','staff-sal-acc','staff-sal-repair','staff-sal-wholesale'].forEach(id=>document.getElementById(id).value='')
+  ;['staff-sal-shift','staff-sal-shift-cnt','staff-sal-acc','staff-sal-repair','staff-sal-wholesale'].forEach(fid=>document.getElementById(fid).value='')
+  // Default page access
+  const defaultPages=['dashboard','clients','deals','tasks','cash','warehouse','salary']
+  document.querySelectorAll('.staff-page-cb').forEach(cb=>{ cb.checked=defaultPages.includes(cb.value) })
+  // Populate warehouse checkboxes
+  const whDiv=document.getElementById('staff-wh-access')
+  const whOpts=[{v:'main',l:'Основной склад'},{v:'reserve',l:'Резервный склад'},{v:'shop',l:'Торговый зал'},{v:'service',l:'Сервисный склад'}]
+  bs.forEach(b=>whOpts.push({v:'branch_'+b.id,l:b.name}))
+  whDiv.innerHTML=whOpts.map(o=>`<label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:4px 10px"><input type="checkbox" class="staff-wh-cb" value="${o.v}" checked style="accent-color:var(--accent)"> ${o.l}</label>`).join('')
   if(id){
     const st=(S.get('staff')||[]).find(x=>x.id===id)
     if(st){
@@ -3661,9 +3697,24 @@ function openStaffModal(id){
       if(sal.accPct!=null)     document.getElementById('staff-sal-acc').value=sal.accPct
       if(sal.repairPct!=null)  document.getElementById('staff-sal-repair').value=sal.repairPct
       if(sal.wholePct!=null)   document.getElementById('staff-sal-wholesale').value=sal.wholePct
+      // pages access
+      if(st.pages){
+        document.querySelectorAll('.staff-page-cb').forEach(cb=>{ cb.checked=st.pages.includes(cb.value) })
+      }
+      // warehouse access
+      if(st.warehouses){
+        document.querySelectorAll('.staff-wh-cb').forEach(cb=>{ cb.checked=st.warehouses.includes(cb.value) })
+      }
     }
   }
+  staffRoleChange(document.getElementById('staff-role').value)
   om('m-staff')
+}
+function staffRoleChange(role){
+  const isManager=role==='Директор'||role==='Управляющий'
+  const sec=document.getElementById('staff-access-section')
+  if(sec) sec.style.opacity=isManager?'0.4':'1'
+  // hint: still show section but dim it for managers
 }
 function saveStaff(){
   const name=document.getElementById('staff-name').value.trim()
@@ -3679,13 +3730,18 @@ function saveStaff(){
     repairPct:pf('staff-sal-repair'),
     wholePct: pf('staff-sal-wholesale'),
   }
+  const role=document.getElementById('staff-role').value
+  const pages=[...document.querySelectorAll('.staff-page-cb:checked')].map(cb=>cb.value)
+  const warehouses=[...document.querySelectorAll('.staff-wh-cb:checked')].map(cb=>cb.value)
   const obj={
     name,
-    role:     document.getElementById('staff-role').value,
+    role,
     branch_id:document.getElementById('staff-branch').value||null,
     phone:    document.getElementById('staff-phone').value.trim(),
     active:   document.getElementById('staff-active').checked,
     salary,
+    pages,
+    warehouses,
   }
   if(id){const i=arr.findIndex(s=>s.id==id);if(i>=0)arr[i]={...arr[i],...obj};else arr.push({id:S.nid('staff'),...obj})}
   else arr.push({id:S.nid('staff'),...obj,created_at:new Date().toISOString()})
@@ -3715,8 +3771,8 @@ function renderStaffList(){
     tbody.innerHTML='<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text3);font-size:13px">Нет сотрудников</td></tr>'
     return
   }
-  const roleBg={Менеджер:'#dbeafe',Мастер:'#d1fae5',Кассир:'#fef3c7',Администратор:'#ede9fe',Курьер:'#fee2e2',Директор:'#f3f4f6'}
-  const roleColor={Менеджер:'#1d4ed8',Мастер:'#065f46',Кассир:'#92400e',Администратор:'#6d28d9',Курьер:'#991b1b',Директор:'#374151'}
+  const roleBg={Менеджер:'#dbeafe',Мастер:'#d1fae5',Кассир:'#fef3c7',Администратор:'#ede9fe',Курьер:'#fee2e2',Управляющий:'#fdf4ff',Директор:'#f3f4f6'}
+  const roleColor={Менеджер:'#1d4ed8',Мастер:'#065f46',Кассир:'#92400e',Администратор:'#6d28d9',Курьер:'#991b1b',Управляющий:'#7e22ce',Директор:'#374151'}
   tbody.innerHTML=filtered.map(s=>`<tr style="${s.active===false?'opacity:.55':''}">
     <td style="font-weight:600">${s.name}</td>
     <td><span style="background:${roleBg[s.role]||'#f1f5f9'};color:${roleColor[s.role]||'#374151'};padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600">${s.role||'—'}</span></td>
@@ -4234,8 +4290,51 @@ function setCurEmp(v){
   const payEmp=document.getElementById('pay-emp')
   if(payEmp&&!payEmp.value&&v) payEmp.value=v
   renderTopbar()
+  applyRoleAccess(v)
 }
 function getCurEmp(){ return localStorage.getItem('cur_emp')||'' }
+
+// ── ROLE-BASED ACCESS CONTROL ─────────────────────────────────────────────────
+const MANAGER_ROLES=['Директор','Управляющий']
+function isManagerRole(role){ return MANAGER_ROLES.includes(role) }
+
+function applyRoleAccess(empName){
+  const staff=S.get('staff')||[]
+  const emp=empName?staff.find(s=>s.name===empName&&s.active!==false):null
+  const allNavLinks=document.querySelectorAll('nav a[data-page]')
+  if(!emp||isManagerRole(emp.role)){
+    // Full access
+    allNavLinks.forEach(a=>{ a.style.display=''; a.removeAttribute('data-blocked') })
+    document.querySelectorAll('.nav-section').forEach(s=>s.style.display='')
+    return
+  }
+  const pages=emp.pages||['dashboard','deals','tasks','cash','warehouse','salary']
+  allNavLinks.forEach(a=>{
+    const page=a.dataset.page
+    const ok=pages.includes(page)
+    a.style.display=ok?'':'none'
+    if(ok) a.removeAttribute('data-blocked'); else a.setAttribute('data-blocked','1')
+  })
+  // Hide section headers if all their items hidden
+  document.querySelectorAll('.nav-section').forEach(sec=>{
+    let next=sec.nextElementSibling, hasVisible=false
+    while(next&&!next.classList.contains('nav-section')){
+      if(next.tagName==='A'&&next.style.display!=='none'){ hasVisible=true; break }
+      next=next.nextElementSibling
+    }
+    sec.style.display=hasVisible?'':'none'
+  })
+  // If current page is blocked, redirect to first allowed
+  const activePage=document.querySelector('.page.active')
+  if(activePage){
+    const pid=activePage.id.replace('page-','')
+    if(!pages.includes(pid)&&pid!=='order'&&pid!=='wholesale'){
+      const firstAllowed=pages[0]||'dashboard'
+      const link=document.querySelector(`nav a[data-page="${firstAllowed}"]`)
+      if(link) link.click()
+    }
+  }
+}
 
 function searchWhPart(q){ /* legacy — replaced by modal */ }
 
@@ -5872,6 +5971,7 @@ function checkProfitabilityTasks(){
   syncEmpList()
   syncBranchSelects()
   renderTopbar()
+  applyRoleAccess(getCurEmp())
   renderDash()
 })()
 
