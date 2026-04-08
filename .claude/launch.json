@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "crm",
+      "runtimeExecutable": "powershell",
+      "runtimeArgs": ["-ExecutionPolicy", "Bypass", "-File", "C:/Users/HadgarPC/Desktop/CRM/serve.ps1"],
+      "port": 5500
+    }
+  ]
+}

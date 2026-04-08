@@ -508,6 +508,12 @@ tr:hover td{background:#fafafa}
           <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Интеграция 1С
         </button>
+        <button id="wh-site-prices-btn" class="btn btn-g" style="font-size:12px" onclick="toggleWhSitePrices()">
+          💰 Цены для сайта
+        </button>
+        <button class="btn" style="font-size:12px;background:#6366f1;color:#fff;border:none" onclick="window.open('shop.html','_blank')">
+          🛒 Открыть витрину
+        </button>
       </div>
     </div>
 
@@ -547,6 +553,9 @@ tr:hover td{background:#fafafa}
             <th class="oth" style="text-align:right">Количество</th>
             <th class="oth" style="text-align:right">Цена (₽)</th>
             <th class="oth" style="text-align:right">Сумма (₽)</th>
+            <th class="oth wh-site-th" style="display:none;text-align:right;color:#3b82f6;font-size:11px">Розница ₽</th>
+            <th class="oth wh-site-th" style="display:none;text-align:right;color:#8b5cf6;font-size:11px">Опт ₽</th>
+            <th class="oth wh-site-th" style="display:none;text-align:right;color:#f59e0b;font-size:11px">VIP ₽</th>
             <th class="oth">Источник</th>
             <th class="oth">Брак</th>
             <th class="oth"></th>
@@ -557,7 +566,7 @@ tr:hover td{background:#fafafa}
           <tr style="background:#f8fafc;border-top:2px solid #e2e8f0">
             <td colspan="6" style="padding:10px 14px;font-size:13px;font-weight:600;color:#64748b">Общая себестоимость:</td>
             <td style="padding:10px 14px;font-size:14px;font-weight:700;color:#1e293b" id="wh-total"></td>
-            <td colspan="3"></td>
+            <td id="wh-foot-extra" colspan="6"></td>
           </tr>
         </tfoot>
       </table>
@@ -4704,6 +4713,28 @@ function createCashTxFromOrder(order){
 }
 
 // ── WAREHOUSE ─────────────────────────────────────────────────────────────────
+let _whSitePricesMode=localStorage.getItem('wh_site_prices')==='1'
+function toggleWhSitePrices(){
+  _whSitePricesMode=!_whSitePricesMode
+  localStorage.setItem('wh_site_prices',_whSitePricesMode?'1':'0')
+  const btn=document.getElementById('wh-site-prices-btn')
+  if(btn){
+    btn.style.background=_whSitePricesMode?'#f0fdf4':''
+    btn.style.borderColor=_whSitePricesMode?'#86efac':''
+    btn.style.color=_whSitePricesMode?'#16a34a':''
+    btn.textContent=_whSitePricesMode?'✓ Цены для сайта':'💰 Цены для сайта'
+  }
+  // Show/hide extra th columns
+  document.querySelectorAll('.wh-site-th').forEach(el=>el.style.display=_whSitePricesMode?'':'none')
+  renderWarehouse()
+}
+function saveWhSitePrice(id,field,val){
+  const items=S.get('wh_items')||[]
+  const it=items.find(i=>i.id===id)
+  if(!it) return
+  it[field]=val===''?null:+val
+  S.set('wh_items',items)
+}
 function renderWarehouse(){
   const items=S.get('wh_items')||[]
   const q=(document.getElementById('wh-search').value||'').toLowerCase()
@@ -4715,13 +4746,26 @@ function renderWarehouse(){
     if(cat&&it.cat!==cat) return false
     return true
   })
+  // Sync site-prices button style
+  const btn=document.getElementById('wh-site-prices-btn')
+  if(btn){
+    btn.style.background=_whSitePricesMode?'#f0fdf4':''
+    btn.style.borderColor=_whSitePricesMode?'#86efac':''
+    btn.style.color=_whSitePricesMode?'#16a34a':''
+    btn.textContent=_whSitePricesMode?'✓ Цены для сайта':'💰 Цены для сайта'
+  }
+  // Update extra headers visibility
+  document.querySelectorAll('.wh-site-th').forEach(el=>el.style.display=_whSitePricesMode?'':'none')
+  const sp=_whSitePricesMode
+  const colspan=sp?13:10
   const tbody=document.getElementById('wh-tbody')
   if(!filtered.length){
-    tbody.innerHTML='<tr><td colspan="10" style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Нет товаров</td></tr>'
+    tbody.innerHTML=`<tr><td colspan="${colspan}" style="padding:20px;text-align:center;color:#94a3b8;font-size:13px">Нет товаров</td></tr>`
     document.getElementById('wh-total').textContent='0 ₽'
     return
   }
   const srcBadge=s=>s==='1c'?'<span style="background:#dbeafe;color:#1d4ed8;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600">1С</span>':'<span style="background:#f1f5f9;color:#64748b;font-size:10px;padding:1px 6px;border-radius:10px">своё</span>'
+  const priceInp=(id,field,val,color)=>sp?`<td style="padding:6px 8px"><input type="number" min="0" value="${val||''}" placeholder="—" onchange="saveWhSitePrice(${id},'${field}',this.value)" style="width:90px;padding:4px 6px;border:1.5px solid ${color}33;border-radius:6px;font-size:12px;text-align:right;background:${color}0d;color:#1e293b"></td>`:''
   tbody.innerHTML=filtered.map(it=>`<tr style="border-bottom:1px solid #f1f5f9;cursor:default" onmouseenter="this.style.background='#f8fafc'" onmouseleave="this.style.background=''">
     <td style="padding:9px 14px;font-size:13px;font-weight:500">${it.name}</td>
     <td style="padding:9px 14px;font-size:12px;color:#64748b">${it.sku||'—'}</td>
@@ -4730,6 +4774,9 @@ function renderWarehouse(){
     <td style="padding:9px 14px;font-size:13px;text-align:right;font-weight:500;color:${it.qty<=0?'#dc2626':it.qty<=2?'#f59e0b':'#16a34a'}">${it.qty}</td>
     <td style="padding:9px 14px;font-size:13px;text-align:right">${Number(it.price||0).toLocaleString('ru')}</td>
     <td style="padding:9px 14px;font-size:13px;text-align:right;font-weight:500">${(it.qty*Number(it.price||0)).toLocaleString('ru')}</td>
+    ${priceInp(it.id,'price_retail',it.price_retail,'#3b82f6')}
+    ${priceInp(it.id,'price_opt',it.price_opt,'#8b5cf6')}
+    ${priceInp(it.id,'price_vip',it.price_vip,'#f59e0b')}
     <td style="padding:9px 14px">${srcBadge(it.src)}</td>
     <td style="padding:9px 14px;font-size:12px;color:#dc2626">${it.defect||0}</td>
     <td style="padding:9px 14px;white-space:nowrap">
