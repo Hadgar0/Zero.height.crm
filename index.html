@@ -913,24 +913,30 @@ tr:hover td{background:#fafafa}
       </button>
     </div>
     <div class="op-body">
-      <div style="display:grid;grid-template-columns:1fr 220px auto;gap:12px;margin-bottom:20px;align-items:start">
-        <!-- Client -->
-        <div class="fg">
-          <label style="font-size:12px;color:#64748b;font-weight:400">Клиент</label>
-          <div style="display:flex;gap:4px;align-items:flex-start">
-            <div style="position:relative;flex:1">
-              <input id="wc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="wClientSearch(this.value)" onblur="setTimeout(closeWClientDrop,200)">
-              <div id="wc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
-            </div>
-            <button type="button" onclick="openQuickClientModalW()" title="Добавить клиента" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
-          </div>
-          <input type="hidden" id="wc-client-id">
-          <textarea id="wc-comment" class="fc" style="display:none"></textarea>
-        </div>
-        <!-- Warehouse + Status stacked -->
+      <div style="display:grid;grid-template-columns:1fr 200px 180px;gap:16px;margin-bottom:20px;align-items:start">
+        <!-- LEFT: Клиент + Сотрудник -->
         <div style="display:flex;flex-direction:column;gap:8px">
           <div class="fg" style="margin:0">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Склад списания</label>
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px">Клиент</label>
+            <div style="display:flex;gap:4px">
+              <div style="position:relative;flex:1">
+                <input id="wc-client" class="fc" autocomplete="off" placeholder="Имя или телефон..." oninput="wClientSearch(this.value)" onblur="setTimeout(closeWClientDrop,200)">
+                <div id="wc-client-drop" style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:200;max-height:200px;overflow-y:auto"></div>
+              </div>
+              <button type="button" onclick="openQuickClientModalW()" style="height:34px;padding:0 10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:18px;color:#475569;flex-shrink:0;line-height:1">+</button>
+            </div>
+            <input type="hidden" id="wc-client-id">
+          </div>
+          <div class="fg" style="margin:0">
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px">Сотрудник</label>
+            <input id="wc-emp" class="fc" placeholder="ФИО сотрудника" list="emp-list">
+          </div>
+          <textarea id="wc-comment" class="fc" style="display:none"></textarea>
+        </div>
+        <!-- MIDDLE: Склад + Статус -->
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div class="fg" style="margin:0">
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px">Склад списания</label>
             <select id="wc-warehouse" class="fc">
               <option value="main">Основной склад</option>
               <option value="reserve">Резервный склад</option>
@@ -939,7 +945,7 @@ tr:hover td{background:#fafafa}
             </select>
           </div>
           <div class="fg" style="margin:0">
-            <label style="font-size:12px;color:#64748b;font-weight:400">Статус</label>
+            <label style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px">Статус</label>
             <select id="wc-status" class="fc" onchange="wcStatusChange(this)">
               <option value="awaiting_payment">🟠 Ожидает оплаты</option>
               <option value="paid">🟢 Оплачен</option>
@@ -947,10 +953,16 @@ tr:hover td{background:#fafafa}
             </select>
           </div>
         </div>
-        <!-- Total -->
-        <div style="padding-top:18px;text-align:right;white-space:nowrap">
-          <div style="font-size:11px;font-weight:600;color:#6b7280;text-transform:uppercase;letter-spacing:.1px;margin-bottom:6px">Сумма по заказу:</div>
-          <div style="font-size:18px;font-weight:700;color:#6366f1" id="wc-total-top">0 руб.</div>
+        <!-- RIGHT: Дата + Сумма -->
+        <div style="display:flex;flex-direction:column;gap:8px;text-align:right">
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px;margin-bottom:4px">Дата</div>
+            <div style="font-size:13px;color:#374151;font-weight:500" id="wc-date-disp">—</div>
+          </div>
+          <div>
+            <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1px;margin-bottom:4px">Сумма по заказу</div>
+            <div style="font-size:18px;font-weight:700;color:#6366f1" id="wc-total-top">0 руб.</div>
+          </div>
         </div>
       </div>
 
@@ -5054,6 +5066,8 @@ function openWholesale(o){
   document.getElementById('wc-num').textContent=(o.number||'Опт №')+' от '+dt.toLocaleDateString('ru')+', '+dt.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'})
   document.getElementById('wc-client').value=o.client||''
   document.getElementById('wc-client-id').value=o.client_id||''
+  const wcEmp=document.getElementById('wc-emp'); if(wcEmp) wcEmp.value=o.emp||getCurEmp()||''
+  const wcDate=document.getElementById('wc-date-disp'); if(wcDate){ const d=new Date(o.created_at); wcDate.textContent=d.toLocaleDateString('ru')+' '+d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}) }
   document.getElementById('wc-warehouse').value=o.warehouse||'main'
   const validWStatuses=['awaiting_payment','paid','closed']
   const wStatus=validWStatuses.includes(o.status)?o.status:'awaiting_payment'
@@ -5340,6 +5354,7 @@ function collectWholesale(){
     ...WCUR,
     client:    document.getElementById('wc-client').value,
     client_id: document.getElementById('wc-client-id').value||null,
+    emp:       document.getElementById('wc-emp')?.value||'',
     warehouse: document.getElementById('wc-warehouse').value,
     status,
     comment:   document.getElementById('wc-comment').value,
