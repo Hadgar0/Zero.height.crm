@@ -1098,6 +1098,11 @@ tr:hover td{background:#fafafa}
           <div class="card-hd"><h2>Организация</h2></div>
           <div style="padding:18px;display:flex;flex-direction:column;gap:14px">
             <div class="fg">
+              <label>Название магазина (для витрины)</label>
+              <input id="set-shop-name" class="fc" placeholder="Напр: Zero.height — Ремонт телефонов" maxlength="60">
+              <p style="font-size:11px;color:var(--text3);margin-top:4px">Отображается в шапке сайта-витрины</p>
+            </div>
+            <div class="fg">
               <label>Краткое имя организации</label>
               <input id="set-org" class="fc" placeholder="Напр: ЗК или 655" maxlength="20">
               <p style="font-size:11px;color:var(--text3);margin-top:4px">Используется в номере заказа: <strong id="set-preview">ЗК-000001</strong></p>
@@ -3565,6 +3570,8 @@ function genNum(){
   return org+'-'+seq
 }
 function saveSettings(){
+  const sn=document.getElementById('set-shop-name').value.trim()
+  localStorage.setItem('shop_name', sn)
   const v=document.getElementById('set-org').value.trim()
   if(v) localStorage.setItem('org_code',v)
   const m=document.getElementById('set-margin').value.trim()
@@ -3594,6 +3601,7 @@ function setTab(btn, secId){
 
 function renderSettings(){
   // Org
+  document.getElementById('set-shop-name').value=localStorage.getItem('shop_name')||''
   document.getElementById('set-org').value=localStorage.getItem('org_code')||''
   document.getElementById('set-margin').value=localStorage.getItem('min_margin')||'20'
   const orders=S.get('orders'),org=getOrg()
