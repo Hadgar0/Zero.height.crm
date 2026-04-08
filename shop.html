@@ -165,71 +165,62 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
   <div class="grid" id="shop-grid"></div>
 </div>
 
-<!-- ORDER MODAL -->
-<div class="overlay hidden" id="m-order">
-  <div class="modal">
+<!-- CHECKOUT MODAL -->
+<div class="overlay hidden" id="m-checkout">
+  <div class="modal" style="max-width:400px">
     <div class="modal-hdr">
-      <div>
-        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Заказать</div>
-        <h3 id="order-item-name"></h3>
-      </div>
-      <button onclick="closeOrderModal()">×</button>
+      <h3>🛒 Оформление заказа</h3>
+      <button onclick="closeCheckout()">×</button>
     </div>
-    <div id="order-success" class="success-banner" style="display:none;margin-top:16px">
+    <div id="checkout-success" class="success-banner" style="display:none;margin:16px 24px 0">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
-      Заявка отправлена! Мы свяжемся с вами.
+      Заказ принят! Менеджер свяжется с вами.
     </div>
-    <div class="modal-body" id="order-form-wrap">
-      <input type="hidden" id="order-item-id">
-      <div class="fg">
-        <label>Ваше имя <span style="color:#ef4444">*</span></label>
-        <input id="o-name" placeholder="Иван Иванов">
-      </div>
+    <div class="modal-body" id="checkout-form-wrap">
+      <p style="font-size:13px;color:#64748b;margin-bottom:16px">Введите номер телефона — мы найдём вас и применим ваши цены</p>
       <div class="fg">
         <label>Телефон <span style="color:#ef4444">*</span></label>
-        <input id="o-phone" placeholder="+7 900 000-00-00" type="tel">
+        <input id="co-phone" placeholder="+7 900 000-00-00" type="tel" oninput="onCoPhoneInput()">
       </div>
-      <div class="fg">
-        <label>Количество</label>
-        <input id="o-qty" type="number" min="1" value="1" style="width:100px">
+      <div class="fg" id="co-name-wrap">
+        <label>Имя <span style="color:#ef4444">*</span></label>
+        <input id="co-name" placeholder="Иван Иванов">
       </div>
+      <div id="co-client-found" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:14px"></div>
       <div class="fg" style="margin-bottom:0">
         <label>Комментарий</label>
-        <textarea id="o-comment" placeholder="Модель устройства, цвет, пожелания..."></textarea>
+        <textarea id="co-comment" placeholder="Пожелания к заказу..." style="min-height:56px;resize:none"></textarea>
       </div>
     </div>
     <div class="modal-foot">
-      <button class="btn-cancel" onclick="closeOrderModal()">Отмена</button>
-      <button class="btn-order" id="order-submit-btn" onclick="submitOrder()">📩 Отправить заявку</button>
+      <button class="btn-cancel" onclick="closeCheckout()">Отмена</button>
+      <button class="btn-order" id="checkout-submit-btn" onclick="submitCheckout()">✓ Оформить</button>
     </div>
   </div>
 </div>
 
 <!-- AUTH MODAL -->
 <div class="overlay hidden" id="m-auth">
-  <div class="modal" style="max-width:400px">
+  <div class="modal" style="max-width:380px">
     <div class="modal-hdr">
-      <h3 id="auth-modal-title">Вход / Регистрация</h3>
+      <h3>👤 Войти</h3>
       <button onclick="document.getElementById('m-auth').classList.add('hidden')">×</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:13px;color:#64748b;margin-bottom:16px">Введите ваши данные — менеджер присвоит статус и вам откроются соответствующие цены</p>
+      <p style="font-size:13px;color:#64748b;margin-bottom:16px">Введите номер — мы найдём вас и покажем ваши цены</p>
       <div class="fg">
+        <label>Телефон <span style="color:#ef4444">*</span></label>
+        <input id="auth-phone" placeholder="+7 900 000-00-00" type="tel" oninput="onAuthPhoneInput()">
+      </div>
+      <div class="fg" id="auth-name-wrap">
         <label>Ваше имя <span style="color:#ef4444">*</span></label>
         <input id="auth-name" placeholder="Иван Иванов">
       </div>
-      <div class="fg">
-        <label>Телефон <span style="color:#ef4444">*</span></label>
-        <input id="auth-phone" placeholder="+7 900 000-00-00" type="tel">
-      </div>
-      <div class="fg" style="margin-bottom:0">
-        <label>Компания (для опт/VIP)</label>
-        <input id="auth-company" placeholder="Название компании (необязательно)">
-      </div>
+      <div id="auth-client-found" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:4px"></div>
     </div>
     <div class="modal-foot">
       <button class="btn-cancel" onclick="document.getElementById('m-auth').classList.add('hidden')">Отмена</button>
-      <button class="btn-order" onclick="submitAuth()">✓ Подтвердить</button>
+      <button class="btn-order" onclick="submitAuth()">✓ Войти</button>
     </div>
   </div>
 </div>
@@ -286,38 +277,45 @@ function userStatus(){ return _user?(_user.status||'retail'):'retail' }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 function openAuthModal(){
-  if(_user){
-    // Already logged in — show profile options
-    document.getElementById('auth-modal-title').textContent='Ваш профиль'
-    document.getElementById('auth-name').value=_user.name||''
-    document.getElementById('auth-phone').value=_user.phone||''
-    document.getElementById('auth-company').value=_user.company||''
-  } else {
-    document.getElementById('auth-modal-title').textContent='Вход / Регистрация'
-    document.getElementById('auth-name').value=''
-    document.getElementById('auth-phone').value=''
-    document.getElementById('auth-company').value=''
-  }
+  document.getElementById('auth-phone').value=_user?_user.phone:''
+  document.getElementById('auth-name').value=_user?_user.name:''
+  document.getElementById('auth-client-found').style.display='none'
+  document.getElementById('auth-name-wrap').style.display=_user?'none':''
+  if(_user) _showAuthFound(_user.name,_user.status)
   document.getElementById('m-auth').classList.remove('hidden')
 }
-function submitAuth(){
-  const name=document.getElementById('auth-name').value.trim()
+function onAuthPhoneInput(){
   const phone=document.getElementById('auth-phone').value.trim()
-  if(!name){alert('Укажите имя');return}
-  if(!phone){alert('Укажите телефон');return}
-  const company=document.getElementById('auth-company').value.trim()
-
-  // Check if client exists in CRM with a status
+  if(phone.replace(/\D/g,'').length<7){document.getElementById('auth-client-found').style.display='none';return}
   const clients=JSON.parse(localStorage.getItem('clients')||'[]')
-  // Try to match by phone
-  const existing=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  const status=existing&&existing.shop_status?existing.shop_status:'retail'
-
-  _user={name,phone,company,status}
+  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
+  if(found){
+    document.getElementById('auth-name').value=found.name
+    document.getElementById('auth-name-wrap').style.display='none'
+    _showAuthFound(found.name,found.shop_status||'retail')
+  } else {
+    document.getElementById('auth-name-wrap').style.display=''
+    document.getElementById('auth-client-found').style.display='none'
+  }
+}
+function _showAuthFound(name,status){
+  const icons={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
+  const el=document.getElementById('auth-client-found')
+  el.innerHTML='👤 '+name+' &nbsp;·&nbsp; '+(icons[status]||icons.retail)
+  el.style.display='block'
+}
+function submitAuth(){
+  const phone=document.getElementById('auth-phone').value.trim()
+  if(!phone){alert('Укажите телефон');return}
+  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
+  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
+  let name=found?found.name:document.getElementById('auth-name').value.trim()
+  if(!name){alert('Укажите имя');return}
+  const status=found&&found.shop_status?found.shop_status:'retail'
+  _user={name,phone,company:found?found.company||'':'',status}
   localStorage.setItem('shop_user',JSON.stringify(_user))
   document.getElementById('m-auth').classList.add('hidden')
-  updateAuthUI()
-  renderShop()
+  updateAuthUI();renderShop()
 }
 function logoutUser(){
   _user=null
@@ -394,71 +392,104 @@ function renderShop(){
         ${it.sku?`<div class="card-sku">Арт: ${it.sku}</div>`:''}
         <div class="card-stock ${stock}">${stock==='in'?'✓ ':stock==='low'?'⚠ ':'✕ '}${stockText}</div>
         ${hasPrices?`<div class="prices-block">${prices}</div>`:'<div style="font-size:12px;color:#94a3b8;margin-top:6px">Цена по запросу</div>'}
-        <button class="card-btn" onclick="openOrderModal(${it.id})" ${it.qty<=0?'disabled':''}>
-          ${hasPrices?'🛒 В корзину':'📩 Запросить цену'}
+        <button class="card-btn" id="cb-${it.id}" onclick="cartAdd(${it.id},this)" ${it.qty<=0?'disabled':''}>
+          ${_cart.find(c=>c.id===it.id)?'✓ В корзине':'🛒 В корзину'}
         </button>
       </div>
     </div>`
   }).join('')
 }
 
-// ── ORDER MODAL ───────────────────────────────────────────────────────────────
-let _orderItemId=null
-function openOrderModal(id){
-  const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
-  const it=items.find(i=>i.id===id)
-  if(!it) return
-  _orderItemId=id
-  document.getElementById('order-item-name').textContent=it.name
-  document.getElementById('order-item-id').value=id
-  document.getElementById('o-name').value=_user?_user.name:''
-  document.getElementById('o-phone').value=_user?_user.phone:''
-  document.getElementById('o-qty').value='1'
-  document.getElementById('o-comment').value=''
-  document.getElementById('order-success').style.display='none'
-  document.getElementById('order-form-wrap').style.display=''
-  document.getElementById('order-submit-btn').style.display=''
-  document.getElementById('m-order').classList.remove('hidden')
+// ── CART ADD (прямо с карточки, без модалки) ─────────────────────────────────
+function cartAdd(id, btn){
+  addToCart(id, 1)
+  if(btn){ btn.textContent='✓ В корзине'; btn.style.background='#16a34a' }
 }
-function closeOrderModal(){
-  document.getElementById('m-order').classList.add('hidden')
-  _orderItemId=null
+
+// ── CHECKOUT ──────────────────────────────────────────────────────────────────
+function openCheckout(){
+  if(!_cart.length){ alert('Корзина пуста'); return }
+  document.getElementById('co-phone').value=_user?_user.phone:''
+  document.getElementById('co-name').value=_user?_user.name:''
+  document.getElementById('co-comment').value=''
+  document.getElementById('co-client-found').style.display='none'
+  document.getElementById('co-name-wrap').style.display=_user?'none':''
+  document.getElementById('checkout-success').style.display='none'
+  document.getElementById('checkout-form-wrap').style.display=''
+  document.getElementById('checkout-submit-btn').style.display=''
+  document.getElementById('m-checkout').classList.remove('hidden')
+  if(_user) _showClientFound(_user.name, _user.status)
 }
-function getCartPrice(it){
-  const st=userStatus()
-  return it[TIERS[st].field]||it.price_retail||it.price_opt||it.price_vip||0
+function closeCheckout(){ document.getElementById('m-checkout').classList.add('hidden') }
+
+function onCoPhoneInput(){
+  const phone=document.getElementById('co-phone').value.trim()
+  if(phone.replace(/\D/g,'').length<7){ document.getElementById('co-client-found').style.display='none'; return }
+  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
+  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
+  if(found){
+    document.getElementById('co-name').value=found.name
+    document.getElementById('co-name-wrap').style.display='none'
+    _showClientFound(found.name, found.shop_status||'retail')
+  } else {
+    document.getElementById('co-name-wrap').style.display=''
+    document.getElementById('co-client-found').style.display='none'
+  }
 }
-function submitOrder(){
-  const name=document.getElementById('o-name').value.trim()
-  const phone=document.getElementById('o-phone').value.trim()
-  if(!name){alert('Укажите имя');return}
-  if(!phone){alert('Укажите телефон');return}
-  const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
-  const it=_orderItemId==='cart'?null:items.find(i=>i.id===_orderItemId)
-  const qty=Math.max(1,parseInt(document.getElementById('o-qty').value)||1)
-  const price=it?getCartPrice(it):0
+function _showClientFound(name, status){
+  const icons={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
+  const el=document.getElementById('co-client-found')
+  el.innerHTML=`👤 ${name} &nbsp;·&nbsp; ${icons[status]||icons.retail}`
+  el.style.display='block'
+}
+
+function submitCheckout(){
+  const phone=document.getElementById('co-phone').value.trim()
+  if(!phone){ alert('Укажите телефон'); return }
+  let name=document.getElementById('co-name').value.trim()
+
+  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
+  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
+  if(found) name=found.name
+  if(!name){ alert('Укажите ваше имя'); document.getElementById('co-name-wrap').style.display=''; return }
+
+  const status=found&&found.shop_status?found.shop_status:'retail'
+  const allItems=JSON.parse(localStorage.getItem('wh_items')||'[]')
+
+  // Пересчитываем цены по статусу клиента
+  const cartFinal=_cart.map(c=>{
+    const it=allItems.find(i=>i.id===c.id)
+    const price=it?(it[TIERS[status].field]||it.price_retail||it.price_opt||it.price_vip||c.price):c.price
+    return{...c,price}
+  })
+  const total=cartFinal.reduce((s,c)=>s+(c.price*c.qty),0)
+
   const orders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
-  const newOrder={
+  orders.push({
     id:Date.now(),
-    item_id:_orderItemId,
-    item_name:it?it.name:'Заказ из корзины',
-    qty, price,
-    tier:userStatus(),
-    total:_orderItemId==='cart'?_cart.reduce((s,c)=>s+(c.price*c.qty),0):price*qty,
+    item_id:'cart',
+    item_name:'Заказ из корзины ('+_cart.length+' поз.)',
+    items:cartFinal,
+    qty:_cart.reduce((s,c)=>s+c.qty,0),
+    price:total, total,
+    tier:status,
     client:name, phone,
-    company:_user?_user.company:'',
-    comment:document.getElementById('o-comment').value.trim(),
+    company:found?found.company||'':'',
+    comment:document.getElementById('co-comment').value.trim(),
     status:'new',
     created_at:new Date().toISOString()
-  }
-  if(_orderItemId==='cart') newOrder.items=JSON.parse(JSON.stringify(_cart))
-  orders.push(newOrder)
+  })
   localStorage.setItem('shop_orders',JSON.stringify(orders))
-  if(it) addToCart(it.id, qty)
-  document.getElementById('order-success').style.display='flex'
-  document.getElementById('order-form-wrap').style.display='none'
-  document.getElementById('order-submit-btn').style.display='none'
-  setTimeout(closeOrderModal, 2500)
+
+  _user={name,phone,company:found?found.company||'':'',status}
+  localStorage.setItem('shop_user',JSON.stringify(_user))
+  updateAuthUI()
+
+  _cart=[];saveCart();renderCart();updateCartCount();renderShop()
+  document.getElementById('checkout-success').style.display='flex'
+  document.getElementById('checkout-form-wrap').style.display='none'
+  document.getElementById('checkout-submit-btn').style.display='none'
+  setTimeout(closeCheckout,2800)
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────────
@@ -466,7 +497,8 @@ function addToCart(id,qty){
   const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
   const it=items.find(i=>i.id===id)
   if(!it) return
-  const price=getCartPrice(it)
+  // Цена пересчитывается при оформлении по статусу клиента
+  const price=it.price_retail||it.price_opt||it.price_vip||0
   const ex=_cart.find(c=>c.id===id)
   if(ex){ ex.qty+=qty } else { _cart.push({id,name:it.name,price,qty,cat:it.cat}) }
   saveCart(); renderCart(); updateCartCount()
@@ -515,19 +547,8 @@ function renderCart(){
 }
 function toggleCart(){ document.getElementById('cart-panel').classList.toggle('open') }
 function checkoutCart(){
-  if(!_cart.length){ alert('Корзина пуста'); return }
-  _orderItemId='cart'
-  document.getElementById('order-item-name').textContent='Заказ из корзины ('+_cart.length+' поз.)'
-  document.getElementById('order-item-id').value='cart'
-  document.getElementById('o-name').value=_user?_user.name:''
-  document.getElementById('o-phone').value=_user?_user.phone:''
-  document.getElementById('o-qty').value='1'
-  document.getElementById('o-comment').value=_cart.map(c=>`${c.name} × ${c.qty}`).join(', ')
-  document.getElementById('order-success').style.display='none'
-  document.getElementById('order-form-wrap').style.display=''
-  document.getElementById('order-submit-btn').style.display=''
-  document.getElementById('m-order').classList.remove('hidden')
   toggleCart()
+  openCheckout()
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
