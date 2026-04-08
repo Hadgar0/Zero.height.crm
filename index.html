@@ -1780,6 +1780,15 @@ tr:hover td{background:#fafafa}
               <label style="display:flex;align-items:center;gap:5px;font-weight:400;font-size:13px;cursor:pointer"><input type="radio" name="cpay" value="ip"> ИП</label>
             </div>
           </div>
+          <div class="fg">
+            <label>💳 Статус для витрины</label>
+            <select id="c-shop-status" class="fc">
+              <option value="">— Не указан —</option>
+              <option value="retail">💳 Розница</option>
+              <option value="opt">📦 Опт</option>
+              <option value="vip">⭐ VIP</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -2645,7 +2654,10 @@ function renderClients(){
         ${st.unpaid>0?`<b style="color:#ef4444">${st.unpaid.toLocaleString('ru')} ₽</b>`:'<span style="color:#10b981;font-size:12px">✓ нет долга</span>'}
       </td>
       <td>${lastBuy}</td>
-      <td><span class="badge ${m.c}">${m.l}</span></td>
+      <td>
+        <span class="badge ${m.c}">${m.l}</span>
+        ${c.shop_status==='retail'?'<span class="badge" style="background:#eff6ff;color:#2563eb;margin-left:4px">💳 Розница</span>':c.shop_status==='opt'?'<span class="badge" style="background:#f5f3ff;color:#7c3aed;margin-left:4px">📦 Опт</span>':c.shop_status==='vip'?'<span class="badge" style="background:#fefce8;color:#a16207;margin-left:4px">⭐ VIP</span>':''}
+      </td>
       <td style="white-space:nowrap" onclick="event.stopPropagation()">
         <button class="btn-i" onclick="openClientModal(${c.id})">${EICO}</button>
         <button class="btn-i d" onclick="delClient(${c.id})">${DICO}</button>
@@ -2709,6 +2721,7 @@ function openClientModal(id){
   document.getElementById('cnorf').checked=c?!!c.no_rf:false
   const payVal=c?c.payment_type||'none':'none'
   document.querySelectorAll('input[name="cpay"]').forEach(r=>r.checked=r.value===payVal)
+  document.getElementById('c-shop-status').value=c?c.shop_status||'':''
   om('m-client')
 }
 function clearClientForm(){
@@ -2749,6 +2762,7 @@ function saveClient(){
     is_corp:document.getElementById('ccorp').checked,
     no_rf:document.getElementById('cnorf').checked,
     payment_type:payEl?payEl.value:'none',
+    shop_status:document.getElementById('c-shop-status').value||'',
     status:'active'
   }
   let newId

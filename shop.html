@@ -308,7 +308,7 @@ function submitAuth(){
   const company=document.getElementById('auth-company').value.trim()
 
   // Check if client exists in CRM with a status
-  const clients=JSON.parse(localStorage.getItem('clients_data')||'[]')
+  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
   // Try to match by phone
   const existing=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
   const status=existing&&existing.shop_status?existing.shop_status:'retail'
