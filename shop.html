@@ -3,72 +3,82 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Витрина — Zero.height</title>
+<title>Витрина</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293b;min-height:100vh}
 /* HEADER */
 .hdr{background:linear-gradient(135deg,#1e1b4b 0%,#312e81 60%,#4f46e5 100%);padding:0 24px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(79,70,229,.3)}
-.hdr-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
-.hdr-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.hdr-logo-icon{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
-.hdr-logo h1{color:#fff;font-size:18px;font-weight:800;letter-spacing:-.3px}
+.hdr-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:12px}
+.hdr-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex:1;min-width:0}
+.hdr-logo-icon{width:36px;height:36px;flex-shrink:0;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.hdr-logo h1{color:#fff;font-size:18px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hdr-logo p{color:rgba(255,255,255,.6);font-size:11px;margin-top:1px}
-.hdr-cart{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:12px;padding:9px 18px;cursor:pointer;color:#fff;font-size:14px;font-weight:700;transition:all .15s;position:relative}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.hdr-auth-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);border-radius:10px;padding:7px 12px;cursor:pointer;color:#fff;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap}
+.hdr-auth-btn:hover{background:rgba(255,255,255,.25)}
+.hdr-cart{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.35);border-radius:12px;padding:9px 16px;cursor:pointer;color:#fff;font-size:14px;font-weight:700;transition:all .15s}
 .hdr-cart:hover{background:rgba(255,255,255,.3);transform:translateY(-1px)}
 .cart-count{background:#ef4444;color:#fff;font-size:11px;font-weight:800;border-radius:99px;padding:2px 7px;min-width:20px;text-align:center;display:inline-block}
-/* Floating cart button */
+/* FLOATING CART */
 .cart-fab{position:fixed;bottom:28px;right:28px;width:60px;height:60px;background:#4f46e5;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 6px 24px rgba(79,70,229,.5);z-index:150;transition:all .2s}
 .cart-fab:hover{background:#4338ca;transform:scale(1.08)}
 .cart-fab-count{position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:11px;font-weight:800;border-radius:99px;padding:2px 6px;min-width:20px;text-align:center;border:2px solid #fff}
-/* TIER BAR */
-.tier-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:0 24px}
-.tier-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:0;height:46px}
-.tier-btn{padding:0 18px;height:46px;background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;font-size:13px;font-weight:600;color:#64748b;transition:all .15s;white-space:nowrap}
-.tier-btn.active{color:#4f46e5;border-bottom-color:#4f46e5}
-.tier-btn:hover:not(.active){color:#1e293b}
+/* STATUS BAR */
+.status-bar{background:#fff;border-bottom:1px solid #e2e8f0;padding:8px 24px}
+.status-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.status-badge{display:flex;align-items:center;gap:6px;padding:5px 14px;border-radius:99px;font-size:12px;font-weight:700;border:1.5px solid}
+.status-badge.retail{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.status-badge.opt{background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe}
+.status-badge.vip{background:#fffbeb;color:#92400e;border-color:#fde68a}
 /* MAIN */
 .main{max-width:1200px;margin:0 auto;padding:24px}
 /* CATS */
-.cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
 .cat-pill{padding:7px 16px;border-radius:99px;border:1.5px solid #e2e8f0;background:#fff;font-size:13px;font-weight:500;cursor:pointer;color:#64748b;transition:all .15s}
 .cat-pill:hover{border-color:#c7d2fe;color:#4f46e5}
 .cat-pill.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
 /* SEARCH */
 .search-wrap{position:relative;margin-bottom:20px;max-width:400px}
 .search-wrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#94a3b8;width:16px;height:16px}
-.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;transition:border-color .15s}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;background:#fff;transition:border-color .15s}
 .search-wrap input:focus{border-color:#818cf8}
 /* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
 /* CARD */
 .card{background:#fff;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;transition:all .2s;display:flex;flex-direction:column}
 .card:hover{box-shadow:0 8px 30px rgba(0,0,0,.1);transform:translateY(-2px);border-color:#c7d2fe}
-.card-img{height:140px;background:linear-gradient(135deg,#f8fafc,#e2e8f0);display:flex;align-items:center;justify-content:center;font-size:48px}
-.card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
+.card-img{height:130px;background:linear-gradient(135deg,#f8fafc,#e2e8f0);display:flex;align-items:center;justify-content:center;font-size:48px}
+.card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:5px}
 .card-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8}
 .card-name{font-size:14px;font-weight:700;color:#1e293b;line-height:1.3}
 .card-sku{font-size:11px;color:#94a3b8}
 .card-stock{font-size:12px;font-weight:600;margin-top:2px}
-.card-stock.in{color:#16a34a}
-.card-stock.low{color:#f59e0b}
-.card-stock.out{color:#dc2626}
-.card-price{font-size:22px;font-weight:800;color:#4f46e5;margin-top:4px}
-.card-price span{font-size:14px;font-weight:500;color:#94a3b8}
-.card-btn{margin-top:auto;background:#4f46e5;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;width:100%}
+.card-stock.in{color:#16a34a}.card-stock.low{color:#f59e0b}.card-stock.out{color:#dc2626}
+/* PRICES BLOCK */
+.prices-block{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.price-tag{flex:1;min-width:0;border-radius:8px;padding:6px 8px;text-align:center;border:1.5px solid}
+.price-tag.retail{background:#eff6ff;border-color:#bfdbfe}
+.price-tag.opt{background:#f5f3ff;border-color:#ddd6fe}
+.price-tag.vip{background:#fffbeb;border-color:#fde68a}
+.price-tag.highlighted{transform:scale(1.03);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.price-tag-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;opacity:.7}
+.price-tag-val{font-size:14px;font-weight:800;margin-top:1px}
+.price-tag.retail .price-tag-lbl{color:#1d4ed8}.price-tag.retail .price-tag-val{color:#1d4ed8}
+.price-tag.opt .price-tag-lbl{color:#6d28d9}.price-tag.opt .price-tag-val{color:#6d28d9}
+.price-tag.vip .price-tag-lbl{color:#92400e}.price-tag.vip .price-tag-val{color:#b45309}
+.card-btn{margin-top:auto;background:#4f46e5;color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;width:100%;margin-top:10px}
 .card-btn:hover{background:#4338ca}
 .card-btn:disabled{background:#e2e8f0;color:#94a3b8;cursor:not-allowed}
 /* EMPTY */
-.empty{text-align:center;padding:60px 20px;color:#94a3b8}
-.empty svg{width:64px;height:64px;margin-bottom:16px;color:#cbd5e1}
-.empty h3{font-size:18px;font-weight:600;color:#64748b;margin-bottom:8px}
-/* ORDER MODAL */
+.empty{text-align:center;padding:60px 20px;color:#94a3b8;grid-column:1/-1}
+/* OVERLAY */
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
 .overlay.hidden{display:none}
 .modal{background:#fff;border-radius:20px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.2);overflow:hidden}
 .modal-hdr{padding:20px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .modal-hdr h3{font-size:17px;font-weight:800;line-height:1.3}
-.modal-hdr button{background:none;border:none;cursor:pointer;color:#94a3b8;font-size:22px;line-height:1;padding:0;flex-shrink:0}
+.modal-hdr button{background:none;border:none;cursor:pointer;color:#94a3b8;font-size:24px;line-height:1;padding:0;flex-shrink:0}
 .modal-hdr button:hover{color:#1e293b}
 .modal-body{padding:20px 24px}
 .fg{margin-bottom:14px}
@@ -81,31 +91,32 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
 .btn-cancel:hover{background:#f8fafc}
 .btn-order{flex:2;padding:11px;border:none;border-radius:10px;background:#4f46e5;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
 .btn-order:hover{background:#4338ca}
-/* SUCCESS */
 .success-banner{background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;color:#16a34a;margin:0 24px 20px}
 /* CART PANEL */
-.cart-panel{position:fixed;right:0;top:0;bottom:0;width:360px;background:#fff;box-shadow:-4px 0 30px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s}
+.cart-panel{position:fixed;right:0;top:0;bottom:0;width:380px;background:#fff;box-shadow:-4px 0 30px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s}
 .cart-panel.open{transform:translateX(0)}
 .cart-hdr{padding:20px 20px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e2e8f0}
 .cart-hdr h3{font-size:16px;font-weight:800}
-.cart-hdr button{background:none;border:none;font-size:22px;cursor:pointer;color:#94a3b8}
+.cart-hdr button{background:none;border:none;font-size:24px;cursor:pointer;color:#94a3b8}
 .cart-items{flex:1;overflow-y:auto;padding:12px}
-.cart-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:10px;margin-bottom:6px;background:#f8fafc}
-.cart-item-name{flex:1;font-size:13px;font-weight:600}
-.cart-item-price{font-size:13px;color:#4f46e5;font-weight:700;white-space:nowrap}
-.qty-ctrl{display:flex;align-items:center;gap:6px}
-.qty-ctrl button{width:26px;height:26px;border-radius:6px;border:1.5px solid #e2e8f0;background:#fff;font-size:14px;cursor:pointer;line-height:1}
-.qty-ctrl span{min-width:20px;text-align:center;font-size:13px;font-weight:700}
+.cart-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:10px;margin-bottom:6px;background:#f8fafc}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-size:13px;font-weight:600;line-height:1.3}
+.cart-item-price{font-size:13px;color:#4f46e5;font-weight:700;white-space:nowrap;margin-top:2px}
+.qty-ctrl{display:flex;align-items:center;gap:6px;margin-top:6px}
+.qty-ctrl button{width:28px;height:28px;border-radius:7px;border:1.5px solid #e2e8f0;background:#fff;font-size:16px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center}
+.qty-ctrl span{min-width:24px;text-align:center;font-size:14px;font-weight:700}
 .cart-footer{padding:16px 20px;border-top:1px solid #e2e8f0}
 .cart-total{display:flex;justify-content:space-between;font-size:15px;font-weight:700;margin-bottom:12px}
 .cart-checkout{width:100%;padding:12px;background:#4f46e5;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
 .cart-checkout:hover{background:#4338ca}
-.cart-empty{text-align:center;padding:40px 20px;color:#94a3b8}
+.cart-empty{text-align:center;padding:40px 20px;color:#94a3b8;font-size:13px}
 @media(max-width:600px){
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
   .cart-panel{width:100%}
   .hdr-inner{height:56px}
   .main{padding:16px}
+  .prices-block{flex-direction:column}
 }
 </style>
 </head>
@@ -121,30 +132,29 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
         <p id="shop-subtitle">Интернет-магазин</p>
       </div>
     </a>
-    <button class="hdr-cart" onclick="toggleCart()">
-      🛒 Корзина&nbsp;<span class="cart-count" id="cart-count">0</span>
-    </button>
+    <div class="hdr-right">
+      <button class="hdr-auth-btn" onclick="openAuthModal()" id="auth-btn">
+        👤 <span id="auth-btn-label">Войти</span>
+      </button>
+      <button class="hdr-cart" onclick="toggleCart()">
+        🛒&nbsp;<span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
   </div>
 </header>
 
-<!-- FLOATING CART BUTTON -->
-<button class="cart-fab" onclick="toggleCart()" title="Открыть корзину">
-  🛒
-  <span class="cart-fab-count" id="cart-fab-count">0</span>
-</button>
-
-<!-- TIER BAR -->
-<div class="tier-bar">
-  <div class="tier-inner">
-    <button class="tier-btn active" data-tier="retail" onclick="setTier('retail',this)">💳 Розница</button>
-    <button class="tier-btn" data-tier="opt" onclick="setTier('opt',this)">📦 Оптовые цены</button>
-    <button class="tier-btn" data-tier="vip" onclick="setTier('vip',this)">⭐ VIP цены</button>
+<!-- STATUS BAR (shown when logged in) -->
+<div class="status-bar" id="status-bar" style="display:none">
+  <div class="status-inner">
+    <span style="font-size:12px;color:#64748b;font-weight:500">Ваши цены:</span>
+    <span class="status-badge retail" id="user-status-badge">💳 Розница</span>
+    <span style="font-size:12px;color:#94a3b8" id="user-welcome"></span>
+    <button onclick="logoutUser()" style="margin-left:auto;background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;text-decoration:underline">Выйти</button>
   </div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
-  <!-- Search + cats -->
   <div class="search-wrap">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input id="shop-search" placeholder="Поиск товара..." oninput="renderShop()">
@@ -195,6 +205,35 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
   </div>
 </div>
 
+<!-- AUTH MODAL -->
+<div class="overlay hidden" id="m-auth">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-hdr">
+      <h3 id="auth-modal-title">Вход / Регистрация</h3>
+      <button onclick="document.getElementById('m-auth').classList.add('hidden')">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:#64748b;margin-bottom:16px">Введите ваши данные — менеджер присвоит статус и вам откроются соответствующие цены</p>
+      <div class="fg">
+        <label>Ваше имя <span style="color:#ef4444">*</span></label>
+        <input id="auth-name" placeholder="Иван Иванов">
+      </div>
+      <div class="fg">
+        <label>Телефон <span style="color:#ef4444">*</span></label>
+        <input id="auth-phone" placeholder="+7 900 000-00-00" type="tel">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>Компания (для опт/VIP)</label>
+        <input id="auth-company" placeholder="Название компании (необязательно)">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="document.getElementById('m-auth').classList.add('hidden')">Отмена</button>
+      <button class="btn-order" onclick="submitAuth()">✓ Подтвердить</button>
+    </div>
+  </div>
+</div>
+
 <!-- CART PANEL -->
 <div class="cart-panel" id="cart-panel">
   <div class="cart-hdr">
@@ -211,16 +250,25 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#f1f5f9;color:#1e293
   </div>
 </div>
 
+<!-- FAB -->
+<button class="cart-fab" onclick="toggleCart()" title="Корзина">
+  🛒
+  <span class="cart-fab-count" id="cart-fab-count" style="display:none">0</span>
+</button>
+
 <script>
-// ── State ────────────────────────────────────────────────────────────────────
-let _tier = (new URLSearchParams(location.search).get('tier')) || 'retail'
+// ── STATE ─────────────────────────────────────────────────────────────────────
 let _cat  = ''
 let _cart = JSON.parse(localStorage.getItem('shop_cart')||'[]')
+let _user = JSON.parse(localStorage.getItem('shop_user')||'null')
+// _user: {name, phone, company, status: 'retail'|'opt'|'vip'}
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const tierField = t => t==='opt'?'price_opt': t==='vip'?'price_vip':'price_retail'
-const tierLabel = t => t==='opt'?'Опт': t==='vip'?'VIP':'Розница'
-
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+const TIERS = {
+  retail: {field:'price_retail', label:'Розница', cls:'retail', icon:'💳'},
+  opt:    {field:'price_opt',    label:'Опт',     cls:'opt',    icon:'📦'},
+  vip:    {field:'price_vip',    label:'VIP',     cls:'vip',    icon:'⭐'},
+}
 function catEmoji(cat){
   if(!cat) return '📦'
   const c=cat.toLowerCase()
@@ -231,61 +279,113 @@ function catEmoji(cat){
   if(c.includes('гидр')) return '🛡️'
   return '📦'
 }
-
 function getItems(){
-  return (JSON.parse(localStorage.getItem('wh_items')||'[]'))
-    .filter(it => it.qty > 0 && it[tierField(_tier)] > 0)
+  return (JSON.parse(localStorage.getItem('wh_items')||'[]')).filter(it=>it.qty>0)
 }
+function userStatus(){ return _user?(_user.status||'retail'):'retail' }
 
-function getOrgName(){
-  return localStorage.getItem('org_code') || 'Zero.height'
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function openAuthModal(){
+  if(_user){
+    // Already logged in — show profile options
+    document.getElementById('auth-modal-title').textContent='Ваш профиль'
+    document.getElementById('auth-name').value=_user.name||''
+    document.getElementById('auth-phone').value=_user.phone||''
+    document.getElementById('auth-company').value=_user.company||''
+  } else {
+    document.getElementById('auth-modal-title').textContent='Вход / Регистрация'
+    document.getElementById('auth-name').value=''
+    document.getElementById('auth-phone').value=''
+    document.getElementById('auth-company').value=''
+  }
+  document.getElementById('m-auth').classList.remove('hidden')
 }
+function submitAuth(){
+  const name=document.getElementById('auth-name').value.trim()
+  const phone=document.getElementById('auth-phone').value.trim()
+  if(!name){alert('Укажите имя');return}
+  if(!phone){alert('Укажите телефон');return}
+  const company=document.getElementById('auth-company').value.trim()
 
-// ── Tier ─────────────────────────────────────────────────────────────────────
-function setTier(t, el){
-  _tier = t
-  document.querySelectorAll('.tier-btn').forEach(b=>b.classList.remove('active'))
-  if(el) el.classList.add('active')
+  // Check if client exists in CRM with a status
+  const clients=JSON.parse(localStorage.getItem('clients_data')||'[]')
+  // Try to match by phone
+  const existing=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
+  const status=existing&&existing.shop_status?existing.shop_status:'retail'
+
+  _user={name,phone,company,status}
+  localStorage.setItem('shop_user',JSON.stringify(_user))
+  document.getElementById('m-auth').classList.add('hidden')
+  updateAuthUI()
   renderShop()
 }
+function logoutUser(){
+  _user=null
+  localStorage.removeItem('shop_user')
+  updateAuthUI()
+  renderShop()
+}
+function updateAuthUI(){
+  const btn=document.getElementById('auth-btn')
+  const lbl=document.getElementById('auth-btn-label')
+  const bar=document.getElementById('status-bar')
+  const badge=document.getElementById('user-status-badge')
+  const welcome=document.getElementById('user-welcome')
+  if(_user){
+    lbl.textContent=_user.name.split(' ')[0]
+    bar.style.display='block'
+    const t=TIERS[_user.status||'retail']||TIERS.retail
+    badge.textContent=t.icon+' '+t.label
+    badge.className='status-badge '+t.cls
+    welcome.textContent='Здравствуйте, '+_user.name+'!'
+  } else {
+    lbl.textContent='Войти'
+    bar.style.display='none'
+  }
+}
 
-// ── Category ─────────────────────────────────────────────────────────────────
-function setCat(c, el){
-  _cat = c
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
+function setCat(c,el){
+  _cat=c
   document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'))
   if(el) el.classList.add('active')
   renderShop()
 }
-
 function buildCats(){
-  const items = JSON.parse(localStorage.getItem('wh_items')||'[]').filter(it=>it.qty>0)
-  const cats  = [...new Set(items.map(it=>it.cat||'').filter(Boolean))].sort()
-  const bar   = document.getElementById('cats-bar')
-  bar.innerHTML = `<button class="cat-pill active" data-cat="" onclick="setCat('',this)">Все товары</button>`
-    + cats.map(c=>`<button class="cat-pill" data-cat="${c}" onclick="setCat('${c}',this)">${catEmoji(c)} ${c}</button>`).join('')
+  const items=getItems()
+  const cats=[...new Set(items.map(it=>it.cat||'').filter(Boolean))].sort()
+  const bar=document.getElementById('cats-bar')
+  bar.innerHTML=`<button class="cat-pill active" onclick="setCat('',this)">Все товары</button>`
+    +cats.map(c=>`<button class="cat-pill" onclick="setCat('${c}',this)">${catEmoji(c)} ${c}</button>`).join('')
 }
 
-// ── Render shop ───────────────────────────────────────────────────────────────
+// ── RENDER SHOP ───────────────────────────────────────────────────────────────
 function renderShop(){
-  const q = document.getElementById('shop-search').value.toLowerCase()
-  let items = getItems()
-  if(_cat) items = items.filter(it=>(it.cat||'')==_cat)
-  if(q)    items = items.filter(it=>it.name.toLowerCase().includes(q)||(it.sku||'').toLowerCase().includes(q))
-  const grid = document.getElementById('shop-grid')
+  const q=document.getElementById('shop-search').value.toLowerCase()
+  let items=getItems()
+  if(_cat) items=items.filter(it=>(it.cat||'')==_cat)
+  if(q)    items=items.filter(it=>it.name.toLowerCase().includes(q)||(it.sku||'').toLowerCase().includes(q))
+  const grid=document.getElementById('shop-grid')
   if(!items.length){
-    grid.innerHTML=`<div class="empty" style="grid-column:1/-1">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <h3>Товары не найдены</h3>
-      <p>Попробуйте изменить фильтр или запрос</p>
-    </div>`
+    grid.innerHTML='<div class="empty"><div style="font-size:48px;margin-bottom:12px">🔍</div><h3 style="color:#64748b">Товары не найдены</h3><p>Попробуйте изменить фильтр</p></div>'
     return
   }
-  const f = tierField(_tier)
-  grid.innerHTML = items.map(it=>{
-    const price = it[f]||0
-    const inCart= _cart.find(c=>c.id===it.id)
-    const stock = it.qty<=0?'out': it.qty<=3?'low':'in'
-    const stockText = it.qty<=0?'Нет в наличии': it.qty<=3?`Осталось ${it.qty} шт.`:'В наличии'
+  const uStatus=userStatus()
+  grid.innerHTML=items.map(it=>{
+    const prices=Object.entries(TIERS).map(([k,t])=>{
+      const p=it[t.field]
+      if(!p) return ''
+      const isUser=(k===uStatus)
+      return `<div class="price-tag ${t.cls}${isUser&&_user?' highlighted':''}">
+        <div class="price-tag-lbl">${t.icon} ${t.label}</div>
+        <div class="price-tag-val">${Number(p).toLocaleString('ru')} ₽</div>
+      </div>`
+    }).join('')
+    const hasPrices=it.price_retail||it.price_opt||it.price_vip
+    const stock=it.qty<=0?'out':it.qty<=3?'low':'in'
+    const stockText=it.qty<=0?'Нет в наличии':it.qty<=3?`Осталось ${it.qty} шт.`:'В наличии'
+    // Price for cart = user's tier price or first available
+    const cartPrice=it[TIERS[uStatus].field]||it.price_retail||it.price_opt||it.price_vip||0
     return `<div class="card">
       <div class="card-img">${catEmoji(it.cat)}</div>
       <div class="card-body">
@@ -293,116 +393,114 @@ function renderShop(){
         <div class="card-name">${it.name}</div>
         ${it.sku?`<div class="card-sku">Арт: ${it.sku}</div>`:''}
         <div class="card-stock ${stock}">${stock==='in'?'✓ ':stock==='low'?'⚠ ':'✕ '}${stockText}</div>
-        <div class="card-price">${Number(price).toLocaleString('ru')} <span>₽</span></div>
+        ${hasPrices?`<div class="prices-block">${prices}</div>`:'<div style="font-size:12px;color:#94a3b8;margin-top:6px">Цена по запросу</div>'}
         <button class="card-btn" onclick="openOrderModal(${it.id})" ${it.qty<=0?'disabled':''}>
-          ${inCart?'✓ Уже в корзине':'Заказать'}
+          ${hasPrices?'🛒 В корзину':'📩 Запросить цену'}
         </button>
       </div>
     </div>`
   }).join('')
 }
 
-// ── Order modal ───────────────────────────────────────────────────────────────
-let _orderItemId = null
+// ── ORDER MODAL ───────────────────────────────────────────────────────────────
+let _orderItemId=null
 function openOrderModal(id){
-  const items = JSON.parse(localStorage.getItem('wh_items')||'[]')
-  const it    = items.find(i=>i.id===id)
+  const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
+  const it=items.find(i=>i.id===id)
   if(!it) return
-  _orderItemId = id
-  document.getElementById('order-item-name').textContent = it.name
-  document.getElementById('order-item-id').value = id
-  document.getElementById('o-name').value   = ''
-  document.getElementById('o-phone').value  = ''
-  document.getElementById('o-qty').value    = '1'
-  document.getElementById('o-comment').value= ''
-  document.getElementById('order-success').style.display = 'none'
-  document.getElementById('order-form-wrap').style.display = ''
-  document.getElementById('order-submit-btn').style.display = ''
+  _orderItemId=id
+  document.getElementById('order-item-name').textContent=it.name
+  document.getElementById('order-item-id').value=id
+  document.getElementById('o-name').value=_user?_user.name:''
+  document.getElementById('o-phone').value=_user?_user.phone:''
+  document.getElementById('o-qty').value='1'
+  document.getElementById('o-comment').value=''
+  document.getElementById('order-success').style.display='none'
+  document.getElementById('order-form-wrap').style.display=''
+  document.getElementById('order-submit-btn').style.display=''
   document.getElementById('m-order').classList.remove('hidden')
 }
 function closeOrderModal(){
   document.getElementById('m-order').classList.add('hidden')
-  _orderItemId = null
+  _orderItemId=null
+}
+function getCartPrice(it){
+  const st=userStatus()
+  return it[TIERS[st].field]||it.price_retail||it.price_opt||it.price_vip||0
 }
 function submitOrder(){
-  const name  = document.getElementById('o-name').value.trim()
-  const phone = document.getElementById('o-phone').value.trim()
+  const name=document.getElementById('o-name').value.trim()
+  const phone=document.getElementById('o-phone').value.trim()
   if(!name){alert('Укажите имя');return}
   if(!phone){alert('Укажите телефон');return}
-  const items  = JSON.parse(localStorage.getItem('wh_items')||'[]')
-  const it     = items.find(i=>i.id===_orderItemId)
-  const qty    = Math.max(1,parseInt(document.getElementById('o-qty').value)||1)
-  const f      = tierField(_tier)
-  const price  = it?it[f]||0:0
-  const orders = JSON.parse(localStorage.getItem('shop_orders')||'[]')
-  orders.push({
-    id:       Date.now(),
-    item_id:  _orderItemId,
-    item_name:it?it.name:'',
-    qty,
-    price,
-    tier:     _tier,
-    total:    price*qty,
-    client:   name,
-    phone,
-    comment:  document.getElementById('o-comment').value.trim(),
-    status:   'new',
-    created_at: new Date().toISOString()
-  })
-  localStorage.setItem('shop_orders', JSON.stringify(orders))
-  // Add to cart
-  addToCart(_orderItemId, qty)
-  document.getElementById('order-success').style.display = 'flex'
-  document.getElementById('order-form-wrap').style.display = 'none'
-  document.getElementById('order-submit-btn').style.display = 'none'
+  const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
+  const it=_orderItemId==='cart'?null:items.find(i=>i.id===_orderItemId)
+  const qty=Math.max(1,parseInt(document.getElementById('o-qty').value)||1)
+  const price=it?getCartPrice(it):0
+  const orders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
+  const newOrder={
+    id:Date.now(),
+    item_id:_orderItemId,
+    item_name:it?it.name:'Заказ из корзины',
+    qty, price,
+    tier:userStatus(),
+    total:_orderItemId==='cart'?_cart.reduce((s,c)=>s+(c.price*c.qty),0):price*qty,
+    client:name, phone,
+    company:_user?_user.company:'',
+    comment:document.getElementById('o-comment').value.trim(),
+    status:'new',
+    created_at:new Date().toISOString()
+  }
+  if(_orderItemId==='cart') newOrder.items=JSON.parse(JSON.stringify(_cart))
+  orders.push(newOrder)
+  localStorage.setItem('shop_orders',JSON.stringify(orders))
+  if(it) addToCart(it.id, qty)
+  document.getElementById('order-success').style.display='flex'
+  document.getElementById('order-form-wrap').style.display='none'
+  document.getElementById('order-submit-btn').style.display='none'
   setTimeout(closeOrderModal, 2500)
 }
 
-// ── Cart ──────────────────────────────────────────────────────────────────────
-function addToCart(id, qty){
-  const items = JSON.parse(localStorage.getItem('wh_items')||'[]')
-  const it    = items.find(i=>i.id===id)
+// ── CART ──────────────────────────────────────────────────────────────────────
+function addToCart(id,qty){
+  const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
+  const it=items.find(i=>i.id===id)
   if(!it) return
-  const f     = tierField(_tier)
-  const existing = _cart.find(c=>c.id===id)
-  if(existing){ existing.qty+=qty } else {
-    _cart.push({id, name:it.name, price:it[f]||0, qty, cat:it.cat})
-  }
-  saveCart()
-  renderCart()
-  updateCartCount()
-}
-function removeFromCart(id){
-  _cart = _cart.filter(c=>c.id!==id)
-  saveCart(); renderCart(); updateCartCount(); renderShop()
-}
-function changeQty(id, delta){
-  const item = _cart.find(c=>c.id===id)
-  if(!item) return
-  item.qty = Math.max(1, item.qty + delta)
+  const price=getCartPrice(it)
+  const ex=_cart.find(c=>c.id===id)
+  if(ex){ ex.qty+=qty } else { _cart.push({id,name:it.name,price,qty,cat:it.cat}) }
   saveCart(); renderCart(); updateCartCount()
 }
-function saveCart(){ localStorage.setItem('shop_cart', JSON.stringify(_cart)) }
+function removeFromCart(id){
+  _cart=_cart.filter(c=>c.id!==id)
+  saveCart(); renderCart(); updateCartCount(); renderShop()
+}
+function changeQty(id,delta){
+  const item=_cart.find(c=>c.id===id)
+  if(!item) return
+  item.qty=Math.max(1,item.qty+delta)
+  saveCart(); renderCart(); updateCartCount()
+}
+function saveCart(){ localStorage.setItem('shop_cart',JSON.stringify(_cart)) }
 function updateCartCount(){
-  const total = _cart.reduce((s,c)=>s+c.qty,0)
-  const cc = document.getElementById('cart-count')
-  const fc = document.getElementById('cart-fab-count')
-  if(cc){ cc.textContent = total; cc.style.background = total>0?'#ef4444':'rgba(255,255,255,.3)' }
-  if(fc){ fc.textContent = total; fc.style.display = total>0?'inline-block':'none' }
-  // Animate fab on add
-  const fab = document.querySelector('.cart-fab')
-  if(fab && total>0){ fab.style.transform='scale(1.2)'; setTimeout(()=>fab.style.transform='',200) }
+  const total=_cart.reduce((s,c)=>s+c.qty,0)
+  const cc=document.getElementById('cart-count')
+  const fc=document.getElementById('cart-fab-count')
+  if(cc){ cc.textContent=total; cc.style.background=total>0?'#ef4444':'rgba(255,255,255,.3)' }
+  if(fc){ fc.textContent=total; fc.style.display=total>0?'inline-block':'none' }
+  const fab=document.querySelector('.cart-fab')
+  if(fab&&total>0){ fab.style.transform='scale(1.18)'; setTimeout(()=>fab.style.transform='',200) }
 }
 function renderCart(){
-  const list = document.getElementById('cart-items-list')
+  const list=document.getElementById('cart-items-list')
   if(!_cart.length){
-    list.innerHTML='<div class="cart-empty">🛒<br>Корзина пуста</div>'
+    list.innerHTML='<div class="cart-empty">🛒<br><br>Корзина пуста</div>'
     document.getElementById('cart-total-val').textContent='0 ₽'
     return
   }
-  list.innerHTML = _cart.map(c=>`<div class="cart-item">
-    <div class="cart-item-name">${c.name}</div>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+  list.innerHTML=_cart.map(c=>`<div class="cart-item">
+    <div class="cart-item-info">
+      <div class="cart-item-name">${c.name}</div>
       <div class="cart-item-price">${(c.price*c.qty).toLocaleString('ru')} ₽</div>
       <div class="qty-ctrl">
         <button onclick="changeQty(${c.id},-1)">−</button>
@@ -412,87 +510,36 @@ function renderCart(){
       </div>
     </div>
   </div>`).join('')
-  const total = _cart.reduce((s,c)=>s+(c.price*c.qty),0)
-  document.getElementById('cart-total-val').textContent = total.toLocaleString('ru')+' ₽'
+  const total=_cart.reduce((s,c)=>s+(c.price*c.qty),0)
+  document.getElementById('cart-total-val').textContent=total.toLocaleString('ru')+' ₽'
 }
-function toggleCart(){
-  document.getElementById('cart-panel').classList.toggle('open')
-}
+function toggleCart(){ document.getElementById('cart-panel').classList.toggle('open') }
 function checkoutCart(){
   if(!_cart.length){ alert('Корзина пуста'); return }
-  // Open order modal with first item, client can fill info
-  const first = _cart[0]
-  document.getElementById('order-item-name').textContent = 'Заказ из корзины ('+_cart.length+' поз.)'
-  document.getElementById('order-item-id').value = 'cart'
-  document.getElementById('o-name').value   = ''
-  document.getElementById('o-phone').value  = ''
-  document.getElementById('o-qty').value    = '1'
-  document.getElementById('o-comment').value= _cart.map(c=>`${c.name} × ${c.qty}`).join(', ')
-  document.getElementById('order-success').style.display = 'none'
-  document.getElementById('order-form-wrap').style.display = ''
-  document.getElementById('order-submit-btn').style.display = ''
-  _orderItemId = 'cart'
+  _orderItemId='cart'
+  document.getElementById('order-item-name').textContent='Заказ из корзины ('+_cart.length+' поз.)'
+  document.getElementById('order-item-id').value='cart'
+  document.getElementById('o-name').value=_user?_user.name:''
+  document.getElementById('o-phone').value=_user?_user.phone:''
+  document.getElementById('o-qty').value='1'
+  document.getElementById('o-comment').value=_cart.map(c=>`${c.name} × ${c.qty}`).join(', ')
+  document.getElementById('order-success').style.display='none'
+  document.getElementById('order-form-wrap').style.display=''
+  document.getElementById('order-submit-btn').style.display=''
   document.getElementById('m-order').classList.remove('hidden')
   toggleCart()
 }
 
-// Override submitOrder for cart checkout
-const _origSubmitOrder = submitOrder
-window.submitOrder = function(){
-  if(_orderItemId === 'cart'){
-    const name  = document.getElementById('o-name').value.trim()
-    const phone = document.getElementById('o-phone').value.trim()
-    if(!name){alert('Укажите имя');return}
-    if(!phone){alert('Укажите телефон');return}
-    const orders = JSON.parse(localStorage.getItem('shop_orders')||'[]')
-    const total  = _cart.reduce((s,c)=>s+(c.price*c.qty),0)
-    orders.push({
-      id:       Date.now(),
-      item_id:  'cart',
-      item_name:'Заказ из корзины ('+_cart.length+' поз.)',
-      items:    JSON.parse(JSON.stringify(_cart)),
-      qty:      _cart.reduce((s,c)=>s+c.qty,0),
-      price:    total,
-      tier:     _tier,
-      total,
-      client:   name,
-      phone,
-      comment:  document.getElementById('o-comment').value.trim(),
-      status:   'new',
-      created_at: new Date().toISOString()
-    })
-    localStorage.setItem('shop_orders', JSON.stringify(orders))
-    _cart = []
-    saveCart(); updateCartCount(); renderCart()
-    document.getElementById('order-success').style.display = 'flex'
-    document.getElementById('order-form-wrap').style.display = 'none'
-    document.getElementById('order-submit-btn').style.display = 'none'
-    setTimeout(closeOrderModal, 2500)
-    return
-  }
-  _origSubmitOrder()
-}
-
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────────────
 ;(function init(){
-  // Shop name (full) or fallback to org_code
-  const shopName = localStorage.getItem('shop_name') || localStorage.getItem('org_code') || 'Zero.height'
-  document.getElementById('shop-name').textContent = shopName
-  document.title = shopName + ' — Витрина'
-
-  // Set tier from URL
-  const urlTier = new URLSearchParams(location.search).get('tier')
-  if(urlTier){
-    _tier = urlTier
-    document.querySelectorAll('.tier-btn').forEach(b=>{
-      b.classList.toggle('active', b.dataset.tier===urlTier)
-    })
-  }
-
+  const shopName=localStorage.getItem('shop_name')||localStorage.getItem('org_code')||'Zero.height'
+  document.getElementById('shop-name').textContent=shopName
+  document.title=shopName+' — Витрина'
   buildCats()
   renderShop()
   renderCart()
   updateCartCount()
+  updateAuthUI()
 })()
 </script>
 </body>

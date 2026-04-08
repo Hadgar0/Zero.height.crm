@@ -283,9 +283,10 @@ tr:hover td{background:#fafafa}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span class="nav-label">Заказы</span>
     </a>
-    <a data-tip="Задачи" data-page="tasks" onclick="nav('tasks',this)">
+    <a data-tip="Задачи" data-page="tasks" onclick="nav('tasks',this)" style="position:relative">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
       <span class="nav-label">Задачи</span>
+      <span id="tasks-badge" style="display:none;position:absolute;top:6px;right:6px;background:#ef4444;color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:1px 5px;min-width:16px;text-align:center;line-height:14px">0</span>
     </a>
     <div class="nav-section" data-nav-sec="finance">Финансы</div>
     <a data-tip="Касса" data-page="cash" onclick="nav('cash',this)">
@@ -2526,7 +2527,7 @@ function nav(id,el){
   if(id==='dashboard') renderDash()
   if(id==='clients')   renderClients()
   if(id==='deals')     renderDeals()
-  if(id==='tasks')     renderTasks()
+  if(id==='tasks'){    checkShopOrders(); renderTasks() }
   if(id==='warehouse') renderWarehouse()
   if(id==='cash'){initCashDates();renderCash()}
   if(id==='settings') renderSettings()
@@ -3514,9 +3515,11 @@ function renderTasks(){
   const row=t=>{
     const ov=t.status==='pending'&&t.due&&new Date(t.due)<now
     const pm=PM[t.priority]||PM.medium,done=t.status==='completed'
+    const shopBtn=t.shop_order_id?`<button onclick="taskToWholesale(${t.id})" style="flex:none;background:#f0fdf4;border:1.5px solid #86efac;color:#16a34a;border-radius:8px;font-size:11px;font-weight:700;padding:4px 10px;cursor:pointer;white-space:nowrap;margin-right:4px">🛒 Оформить опт</button>`:'';
     return `<div class="ti"><div class="tc ${done?'done':''}" onclick="toggleTask(${t.id})"></div>
-      <div style="flex:1;min-width:0"><div class="ttl ${done?'done':''}">${t.title}</div>
-      <div class="tmt">${t.client_id?cn(t.client_id):''}${t.deal_id?' · '+dn(t.deal_id):''}${t.due?` <span class="${ov?'ov':''}">${ov?'⚠ просрочено: ':''}${fdt(t.due)}</span>`:''}</div></div>
+      <div style="flex:1;min-width:0"><div class="ttl ${done?'done':''}">${t.shop_order_id?'🛒 ':''}${t.title}</div>
+      <div class="tmt">${t.client_id?cn(t.client_id):''}${t.deal_id?' · '+dn(t.deal_id):''}${t.due?` <span class="${ov?'ov':''}">${ov?'⚠ просрочено: ':''}${fdt(t.due)}</span>`:''}${t.shop_order_id?` <span style="color:#6366f1;font-size:10px;font-weight:600">· Заказ с сайта</span>`:''}</div></div>
+      ${shopBtn}
       <span class="badge ${pm.c}" style="white-space:nowrap;margin-right:4px">${pm.l}</span>
       <button class="btn-i" onclick="openTaskModal(${t.id})">${EICO}</button>
       <button class="btn-i d" onclick="delTask(${t.id})">${DICO}</button></div>`
@@ -3560,6 +3563,67 @@ function delTask(id){
   if(!confirm('Удалить задачу?'))return
   S.set('tasks',S.get('tasks').filter(t=>t.id!==id));renderTasks()
 }
+
+// ── SHOP ORDERS → TASKS ───────────────────────────────────────────────────────
+function checkShopOrders(){
+  const shopOrders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
+  const processed=JSON.parse(localStorage.getItem('shop_orders_processed')||'[]')
+  const newOrders=shopOrders.filter(o=>!processed.includes(o.id))
+  if(!newOrders.length){updateTasksBadge();return}
+  const tasks=S.get('tasks')
+  newOrders.forEach(o=>{
+    const title=`Заказ с сайта: ${o.item_name||'Корзина'} — ${o.client} (${o.phone})`
+    const desc=`Клиент: ${o.client}\nТелефон: ${o.phone}\nТовар: ${o.item_name||'Корзина'}\nКол-во: ${o.qty}\nСумма: ${Number(o.total||0).toLocaleString('ru')} ₽${o.comment?'\nКомментарий: '+o.comment:''}`
+    tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'pending',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
+    processed.push(o.id)
+  })
+  S.set('tasks',tasks)
+  localStorage.setItem('shop_orders_processed',JSON.stringify(processed))
+  renderTasks()
+  updateTasksBadge()
+  // Show notification toast
+  showShopNotification(newOrders.length)
+}
+
+function updateTasksBadge(){
+  const tasks=S.get('tasks')
+  const newShop=tasks.filter(t=>t.shop_order_id&&t.status==='pending').length
+  const badge=document.getElementById('tasks-badge')
+  if(badge){
+    badge.textContent=newShop
+    badge.style.display=newShop>0?'inline-block':'none'
+  }
+}
+
+let _notifTimeout=null
+function showShopNotification(count){
+  let el=document.getElementById('shop-notif-toast')
+  if(!el){
+    el=document.createElement('div')
+    el.id='shop-notif-toast'
+    el.style.cssText='position:fixed;top:16px;right:16px;z-index:9999;background:#1e1b4b;color:#fff;border-radius:14px;padding:14px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.25);font-size:13px;font-weight:600;cursor:pointer;transition:all .3s;min-width:280px'
+    el.onclick=()=>{ nav('tasks',document.querySelector('nav a[data-page="tasks"]')); el.style.opacity='0'; setTimeout(()=>el.remove(),300) }
+    document.body.appendChild(el)
+  }
+  el.innerHTML=`<span style="font-size:22px">🛒</span><div><div style="font-size:14px;font-weight:700">Новый заказ с витрины!</div><div style="font-size:12px;opacity:.8;margin-top:2px">${count} заказ${count>1?'а':''} ожидает обработки</div></div><span style="margin-left:auto;opacity:.6;font-size:18px">→</span>`
+  el.style.opacity='1'
+  clearTimeout(_notifTimeout)
+  _notifTimeout=setTimeout(()=>{ el.style.opacity='0'; setTimeout(()=>el&&el.remove(),300) },6000)
+}
+
+function taskToWholesale(taskId){
+  const t=(S.get('tasks')||[]).find(t=>t.id===taskId)
+  if(!t||!t.shop_order) return
+  const o=t.shop_order
+  const items=(o.items||[{id:o.item_id,name:o.item_name,qty:o.qty||1,price:o.price||0}]).map(i=>({id:i.id||S.nid('wi'),name:i.name,sku:'',qty:i.qty||1,price:i.price||0}))
+  const ws={id:null,number:genNum(),client:o.client||'',client_id:null,emp:getCurEmp()||'',warehouse:'main',status:'awaiting_payment',comment:`Заказ с сайта. Тел: ${o.phone}${o.comment?'. '+o.comment:''}`,items,shipped:false,created_at:new Date().toISOString()}
+  localStorage.setItem('_wholesale_tab',JSON.stringify(ws))
+  const base=location.href.split('?')[0].split('#')[0]
+  window.open(base+'?wholesale=1','_blank')
+}
+
+// Poll every 10 seconds
+setInterval(checkShopOrders, 10000)
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────────
 function getOrg(){ return localStorage.getItem('org_code')||'ЗК' }
@@ -6027,6 +6091,7 @@ function checkProfitabilityTasks(){
   syncBranchSelects()
   renderTopbar()
   applyRoleAccess(getCurEmp())
+  checkShopOrders()
   renderDash()
 })()
 
