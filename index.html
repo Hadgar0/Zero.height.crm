@@ -3610,8 +3610,9 @@ function checkShopOrders(){
     showShopNotification(newOrders.length)
   }
   if(newOrders.length||changed) S.set('tasks',tasks)
-  renderTasks()
   updateTasksBadge()
+  // Перерисовываем только если сейчас открыта страница задач
+  if(document.getElementById('page-tasks')&&document.getElementById('page-tasks').classList.contains('active')) renderTasks()
 }
 
 function updateTasksBadge(){
