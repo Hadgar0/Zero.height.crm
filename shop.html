@@ -197,15 +197,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
       Заказ принят! Менеджер свяжется с вами.
     </div>
     <div class="modal-body" id="checkout-form-wrap">
-      <p style="font-size:13px;color:#64748b;margin-bottom:16px">Введите номер телефона — мы найдём вас и применим ваши цены</p>
-      <div class="fg">
-        <label>Телефон <span style="color:#ef4444">*</span></label>
-        <input id="co-phone" placeholder="+7 900 000-00-00" type="tel" oninput="onCoPhoneInput()">
-      </div>
-      <div id="co-client-found" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:14px"></div>
+      <div id="co-client-found" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:12px 16px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:16px;line-height:1.6"></div>
+      <div id="co-cart-summary" style="background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:12px 14px;margin-bottom:16px;max-height:140px;overflow-y:auto"></div>
       <div class="fg" style="margin-bottom:0">
-        <label>Комментарий</label>
-        <textarea id="co-comment" placeholder="Пожелания к заказу..." style="min-height:56px;resize:none"></textarea>
+        <label>Комментарий к заказу</label>
+        <textarea id="co-comment" placeholder="Пожелания, уточнения..." style="min-height:60px;resize:none;width:100%;padding:11px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .15s"></textarea>
       </div>
     </div>
     <div class="modal-foot">
@@ -217,22 +213,65 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
 
 <!-- AUTH MODAL -->
 <div class="overlay hidden" id="m-auth">
-  <div class="modal" style="max-width:380px">
-    <div class="modal-hdr">
-      <h3>👤 Войти</h3>
-      <button onclick="document.getElementById('m-auth').classList.add('hidden')">×</button>
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hdr" style="padding-bottom:0">
+      <h3 id="auth-modal-title">Вход в аккаунт</h3>
+      <button onclick="closeAuthModal()">×</button>
     </div>
-    <div class="modal-body">
-      <p style="font-size:13px;color:#64748b;margin-bottom:16px">Введите номер — мы найдём вас и покажем ваши цены</p>
+    <!-- Tabs -->
+    <div style="display:flex;gap:0;padding:16px 26px 0;border-bottom:1px solid #ebebeb;margin-top:14px">
+      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2.5px solid #0f0f0f;font-size:13.5px;font-weight:700;cursor:pointer;color:#0f0f0f;transition:.15s">Войти</button>
+      <button id="tab-reg" onclick="switchAuthTab('reg')" style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13.5px;font-weight:600;cursor:pointer;color:#a3a3a3;transition:.15s">Регистрация</button>
+    </div>
+    <!-- Login form -->
+    <div id="auth-login-form" class="modal-body">
+      <div id="auth-error" style="display:none;background:#fff1f2;border:1.5px solid #fda4af;border-radius:10px;padding:10px 14px;font-size:13px;color:#be123c;font-weight:600;margin-bottom:14px"></div>
+      <div class="fg">
+        <label>Телефон</label>
+        <input id="login-phone" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>Пароль</label>
+        <div style="position:relative">
+          <input id="login-pass" type="password" placeholder="Введите пароль" autocomplete="current-password" style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .15s">
+          <button onclick="togglePassVis('login-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#a3a3a3;font-size:16px;padding:0;line-height:1">👁</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot" id="auth-login-foot">
+      <button class="btn-cancel" onclick="closeAuthModal()">Отмена</button>
+      <button class="btn-order" onclick="submitLogin()">→ Войти</button>
+    </div>
+    <!-- Register form -->
+    <div id="auth-reg-form" class="modal-body" style="display:none">
+      <div id="reg-error" style="display:none;background:#fff1f2;border:1.5px solid #fda4af;border-radius:10px;padding:10px 14px;font-size:13px;color:#be123c;font-weight:600;margin-bottom:14px"></div>
+      <div class="fg">
+        <label>ФИО <span style="color:#ef4444">*</span></label>
+        <input id="reg-name" type="text" placeholder="Иванов Иван Иванович" autocomplete="name">
+      </div>
+      <div class="fg">
+        <label>Название сервисного центра <span style="color:#ef4444">*</span></label>
+        <input id="reg-company" type="text" placeholder="ООО «Мастер»" autocomplete="organization">
+      </div>
       <div class="fg">
         <label>Телефон <span style="color:#ef4444">*</span></label>
-        <input id="auth-phone" placeholder="+7 900 000-00-00" type="tel" oninput="onAuthPhoneInput()">
+        <input id="reg-phone" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">
       </div>
-      <div id="auth-client-found" style="display:none;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:4px"></div>
+      <div class="fg">
+        <label>Пароль <span style="color:#ef4444">*</span></label>
+        <div style="position:relative">
+          <input id="reg-pass" type="password" placeholder="Минимум 4 символа" autocomplete="new-password" style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .15s">
+          <button onclick="togglePassVis('reg-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#a3a3a3;font-size:16px;padding:0;line-height:1">👁</button>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>Повторите пароль <span style="color:#ef4444">*</span></label>
+        <input id="reg-pass2" type="password" placeholder="Повторите пароль" autocomplete="new-password">
+      </div>
     </div>
-    <div class="modal-foot">
-      <button class="btn-cancel" onclick="document.getElementById('m-auth').classList.add('hidden')">Отмена</button>
-      <button class="btn-order" onclick="submitAuth()">✓ Войти</button>
+    <div class="modal-foot" id="auth-reg-foot" style="display:none">
+      <button class="btn-cancel" onclick="closeAuthModal()">Отмена</button>
+      <button class="btn-order" onclick="submitRegister()">✓ Зарегистрироваться</button>
     </div>
   </div>
 </div>
@@ -288,37 +327,101 @@ function getItems(){
 function userStatus(){ return _user?(_user.status||'retail'):'retail' }
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
-function openAuthModal(){
-  document.getElementById('auth-phone').value=_user?_user.phone:''
-  document.getElementById('auth-client-found').style.display='none'
-  if(_user) _showAuthFound(_user.name,_user.status)
+// shop_accounts: [{phone, passHash, name, company, status, created_at}]
+function getAccounts(){ return JSON.parse(localStorage.getItem('shop_accounts')||'[]') }
+function saveAccounts(a){ localStorage.setItem('shop_accounts',JSON.stringify(a)) }
+
+// простой хэш — не криптографический, для localStorage достаточно
+function simpleHash(s){
+  let h=0
+  for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}
+  return h.toString(36)
+}
+function normPhone(p){ return p.replace(/\D/g,'') }
+
+function openAuthModal(tab){
+  switchAuthTab(tab||'login')
+  document.getElementById('login-phone').value=''
+  document.getElementById('login-pass').value=''
+  document.getElementById('auth-error').style.display='none'
+  document.getElementById('reg-error').style.display='none'
   document.getElementById('m-auth').classList.remove('hidden')
 }
-function onAuthPhoneInput(){
-  const phone=document.getElementById('auth-phone').value.trim()
-  if(phone.replace(/\D/g,'').length<7){document.getElementById('auth-client-found').style.display='none';return}
-  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
-  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  if(found) _showAuthFound(found.name,found.shop_status||'retail')
-  else document.getElementById('auth-client-found').style.display='none'
-}
-function _showAuthFound(name,status){
-  const icons={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
-  const el=document.getElementById('auth-client-found')
-  el.innerHTML='👤 '+(name||'')+(name?' &nbsp;·&nbsp; ':'')+( icons[status]||icons.retail)
-  el.style.display='block'
-}
-function submitAuth(){
-  const phone=document.getElementById('auth-phone').value.trim()
-  if(!phone){alert('Укажите телефон');return}
-  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
-  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  const status=found&&found.shop_status?found.shop_status:'retail'
-  _user={name:found?found.name:phone,phone,company:found?found.company||'':'',status}
-  localStorage.setItem('shop_user',JSON.stringify(_user))
+function closeAuthModal(){
   document.getElementById('m-auth').classList.add('hidden')
+}
+function switchAuthTab(t){
+  const isLogin=t==='login'
+  document.getElementById('auth-login-form').style.display=isLogin?'':'none'
+  document.getElementById('auth-login-foot').style.display=isLogin?'':'none'
+  document.getElementById('auth-reg-form').style.display=isLogin?'none':''
+  document.getElementById('auth-reg-foot').style.display=isLogin?'none':''
+  document.getElementById('tab-login').style.borderBottomColor=isLogin?'#0f0f0f':'transparent'
+  document.getElementById('tab-login').style.color=isLogin?'#0f0f0f':'#a3a3a3'
+  document.getElementById('tab-login').style.fontWeight=isLogin?'700':'600'
+  document.getElementById('tab-reg').style.borderBottomColor=isLogin?'transparent':'#0f0f0f'
+  document.getElementById('tab-reg').style.color=isLogin?'#a3a3a3':'#0f0f0f'
+  document.getElementById('tab-reg').style.fontWeight=isLogin?'600':'700'
+  document.getElementById('auth-modal-title').textContent=isLogin?'Вход в аккаунт':'Регистрация'
+}
+function togglePassVis(id,btn){
+  const inp=document.getElementById(id)
+  if(inp.type==='password'){inp.type='text';btn.textContent='🙈'}
+  else{inp.type='password';btn.textContent='👁'}
+}
+function showAuthError(msg){ const e=document.getElementById('auth-error');e.textContent=msg;e.style.display='block' }
+function showRegError(msg){ const e=document.getElementById('reg-error');e.textContent=msg;e.style.display='block' }
+
+function submitLogin(){
+  document.getElementById('auth-error').style.display='none'
+  const phone=normPhone(document.getElementById('login-phone').value.trim())
+  const pass=document.getElementById('login-pass').value
+  if(!phone||phone.length<7){ showAuthError('Введите номер телефона'); return }
+  if(!pass){ showAuthError('Введите пароль'); return }
+  const accounts=getAccounts()
+  const acc=accounts.find(a=>normPhone(a.phone)===phone)
+  if(!acc){ showAuthError('Аккаунт с таким номером не найден. Зарегистрируйтесь.'); return }
+  if(acc.passHash!==simpleHash(pass)){ showAuthError('Неверный пароль'); return }
+  // Подтягиваем shop_status из CRM если есть
+  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
+  const crmClient=clients.find(c=>normPhone(c.phone||'')===phone)
+  const status=crmClient&&crmClient.shop_status?crmClient.shop_status:(acc.status||'retail')
+  _user={name:acc.name,phone:acc.phone,company:acc.company||'',status}
+  localStorage.setItem('shop_user',JSON.stringify(_user))
+  closeAuthModal()
   updateAuthUI();renderShop()
 }
+
+function submitRegister(){
+  document.getElementById('reg-error').style.display='none'
+  const name=document.getElementById('reg-name').value.trim()
+  const company=document.getElementById('reg-company').value.trim()
+  const phone=document.getElementById('reg-phone').value.trim()
+  const pass=document.getElementById('reg-pass').value
+  const pass2=document.getElementById('reg-pass2').value
+  if(!name){ showRegError('Укажите ФИО'); return }
+  if(!company){ showRegError('Укажите название сервисного центра'); return }
+  if(!phone||normPhone(phone).length<7){ showRegError('Укажите корректный номер телефона'); return }
+  if(!pass||pass.length<4){ showRegError('Пароль должен содержать минимум 4 символа'); return }
+  if(pass!==pass2){ showRegError('Пароли не совпадают'); return }
+  const accounts=getAccounts()
+  if(accounts.find(a=>normPhone(a.phone)===normPhone(phone))){
+    showRegError('Аккаунт с этим номером уже существует. Войдите.')
+    return
+  }
+  // Подтягиваем shop_status из CRM если уже есть такой клиент
+  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
+  const crmClient=clients.find(c=>normPhone(c.phone||'')===normPhone(phone))
+  const status=crmClient&&crmClient.shop_status?crmClient.shop_status:'retail'
+  const newAcc={phone:normPhone(phone),passHash:simpleHash(pass),name,company,status,created_at:new Date().toISOString()}
+  accounts.push(newAcc)
+  saveAccounts(accounts)
+  _user={name,phone:normPhone(phone),company,status}
+  localStorage.setItem('shop_user',JSON.stringify(_user))
+  closeAuthModal()
+  updateAuthUI();renderShop()
+}
+
 function logoutUser(){
   _user=null
   localStorage.removeItem('shop_user')
@@ -326,7 +429,6 @@ function logoutUser(){
   renderShop()
 }
 function updateAuthUI(){
-  const btn=document.getElementById('auth-btn')
   const lbl=document.getElementById('auth-btn-label')
   const bar=document.getElementById('status-bar')
   const badge=document.getElementById('user-status-badge')
@@ -337,7 +439,7 @@ function updateAuthUI(){
     const t=TIERS[_user.status||'retail']||TIERS.retail
     badge.textContent=t.icon+' '+t.label
     badge.className='status-badge '+t.cls
-    welcome.textContent='Здравствуйте, '+_user.name+'!'
+    welcome.textContent=_user.company?_user.company+' · '+_user.name:_user.name
   } else {
     lbl.textContent='Войти'
     bar.style.display='none'
@@ -411,49 +513,48 @@ function cartAdd(id, btn){
 // ── CHECKOUT ──────────────────────────────────────────────────────────────────
 function openCheckout(){
   if(!_cart.length){ alert('Корзина пуста'); return }
-  document.getElementById('co-phone').value=_user?_user.phone:''
+  if(!_user){ openAuthModal('login'); return }
+  const t=TIERS[_user.status||'retail']||TIERS.retail
+  // Клиент
+  document.getElementById('co-client-found').innerHTML=
+    '👤 <b>'+_user.name+'</b>'
+    +(_user.company?' &nbsp;·&nbsp; '+_user.company:'')
+    +'<br>'+t.icon+' '+t.label+' &nbsp;·&nbsp; 📞 '+_user.phone
+  // Состав корзины
+  const allItems=JSON.parse(localStorage.getItem('wh_items')||'[]')
+  const status=_user.status||'retail'
+  let cartTotal=0
+  const rows=_cart.map(c=>{
+    const it=allItems.find(i=>i.id===c.id)
+    const price=it?(it[TIERS[status].field]||it.price_retail||it.price_opt||it.price_vip||c.price):c.price
+    cartTotal+=price*c.qty
+    return `<div style="display:flex;justify-content:space-between;font-size:12.5px;padding:4px 0;border-bottom:1px solid #f0f0f0">
+      <span style="color:#525252">${c.name} <span style="color:#a3a3a3">× ${c.qty}</span></span>
+      <span style="font-weight:700">${(price*c.qty).toLocaleString('ru')} ₽</span>
+    </div>`
+  }).join('')
+  document.getElementById('co-cart-summary').innerHTML=rows
+    +`<div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;padding-top:8px;margin-top:2px">
+      <span>Итого</span><span style="color:#e11d48">${cartTotal.toLocaleString('ru')} ₽</span>
+    </div>`
   document.getElementById('co-comment').value=''
-  document.getElementById('co-client-found').style.display='none'
   document.getElementById('checkout-success').style.display='none'
   document.getElementById('checkout-form-wrap').style.display=''
   document.getElementById('checkout-submit-btn').style.display=''
   document.getElementById('m-checkout').classList.remove('hidden')
-  if(_user) _showClientFound(_user.name,_user.status)
 }
 function closeCheckout(){ document.getElementById('m-checkout').classList.add('hidden') }
 
-function onCoPhoneInput(){
-  const phone=document.getElementById('co-phone').value.trim()
-  if(phone.replace(/\D/g,'').length<7){document.getElementById('co-client-found').style.display='none';return}
-  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
-  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  if(found) _showClientFound(found.name,found.shop_status||'retail')
-  else document.getElementById('co-client-found').style.display='none'
-}
-function _showClientFound(name,status){
-  const icons={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
-  const el=document.getElementById('co-client-found')
-  el.innerHTML='👤 '+(name||phone)+' &nbsp;·&nbsp; '+(icons[status]||icons.retail)
-  el.style.display='block'
-}
-
 function submitCheckout(){
-  const phone=document.getElementById('co-phone').value.trim()
-  if(!phone){alert('Укажите телефон');return}
-  const clients=JSON.parse(localStorage.getItem('clients')||'[]')
-  const found=clients.find(c=>(c.phone||'').replace(/\D/g,'')===phone.replace(/\D/g,''))
-  const name=found?found.name:phone
-  const status=found&&found.shop_status?found.shop_status:'retail'
+  if(!_user){ closeCheckout(); openAuthModal('login'); return }
+  const status=_user.status||'retail'
   const allItems=JSON.parse(localStorage.getItem('wh_items')||'[]')
-
-  // Пересчитываем цены по статусу клиента
   const cartFinal=_cart.map(c=>{
     const it=allItems.find(i=>i.id===c.id)
     const price=it?(it[TIERS[status].field]||it.price_retail||it.price_opt||it.price_vip||c.price):c.price
     return{...c,price}
   })
   const total=cartFinal.reduce((s,c)=>s+(c.price*c.qty),0)
-
   const orders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
   orders.push({
     id:Date.now(),
@@ -463,18 +564,14 @@ function submitCheckout(){
     qty:_cart.reduce((s,c)=>s+c.qty,0),
     price:total, total,
     tier:status,
-    client:name, phone,
-    company:found?found.company||'':'',
+    client:_user.name,
+    phone:_user.phone,
+    company:_user.company||'',
     comment:document.getElementById('co-comment').value.trim(),
     status:'new',
     created_at:new Date().toISOString()
   })
   localStorage.setItem('shop_orders',JSON.stringify(orders))
-
-  _user={name,phone,company:found?found.company||'':'',status}
-  localStorage.setItem('shop_user',JSON.stringify(_user))
-  updateAuthUI()
-
   _cart=[];saveCart();renderCart();updateCartCount();renderShop()
   document.getElementById('checkout-success').style.display='flex'
   document.getElementById('checkout-form-wrap').style.display='none'
