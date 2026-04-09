@@ -3590,20 +3590,28 @@ function checkShopOrders(){
   const shopOrders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
   const processed=JSON.parse(localStorage.getItem('shop_orders_processed')||'[]')
   const newOrders=shopOrders.filter(o=>!processed.includes(o.id))
-  if(!newOrders.length){updateTasksBadge();return}
   const tasks=S.get('tasks')
-  newOrders.forEach(o=>{
-    const title=`Заказ с сайта: ${o.item_name||'Корзина'} — ${o.client} (${o.phone})`
-    const desc=`Клиент: ${o.client}\nТелефон: ${o.phone}\nТовар: ${o.item_name||'Корзина'}\nКол-во: ${o.qty}\nСумма: ${Number(o.total||0).toLocaleString('ru')} ₽${o.comment?'\nКомментарий: '+o.comment:''}`
-    tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'completed',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
-    processed.push(o.id)
+  // Закрываем все существующие задачи по заказам с сайта (ретроактивно)
+  let changed=false
+  tasks.forEach(t=>{
+    if(t.shop_order_id && t.status!=='completed'){
+      t.status='completed'
+      changed=true
+    }
   })
-  S.set('tasks',tasks)
-  localStorage.setItem('shop_orders_processed',JSON.stringify(processed))
+  if(newOrders.length){
+    newOrders.forEach(o=>{
+      const title=`Заказ с сайта: ${o.item_name||'Корзина'} — ${o.client} (${o.phone})`
+      const desc=`Клиент: ${o.client}\nТелефон: ${o.phone}\nТовар: ${o.item_name||'Корзина'}\nКол-во: ${o.qty}\nСумма: ${Number(o.total||0).toLocaleString('ru')} ₽${o.comment?'\nКомментарий: '+o.comment:''}`
+      tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'completed',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
+      processed.push(o.id)
+    })
+    localStorage.setItem('shop_orders_processed',JSON.stringify(processed))
+    showShopNotification(newOrders.length)
+  }
+  if(newOrders.length||changed) S.set('tasks',tasks)
   renderTasks()
   updateTasksBadge()
-  // Show notification toast
-  showShopNotification(newOrders.length)
 }
 
 function updateTasksBadge(){
