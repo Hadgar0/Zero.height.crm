@@ -646,7 +646,8 @@ function renderCart(){
         <button onclick="removeFromCart(${c.id})" style="color:#dc2626;border-color:#fecaca">✕</button>
       </div>
     </div>
-  </div>`).join('')
+  </div>`
+  }).join('')
   // Тир-баннер + итог
   const tierLabel=`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:${tierBg[status]};border-radius:8px;margin-bottom:10px;font-size:11.5px;font-weight:700;color:${tierColors[status]}">
     <span>${t.icon} Цены: ${t.label}</span>
