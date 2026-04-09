@@ -389,7 +389,7 @@ function submitLogin(){
   _user={name:acc.name,phone:acc.phone,company:acc.company||'',status}
   localStorage.setItem('shop_user',JSON.stringify(_user))
   closeAuthModal()
-  updateAuthUI();renderShop()
+  updateAuthUI();renderShop();renderCart()
 }
 
 function submitRegister(){
@@ -419,14 +419,14 @@ function submitRegister(){
   _user={name,phone:normPhone(phone),company,status}
   localStorage.setItem('shop_user',JSON.stringify(_user))
   closeAuthModal()
-  updateAuthUI();renderShop()
+  updateAuthUI();renderShop();renderCart()
 }
 
 function logoutUser(){
   _user=null
   localStorage.removeItem('shop_user')
   updateAuthUI()
-  renderShop()
+  renderShop();renderCart()
 }
 function updateAuthUI(){
   const lbl=document.getElementById('auth-btn-label')
@@ -580,14 +580,18 @@ function submitCheckout(){
 }
 
 // ── CART ──────────────────────────────────────────────────────────────────────
+// Корзина хранит только id+qty+name — цена всегда считается по статусу пользователя
+function getCartPrice(it){
+  const status=userStatus()
+  const tier=TIERS[status]||TIERS.retail
+  return it[tier.field]||it.price_retail||it.price_opt||it.price_vip||0
+}
 function addToCart(id,qty){
   const items=JSON.parse(localStorage.getItem('wh_items')||'[]')
   const it=items.find(i=>i.id===id)
   if(!it) return
-  // Цена пересчитывается при оформлении по статусу клиента
-  const price=it.price_retail||it.price_opt||it.price_vip||0
   const ex=_cart.find(c=>c.id===id)
-  if(ex){ ex.qty+=qty } else { _cart.push({id,name:it.name,price,qty,cat:it.cat}) }
+  if(ex){ ex.qty+=qty } else { _cart.push({id,name:it.name,qty,cat:it.cat}) }
   saveCart(); renderCart(); updateCartCount()
 }
 function removeFromCart(id){
@@ -617,10 +621,24 @@ function renderCart(){
     document.getElementById('cart-total-val').textContent='0 ₽'
     return
   }
-  list.innerHTML=_cart.map(c=>`<div class="cart-item">
+  const allItems=JSON.parse(localStorage.getItem('wh_items')||'[]')
+  const status=userStatus()
+  const t=TIERS[status]||TIERS.retail
+  // Плашка текущего тира в шапке корзины
+  const tierColors={retail:'#1d4ed8',opt:'#059669',vip:'#92400e'}
+  const tierBg={retail:'#eff6ff',opt:'#f0fdf4',vip:'#fffbeb'}
+  let grandTotal=0
+  const rows=_cart.map(c=>{
+    const it=allItems.find(i=>i.id===c.id)
+    const price=it?getCartPriceById(c.id,allItems):0
+    grandTotal+=price*c.qty
+    return `<div class="cart-item">
     <div class="cart-item-info">
       <div class="cart-item-name">${c.name}</div>
-      <div class="cart-item-price">${(c.price*c.qty).toLocaleString('ru')} ₽</div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:3px">
+        <div class="cart-item-price">${price>0?(price*c.qty).toLocaleString('ru')+' ₽':'По запросу'}</div>
+        ${price>0?`<span style="font-size:10.5px;color:#a3a3a3">(${price.toLocaleString('ru')} ₽ × ${c.qty})</span>`:''}
+      </div>
       <div class="qty-ctrl">
         <button onclick="changeQty(${c.id},-1)">−</button>
         <span>${c.qty}</span>
@@ -629,8 +647,18 @@ function renderCart(){
       </div>
     </div>
   </div>`).join('')
-  const total=_cart.reduce((s,c)=>s+(c.price*c.qty),0)
-  document.getElementById('cart-total-val').textContent=total.toLocaleString('ru')+' ₽'
+  // Тир-баннер + итог
+  const tierLabel=`<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:${tierBg[status]};border-radius:8px;margin-bottom:10px;font-size:11.5px;font-weight:700;color:${tierColors[status]}">
+    <span>${t.icon} Цены: ${t.label}</span>
+    ${_user?'':'<span style="color:#a3a3a3;font-weight:500">Войдите для своих цен</span>'}
+  </div>`
+  list.innerHTML=tierLabel+rows
+  document.getElementById('cart-total-val').textContent=grandTotal.toLocaleString('ru')+' ₽'
+}
+function getCartPriceById(id, allItems){
+  const it=allItems.find(i=>i.id===id)
+  if(!it) return 0
+  return getCartPrice(it)
 }
 function toggleCart(){ document.getElementById('cart-panel').classList.toggle('open') }
 function checkoutCart(){
