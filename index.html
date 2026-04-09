@@ -3595,7 +3595,7 @@ function checkShopOrders(){
   newOrders.forEach(o=>{
     const title=`Заказ с сайта: ${o.item_name||'Корзина'} — ${o.client} (${o.phone})`
     const desc=`Клиент: ${o.client}\nТелефон: ${o.phone}\nТовар: ${o.item_name||'Корзина'}\nКол-во: ${o.qty}\nСумма: ${Number(o.total||0).toLocaleString('ru')} ₽${o.comment?'\nКомментарий: '+o.comment:''}`
-    tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'pending',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
+    tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'completed',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
     processed.push(o.id)
   })
   S.set('tasks',tasks)
