@@ -3591,25 +3591,17 @@ function checkShopOrders(){
   const processed=JSON.parse(localStorage.getItem('shop_orders_processed')||'[]')
   const newOrders=shopOrders.filter(o=>!processed.includes(o.id))
   const tasks=S.get('tasks')
-  // Закрываем все существующие задачи по заказам с сайта (ретроактивно)
-  let changed=false
-  tasks.forEach(t=>{
-    if(t.shop_order_id && t.status!=='completed'){
-      t.status='completed'
-      changed=true
-    }
-  })
   if(newOrders.length){
     newOrders.forEach(o=>{
       const title=`Заказ с сайта: ${o.item_name||'Корзина'} — ${o.client} (${o.phone})`
       const desc=`Клиент: ${o.client}\nТелефон: ${o.phone}\nТовар: ${o.item_name||'Корзина'}\nКол-во: ${o.qty}\nСумма: ${Number(o.total||0).toLocaleString('ru')} ₽${o.comment?'\nКомментарий: '+o.comment:''}`
-      tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'completed',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
+      tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'pending',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
       processed.push(o.id)
     })
+    S.set('tasks',tasks)
     localStorage.setItem('shop_orders_processed',JSON.stringify(processed))
     showShopNotification(newOrders.length)
   }
-  if(newOrders.length||changed) S.set('tasks',tasks)
   updateTasksBadge()
   // Перерисовываем только если сейчас открыта страница задач
   if(document.getElementById('page-tasks')&&document.getElementById('page-tasks').classList.contains('active')) renderTasks()
