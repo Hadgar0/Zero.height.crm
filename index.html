@@ -1084,6 +1084,7 @@ tr:hover td{background:#fcfcfc}
         <button class="set-tab" onclick="setTab(this,'set-cats-sec')" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">📊 Маржинальность</button>
         <button class="set-tab" onclick="setTab(this,'set-salary-sec')" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">💰 Зарплата</button>
         <button class="set-tab" onclick="setTab(this,'set-works-sec');renderWorksList()" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">🔧 Работы</button>
+        <button class="set-tab" onclick="setTab(this,'set-shop-sec');renderShopAccounts()" style="padding:7px 18px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">🛒 Витрина</button>
       </div>
 
       <!-- ── Организация ── -->
@@ -1380,6 +1381,54 @@ tr:hover td{background:#fcfcfc}
               <span></span>
             </div>
             <div id="set-works-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Витрина ── -->
+      <div id="set-shop-sec" style="display:none">
+
+        <!-- Внешний вид -->
+        <div class="card" style="max-width:560px;margin-bottom:16px">
+          <div class="card-hd"><h2>Внешний вид витрины</h2></div>
+          <div style="padding:18px;display:flex;flex-direction:column;gap:14px">
+            <div class="fg">
+              <label>Название магазина</label>
+              <input id="shop-set-name" class="fc" placeholder="Напр: Zero.height — Каталог запчастей" maxlength="60">
+              <p style="font-size:11px;color:var(--text3);margin-top:4px">Отображается в шапке витрины</p>
+            </div>
+            <div class="fg">
+              <label>Подзаголовок</label>
+              <input id="shop-set-subtitle" class="fc" placeholder="Напр: Каталог запчастей и аксессуаров" maxlength="60">
+            </div>
+            <div class="fg" style="margin-bottom:0">
+              <label>Объявление / баннер (показывается под шапкой)</label>
+              <input id="shop-set-banner" class="fc" placeholder="Напр: 🚚 Доставка по всему городу от 2 часов">
+            </div>
+            <button class="btn btn-p" onclick="saveShopSettings()" style="align-self:flex-start">Сохранить</button>
+          </div>
+        </div>
+
+        <!-- Аккаунты покупателей -->
+        <div class="card">
+          <div class="card-hd">
+            <h2>Аккаунты покупателей</h2>
+            <span id="shop-acc-count" style="font-size:11px;color:var(--text3);margin-left:8px"></span>
+          </div>
+          <div style="overflow-x:auto">
+            <table style="min-width:640px">
+              <thead><tr>
+                <th>ФИО</th>
+                <th>Сервисный центр</th>
+                <th>Телефон</th>
+                <th>Тариф</th>
+                <th>Дата регистрации</th>
+                <th style="width:100px"></th>
+              </tr></thead>
+              <tbody id="shop-acc-tbody">
+                <tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text3)">Нет зарегистрированных аккаунтов</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -3665,6 +3714,73 @@ function saveSettings(){
   const inp=document.querySelector('[onclick="saveSettings()"]')
   if(inp){const t=inp.textContent;inp.textContent='✓ Сохранено';inp.style.background='var(--green)';setTimeout(()=>{inp.textContent=t;inp.style.background=''},1500)}
 }
+
+// ── SHOP SETTINGS ─────────────────────────────────────────────────────────────
+function saveShopSettings(){
+  const name=document.getElementById('shop-set-name').value.trim()
+  const subtitle=document.getElementById('shop-set-subtitle').value.trim()
+  const banner=document.getElementById('shop-set-banner').value.trim()
+  if(name) localStorage.setItem('shop_name', name)
+  localStorage.setItem('shop_subtitle', subtitle)
+  localStorage.setItem('shop_banner', banner)
+  const btn=document.querySelector('[onclick="saveShopSettings()"]')
+  if(btn){const t=btn.textContent;btn.textContent='✓ Сохранено';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=t;btn.style.background=''},1500)}
+}
+
+function renderShopAccounts(){
+  const accounts=JSON.parse(localStorage.getItem('shop_accounts')||'[]')
+  const clients=S.get('clients')
+  const tbody=document.getElementById('shop-acc-tbody')
+  const count=document.getElementById('shop-acc-count')
+  if(count) count.textContent=accounts.length+' аккаунтов'
+  const TIER_LABELS={retail:'💳 Розница',opt:'📦 Опт',vip:'⭐ VIP'}
+  const TIER_COLORS={retail:'background:#eff6ff;color:#1d4ed8',opt:'background:#f0fdf4;color:#065f46',vip:'background:#fffbeb;color:#92400e'}
+  if(!accounts.length){
+    tbody.innerHTML='<tr><td colspan="6" style="padding:24px;text-align:center;color:var(--text3)">Нет зарегистрированных аккаунтов</td></tr>'
+    return
+  }
+  tbody.innerHTML=accounts.map((a,i)=>{
+    const crmClient=clients.find(c=>(c.phone||'').replace(/\D/g,'')===a.phone)
+    const status=crmClient&&crmClient.shop_status?crmClient.shop_status:(a.status||'retail')
+    const regDate=a.created_at?new Date(a.created_at).toLocaleDateString('ru',{day:'numeric',month:'short',year:'numeric'}):'—'
+    return `<tr>
+      <td><strong style="font-size:13px">${a.name||'—'}</strong></td>
+      <td style="font-size:12px;color:var(--text2)">${a.company||'—'}</td>
+      <td style="font-size:12px">${a.phone||'—'}</td>
+      <td>
+        <select onchange="setShopAccountTier(${i},this.value)" style="border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:12px;cursor:pointer;font-family:inherit;outline:none;${TIER_COLORS[status]}">
+          <option value="retail" ${status==='retail'?'selected':''}>💳 Розница</option>
+          <option value="opt" ${status==='opt'?'selected':''}>📦 Опт</option>
+          <option value="vip" ${status==='vip'?'selected':''}>⭐ VIP</option>
+        </select>
+      </td>
+      <td style="font-size:12px;color:var(--text3)">${regDate}</td>
+      <td>
+        <button class="btn-i d" onclick="deleteShopAccount(${i})" title="Удалить аккаунт">${DICO}</button>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+function setShopAccountTier(idx, tier){
+  const accounts=JSON.parse(localStorage.getItem('shop_accounts')||'[]')
+  if(!accounts[idx]) return
+  accounts[idx].status=tier
+  localStorage.setItem('shop_accounts',JSON.stringify(accounts))
+  // Также обновляем CRM-клиента если он есть
+  const clients=S.get('clients')
+  const c=clients.find(cl=>(cl.phone||'').replace(/\D/g,'')===accounts[idx].phone)
+  if(c){ c.shop_status=tier; S.set('clients',clients) }
+  renderShopAccounts()
+}
+
+function deleteShopAccount(idx){
+  if(!confirm('Удалить аккаунт?')) return
+  const accounts=JSON.parse(localStorage.getItem('shop_accounts')||'[]')
+  accounts.splice(idx,1)
+  localStorage.setItem('shop_accounts',JSON.stringify(accounts))
+  renderShopAccounts()
+}
 function openSettings(){ nav('settings', document.getElementById('nav-settings')) }
 document.getElementById('set-org').addEventListener('input',function(){
   const v=this.value.trim()||'ЗК'
@@ -3679,7 +3795,7 @@ function setTab(btn, secId){
     b.style.background='transparent'; b.style.color='var(--text2)'; b.style.fontWeight='500'; b.style.boxShadow='none'
   })
   btn.style.background='var(--surface)'; btn.style.color='var(--accent)'; btn.style.fontWeight='600'; btn.style.boxShadow='var(--shadow-sm)'
-  document.querySelectorAll('#set-org-sec,#set-branches-sec,#set-staff-sec,#set-cats-sec,#set-salary-sec').forEach(s=>s.style.display='none')
+  document.querySelectorAll('#set-org-sec,#set-branches-sec,#set-staff-sec,#set-cats-sec,#set-salary-sec,#set-works-sec,#set-shop-sec').forEach(s=>s.style.display='none')
   document.getElementById(secId).style.display='block'
   if(secId==='set-cats-sec') renderCatList()
   if(secId==='set-salary-sec') initSalaryTab()
@@ -3689,6 +3805,10 @@ function renderSettings(){
   // Org
   document.getElementById('set-shop-name').value=localStorage.getItem('shop_name')||''
   document.getElementById('set-org').value=localStorage.getItem('org_code')||''
+  // Shop storefront settings
+  document.getElementById('shop-set-name').value=localStorage.getItem('shop_name')||''
+  document.getElementById('shop-set-subtitle').value=localStorage.getItem('shop_subtitle')||''
+  document.getElementById('shop-set-banner').value=localStorage.getItem('shop_banner')||''
   document.getElementById('set-margin').value=localStorage.getItem('min_margin')||'20'
   const orders=S.get('orders'),org=getOrg()
   document.getElementById('set-preview').textContent=org+'-'+String((orders.length||0)+1).padStart(6,'0')
