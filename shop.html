@@ -4,134 +4,149 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Витрина</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root{
+  --white:#ffffff;
+  --off:#f7f6f4;
+  --black:#111010;
+  --ink:#1a1a1a;
+  --red:#d42b2b;
+  --red2:#b01e1e;
+  --muted:#888888;
+  --line:#e4e4e4;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,sans-serif;background:#f2f2f2;color:#0f0f0f;min-height:100vh;-webkit-font-smoothing:antialiased}
-/* HEADER */
-.hdr{background:#111;padding:0 28px;position:sticky;top:0;z-index:100;box-shadow:0 1px 0 rgba(255,255,255,.04)}
-.hdr-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--off);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;font-size:14px}
+/* ── HEADER ── */
+.hdr{background:var(--black);border-bottom:2px solid var(--red);position:sticky;top:0;z-index:100;height:60px}
+.hdr-inner{max-width:1400px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:100%;gap:16px}
 .hdr-logo{display:flex;align-items:center;gap:12px;text-decoration:none;flex:1;min-width:0}
-.hdr-logo-icon{width:36px;height:36px;flex-shrink:0;background:#e11d48;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 2px 14px rgba(225,29,72,.5)}
-.hdr-logo h1{color:#fff;font-size:17px;font-weight:800;letter-spacing:-.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hdr-logo p{color:rgba(255,255,255,.3);font-size:11px;margin-top:1px}
+.hdr-logo-icon{width:32px;height:32px;flex-shrink:0;background:var(--red);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.hdr-logo h1{font-family:'Bebas Neue',sans-serif;color:#fff;font-size:22px;letter-spacing:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1}
+.hdr-logo p{color:rgba(255,255,255,.3);font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;margin-top:1px}
 .hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.hdr-auth-btn{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:8px 14px;cursor:pointer;color:rgba(255,255,255,.7);font-size:12.5px;font-weight:600;transition:all .15s;white-space:nowrap}
-.hdr-auth-btn:hover{background:rgba(255,255,255,.13);color:#fff;border-color:rgba(255,255,255,.18)}
-.hdr-cart{display:flex;align-items:center;gap:8px;background:#e11d48;border:none;border-radius:9px;padding:9px 18px;cursor:pointer;color:#fff;font-size:13px;font-weight:700;transition:all .15s;box-shadow:0 2px 12px rgba(225,29,72,.35)}
-.hdr-cart:hover{background:#be123c;transform:translateY(-1px);box-shadow:0 4px 20px rgba(225,29,72,.45)}
-.cart-count{background:rgba(0,0,0,.3);color:#fff;font-size:11px;font-weight:800;border-radius:99px;padding:1px 7px;min-width:20px;text-align:center;display:inline-block}
-/* FLOATING CART */
-.cart-fab{position:fixed;bottom:28px;right:28px;width:58px;height:58px;background:#e11d48;border-radius:18px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 24px rgba(225,29,72,.5);z-index:150;transition:all .2s}
-.cart-fab:hover{background:#be123c;transform:scale(1.07);box-shadow:0 8px 30px rgba(225,29,72,.6)}
-.cart-fab-count{position:absolute;top:-7px;right:-7px;background:#0f0f0f;color:#fff;font-size:11px;font-weight:800;border-radius:99px;padding:2px 7px;min-width:21px;text-align:center;border:2.5px solid #fff}
-/* STATUS BAR */
-.status-bar{background:#fff;border-bottom:1px solid #e8e8e8;padding:9px 28px}
-.status-inner{max-width:1320px;margin:0 auto;display:flex;align-items:center;gap:14px}
-.status-badge{display:flex;align-items:center;gap:6px;padding:5px 13px;border-radius:99px;font-size:12px;font-weight:700;border:1.5px solid}
-.status-badge.retail{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
-.status-badge.opt{background:#f0fdf4;color:#065f46;border-color:#bbf7d0}
-.status-badge.vip{background:#fffbeb;color:#92400e;border-color:#fde68a}
-/* MAIN */
-.main{max-width:1320px;margin:0 auto;padding:28px}
-/* TOOLBAR — search + cats in one line */
-.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-/* CATS */
+.hdr-auth-btn{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:3px;padding:7px 14px;cursor:pointer;color:rgba(255,255,255,.65);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif}
+.hdr-auth-btn:hover{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.35)}
+.hdr-cart{display:flex;align-items:center;gap:8px;background:var(--red);border:none;border-radius:3px;padding:8px 18px;cursor:pointer;color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:background .2s;font-family:'DM Sans',sans-serif}
+.hdr-cart:hover{background:var(--red2)}
+.cart-count{background:rgba(0,0,0,.3);color:#fff;font-size:11px;font-weight:700;border-radius:2px;padding:1px 6px;min-width:18px;text-align:center;display:inline-block}
+/* ── FAB ── */
+.cart-fab{position:fixed;bottom:32px;right:32px;width:54px;height:54px;background:var(--red);border-radius:3px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;z-index:150;transition:background .2s}
+.cart-fab:hover{background:var(--red2)}
+.cart-fab-count{position:absolute;top:-8px;right:-8px;background:var(--black);color:#fff;font-size:10px;font-weight:700;border-radius:2px;padding:2px 5px;min-width:18px;text-align:center;border:2px solid var(--off)}
+/* ── STATUS BAR ── */
+.status-bar{background:var(--white);border-bottom:1px solid var(--line);padding:0 40px;height:40px;display:flex;align-items:center}
+.status-inner{max-width:1400px;margin:0 auto;width:100%;display:flex;align-items:center;gap:16px}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:2px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:1px solid}
+.status-badge.retail{background:#e8f0fe;color:#1a56c4;border-color:#c5d8fc}
+.status-badge.opt{background:#e6f4ea;color:#1a6e34;border-color:#b6dfc4}
+.status-badge.vip{background:#fef9e7;color:#7a5a00;border-color:#f0d97a}
+/* ── LAYOUT ── */
+.main{max-width:1400px;margin:0 auto;padding:32px 40px}
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--line)}
+/* ── SEARCH ── */
+.search-wrap{position:relative;min-width:240px;flex:1;max-width:360px}
+.search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);width:14px;height:14px}
+.search-wrap input{width:100%;padding:9px 12px 9px 34px;border:1px solid var(--line);border-radius:3px;font-size:13px;outline:none;background:var(--white);font-family:'DM Sans',sans-serif;color:var(--ink);transition:border-color .2s}
+.search-wrap input::placeholder{color:var(--muted)}
+.search-wrap input:focus{border-color:var(--ink)}
+/* ── CATS ── */
 .cats{display:flex;flex-wrap:wrap;gap:6px}
-.cat-pill{padding:7px 16px;border-radius:99px;border:1.5px solid #e0e0e0;background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:#525252;transition:all .15s;line-height:1}
-.cat-pill:hover{border-color:#0f0f0f;color:#0f0f0f;background:#fafafa}
-.cat-pill.active{background:#0f0f0f;color:#fff;border-color:#0f0f0f;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-/* SEARCH */
-.search-wrap{position:relative;min-width:260px;flex:1;max-width:400px}
-.search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#a3a3a3;width:15px;height:15px}
-.search-wrap input{width:100%;padding:10px 13px 10px 37px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:13.5px;outline:none;background:#fff;font-family:inherit;transition:border-color .15s;color:#0f0f0f}
-.search-wrap input:focus{border-color:#0f0f0f;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
-/* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-/* CARD */
-.card{background:#fff;border-radius:14px;border:1px solid #e8e8e8;overflow:hidden;transition:all .22s;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,.04)}
-.card:hover{box-shadow:0 10px 36px rgba(0,0,0,.09);transform:translateY(-4px);border-color:#d0d0d0}
-.card-img{height:130px;background:linear-gradient(145deg,#f8f8f8,#efefef);display:flex;align-items:center;justify-content:center;font-size:52px;border-bottom:1px solid #f0f0f0}
+.cat-pill{padding:6px 14px;border-radius:3px;border:1px solid var(--line);background:var(--white);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif;line-height:1}
+.cat-pill:hover{border-color:var(--ink);color:var(--ink)}
+.cat-pill.active{background:var(--black);color:#fff;border-color:var(--black)}
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+/* ── CARD (сохраняем стиль с фото) ── */
+.card{background:var(--white);border-radius:12px;border:1px solid var(--line);overflow:hidden;transition:border-color .2s;display:flex;flex-direction:column}
+.card:hover{border-color:#c8c8c8}
+.card-img{height:130px;background:var(--off);display:flex;align-items:center;justify-content:center;font-size:52px;border-bottom:1px solid var(--line)}
 .card-body{padding:14px 16px;flex:1;display:flex;flex-direction:column;gap:3px}
-.card-cat{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#b0b0b0}
-.card-name{font-size:14px;font-weight:700;color:#0f0f0f;line-height:1.35;margin-top:1px}
-.card-sku{font-size:11px;color:#b0b0b0}
+.card-cat{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted)}
+.card-name{font-size:14px;font-weight:600;color:var(--ink);line-height:1.35;margin-top:2px}
+.card-sku{font-size:11px;color:var(--muted)}
 .card-stock{font-size:11.5px;font-weight:600;margin-top:3px}
-.card-stock.in{color:#059669}.card-stock.low{color:#d97706}.card-stock.out{color:#e11d48}
-/* PRICES BLOCK */
+.card-stock.in{color:#1a6e34}.card-stock.low{color:#b45309}.card-stock.out{color:var(--red)}
+/* PRICES */
 .prices-block{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
-.price-tag{flex:1;min-width:0;border-radius:9px;padding:8px 6px;text-align:center;border:1.5px solid;transition:all .15s}
+.price-tag{flex:1;min-width:0;border-radius:8px;padding:8px 6px;text-align:center;border:1.5px solid;transition:all .15s}
 .price-tag.retail{background:#f0f9ff;border-color:#bae6fd}
 .price-tag.opt{background:#f0fdf4;border-color:#bbf7d0}
 .price-tag.vip{background:#fffbeb;border-color:#fde68a}
-.price-tag.highlighted{box-shadow:0 3px 12px rgba(0,0,0,.1);transform:scale(1.05);z-index:1;position:relative}
+.price-tag.highlighted{outline:2px solid var(--ink);outline-offset:-1px}
 .price-tag-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;opacity:.7}
 .price-tag-val{font-size:13px;font-weight:800;margin-top:2px}
 .price-tag.retail .price-tag-lbl,.price-tag.retail .price-tag-val{color:#0369a1}
-.price-tag.opt .price-tag-lbl,.price-tag.opt .price-tag-val{color:#059669}
-.price-tag.vip .price-tag-lbl,.price-tag.vip .price-tag-val{color:#92400e}
-.card-btn{background:#0f0f0f;color:#fff;border:none;border-radius:10px;padding:11px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;width:100%;margin-top:10px;letter-spacing:-.1px}
-.card-btn:hover{background:#222;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.18)}
-.card-btn:disabled{background:#e8e8e8;color:#b0b0b0;cursor:not-allowed;transform:none;box-shadow:none}
-.card-btn-in{background:#059669!important;box-shadow:0 2px 10px rgba(5,150,105,.3)!important}
-.card-btn-in:hover{background:#047857!important;box-shadow:0 4px 16px rgba(5,150,105,.4)!important}
-/* EMPTY */
-.empty{text-align:center;padding:80px 20px;color:#b0b0b0;grid-column:1/-1}
-.empty-icon{font-size:48px;margin-bottom:12px;opacity:.5}
-.empty p{font-size:14px;font-weight:500}
-/* OVERLAY */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.price-tag.opt .price-tag-lbl,.price-tag.opt .price-tag-val{color:#1a6e34}
+.price-tag.vip .price-tag-lbl,.price-tag.vip .price-tag-val{color:#7a5a00}
+.card-btn{background:var(--black);color:#fff;border:none;border-radius:8px;padding:11px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s;width:100%;margin-top:10px;font-family:'DM Sans',sans-serif;letter-spacing:.3px}
+.card-btn:hover{background:#2a2a2a}
+.card-btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.card-btn-in{background:#1a6e34!important}
+.card-btn-in:hover{background:#155c2b!important}
+/* ── EMPTY ── */
+.empty{text-align:center;padding:80px 20px;color:var(--muted);grid-column:1/-1}
+.empty-icon{font-size:40px;margin-bottom:16px;opacity:.4;display:block}
+.empty p{font-size:13px;font-weight:500;letter-spacing:.5px}
+/* ── OVERLAY ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
 .overlay.hidden{display:none}
-.modal{background:#fff;border-radius:20px;width:100%;max-width:440px;box-shadow:0 28px 90px rgba(0,0,0,.2);overflow:hidden}
-.modal-hdr{padding:24px 26px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.modal-hdr h3{font-size:18px;font-weight:800;color:#0f0f0f;line-height:1.3;letter-spacing:-.3px}
-.modal-hdr button{background:none;border:none;cursor:pointer;color:#b0b0b0;font-size:22px;line-height:1;padding:0;flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:.15s}
-.modal-hdr button:hover{background:#f0f0f0;color:#0f0f0f}
-.modal-body{padding:20px 26px}
-.fg{margin-bottom:15px}
-.fg label{display:block;font-size:11px;font-weight:700;color:#525252;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px}
-.fg input,.fg textarea,.fg select{width:100%;padding:12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;font-family:inherit;outline:none;color:#0f0f0f;background:#fff;transition:all .15s}
-.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:#0f0f0f;box-shadow:0 0 0 3px rgba(0,0,0,.06)}
+.modal{background:var(--white);border-radius:4px;border:1px solid var(--line);width:100%;max-width:440px;overflow:hidden}
+.modal-hdr{padding:20px 24px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:16px}
+.modal-hdr h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--ink);line-height:1;text-transform:uppercase}
+.modal-hdr button{background:none;border:none;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;padding:0;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:2px;transition:.15s}
+.modal-hdr button:hover{background:var(--off);color:var(--ink)}
+.modal-body{padding:20px 24px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.fg input,.fg textarea,.fg select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:3px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;color:var(--ink);background:var(--white);transition:border-color .2s}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--ink)}
 .fg textarea{resize:none;min-height:70px}
-.modal-foot{padding:14px 26px 24px;display:flex;gap:10px}
-.btn-cancel{flex:1;padding:12px;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;font-size:14px;font-weight:600;cursor:pointer;color:#525252;transition:.15s}
-.btn-cancel:hover{background:#f5f5f5;border-color:#ccc}
-.btn-order{flex:2;padding:12px;border:none;border-radius:10px;background:#e11d48;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;box-shadow:0 2px 10px rgba(225,29,72,.25)}
-.btn-order:hover{background:#be123c;transform:translateY(-1px);box-shadow:0 4px 18px rgba(225,29,72,.4)}
-.success-banner{background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;font-size:14px;font-weight:600;color:#059669;margin:0 26px 20px}
-/* CART PANEL */
-.cart-panel{position:fixed;right:0;top:0;bottom:0;width:390px;background:#fff;box-shadow:-6px 0 48px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.modal-foot{padding:12px 24px 20px;display:flex;gap:8px;border-top:1px solid var(--line)}
+.btn-cancel{flex:1;padding:10px;border:1px solid var(--line);border-radius:3px;background:var(--white);font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-cancel:hover{background:var(--off);color:var(--ink)}
+.btn-order{flex:2;padding:10px;border:none;border-radius:3px;background:var(--red);color:#fff;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif}
+.btn-order:hover{background:var(--red2)}
+.success-banner{background:#e6f4ea;border:1px solid #b6dfc4;border-radius:3px;padding:14px 18px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#1a6e34;margin:0 24px 16px}
+/* ── CART PANEL ── */
+.cart-panel{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--white);border-left:1px solid var(--line);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1)}
 .cart-panel.open{transform:translateX(0)}
-.cart-hdr{padding:22px 22px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ebebeb}
-.cart-hdr h3{font-size:17px;font-weight:800;color:#0f0f0f;letter-spacing:-.2px}
-.cart-hdr button{background:none;border:none;font-size:20px;cursor:pointer;color:#b0b0b0;transition:.15s;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px}
-.cart-hdr button:hover{background:#f0f0f0;color:#0f0f0f}
-.cart-items{flex:1;overflow-y:auto;padding:12px 14px}
-.cart-item{display:flex;align-items:flex-start;gap:10px;padding:13px 12px;border-radius:12px;margin-bottom:8px;background:#f8f8f8;border:1px solid #efefef;transition:.15s}
-.cart-item:hover{background:#f4f4f4}
+.cart-hdr{padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--red)}
+.cart-hdr h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;color:var(--ink);text-transform:uppercase}
+.cart-hdr button{background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);transition:.15s;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:2px}
+.cart-hdr button:hover{background:var(--off);color:var(--ink)}
+.cart-items{flex:1;overflow-y:auto;padding:12px}
+.cart-item{display:flex;align-items:flex-start;gap:10px;padding:12px;margin-bottom:1px;background:var(--white);border:1px solid var(--line);border-radius:3px;margin-bottom:6px}
 .cart-item-info{flex:1;min-width:0}
-.cart-item-name{font-size:13px;font-weight:600;color:#0f0f0f;line-height:1.3}
-.cart-item-price{font-size:13.5px;color:#e11d48;font-weight:800;white-space:nowrap;margin-top:4px}
-.qty-ctrl{display:flex;align-items:center;gap:6px;margin-top:9px}
-.qty-ctrl button{width:28px;height:28px;border-radius:8px;border:1.5px solid #e0e0e0;background:#fff;font-size:15px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;font-weight:700;transition:.15s}
-.qty-ctrl button:hover{border-color:#0f0f0f;background:#0f0f0f;color:#fff}
-.qty-ctrl span{min-width:28px;text-align:center;font-size:14px;font-weight:700}
-.cart-footer{padding:16px 20px;border-top:1px solid #ebebeb;background:#fafafa}
-.cart-total{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:600;margin-bottom:13px;color:#525252}
-.cart-total span:last-child{font-size:22px;font-weight:800;color:#0f0f0f}
-.cart-checkout{width:100%;padding:14px;background:#e11d48;color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;box-shadow:0 2px 12px rgba(225,29,72,.3);letter-spacing:-.1px}
-.cart-checkout:hover{background:#be123c;box-shadow:0 4px 20px rgba(225,29,72,.45)}
-.cart-empty{text-align:center;padding:60px 20px;color:#b0b0b0;font-size:14px}
-.cart-empty-icon{font-size:40px;margin-bottom:10px;opacity:.4}
-/* SCROLLBAR */
-::-webkit-scrollbar{width:5px;height:5px}
+.cart-item-name{font-size:12.5px;font-weight:600;color:var(--ink);line-height:1.3}
+.cart-item-price{font-size:13px;color:var(--red);font-weight:700;white-space:nowrap;margin-top:4px;font-family:'Bebas Neue',sans-serif;letter-spacing:.5px;font-size:15px}
+.qty-ctrl{display:flex;align-items:center;gap:6px;margin-top:8px}
+.qty-ctrl button{width:26px;height:26px;border-radius:2px;border:1px solid var(--line);background:var(--white);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600;transition:.15s;color:var(--ink)}
+.qty-ctrl button:hover{border-color:var(--ink);background:var(--ink);color:#fff}
+.qty-ctrl span{min-width:28px;text-align:center;font-size:13px;font-weight:700}
+.cart-footer{padding:16px;border-top:1px solid var(--line);background:var(--off)}
+.cart-total{display:flex;justify-content:space-between;align-items:baseline;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.cart-total span:last-child{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--ink)}
+.cart-checkout{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif}
+.cart-checkout:hover{background:var(--red2)}
+.cart-empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.cart-empty-icon{font-size:36px;margin-bottom:12px;opacity:.3;display:block}
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#ddd;border-radius:10px}
-::-webkit-scrollbar-thumb:hover{background:#bbb}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:0}
+::-webkit-scrollbar-thumb:hover{background:#ccc}
+/* ── AUTH TABS ── */
+#tab-login,#tab-reg{font-family:'DM Sans',sans-serif!important;font-size:11px!important;font-weight:700!important;letter-spacing:1.5px!important;text-transform:uppercase!important}
 @media(max-width:640px){
-  .grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .cart-panel{width:100%}
-  .hdr-inner{height:56px}
-  .main{padding:16px}
+  .hdr-inner{padding:0 16px}
+  .main{padding:20px 16px}
+  .status-bar{padding:0 16px}
   .prices-block{flex-direction:column}
   .toolbar{flex-direction:column;align-items:stretch}
   .search-wrap{max-width:100%}
@@ -146,16 +161,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
     <a class="hdr-logo" href="#">
       <div class="hdr-logo-icon">⚡</div>
       <div>
-        <h1 id="shop-name">Zero.height</h1>
-        <p id="shop-subtitle">Интернет-магазин</p>
+        <h1 id="shop-name">ZERO.HEIGHT</h1>
+        <p id="shop-subtitle">КАТАЛОГ ЗАПЧАСТЕЙ</p>
       </div>
     </a>
     <div class="hdr-right">
       <button class="hdr-auth-btn" onclick="openAuthModal()" id="auth-btn">
-        👤 <span id="auth-btn-label">Войти</span>
+        👤 <span id="auth-btn-label">ВОЙТИ</span>
       </button>
       <button class="hdr-cart" onclick="toggleCart()">
-        🛒&nbsp;<span class="cart-count" id="cart-count">0</span>
+        КОРЗИНА &nbsp;<span class="cart-count" id="cart-count">0</span>
       </button>
     </div>
   </div>
@@ -164,10 +179,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
 <!-- STATUS BAR (shown when logged in) -->
 <div class="status-bar" id="status-bar" style="display:none">
   <div class="status-inner">
-    <span style="font-size:12px;color:#64748b;font-weight:500">Ваши цены:</span>
-    <span class="status-badge retail" id="user-status-badge">💳 Розница</span>
-    <span style="font-size:12px;color:#94a3b8" id="user-welcome"></span>
-    <button onclick="logoutUser()" style="margin-left:auto;background:none;border:none;font-size:12px;color:#94a3b8;cursor:pointer;text-decoration:underline">Выйти</button>
+    <span style="font-size:10px;color:var(--muted);font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Ваш тариф:</span>
+    <span class="status-badge retail" id="user-status-badge">РОЗНИЦА</span>
+    <span style="font-size:12px;color:var(--muted);font-weight:500" id="user-welcome"></span>
+    <button onclick="logoutUser()" style="margin-left:auto;background:none;border:none;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:.2s" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--muted)'">ВЫЙТИ →</button>
   </div>
 </div>
 
@@ -187,26 +202,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
 
 <!-- CHECKOUT MODAL -->
 <div class="overlay hidden" id="m-checkout">
-  <div class="modal" style="max-width:400px">
+  <div class="modal" style="max-width:420px">
     <div class="modal-hdr">
-      <h3>🛒 Оформление заказа</h3>
+      <h3>ОФОРМЛЕНИЕ ЗАКАЗА</h3>
       <button onclick="closeCheckout()">×</button>
     </div>
     <div id="checkout-success" class="success-banner" style="display:none;margin:16px 24px 0">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:20px;height:20px;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
-      Заказ принят! Менеджер свяжется с вами.
+      ✓ ЗАКАЗ ПРИНЯТ — МЕНЕДЖЕР СВЯЖЕТСЯ С ВАМИ
     </div>
     <div class="modal-body" id="checkout-form-wrap">
-      <div id="co-client-found" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:12px 16px;font-size:13px;color:#15803d;font-weight:600;margin-bottom:16px;line-height:1.6"></div>
-      <div id="co-cart-summary" style="background:#fafafa;border:1px solid #e8e8e8;border-radius:10px;padding:12px 14px;margin-bottom:16px;max-height:140px;overflow-y:auto"></div>
+      <div id="co-client-found" style="background:#e6f4ea;border:1px solid #b6dfc4;border-radius:3px;padding:10px 14px;font-size:12px;color:#1a6e34;font-weight:700;letter-spacing:.3px;margin-bottom:14px;line-height:1.6"></div>
+      <div id="co-cart-summary" style="background:var(--off);border:1px solid var(--line);border-radius:3px;padding:12px 14px;margin-bottom:14px;max-height:140px;overflow-y:auto"></div>
       <div class="fg" style="margin-bottom:0">
         <label>Комментарий к заказу</label>
-        <textarea id="co-comment" placeholder="Пожелания, уточнения..." style="min-height:60px;resize:none;width:100%;padding:11px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .15s"></textarea>
+        <textarea id="co-comment" placeholder="Пожелания, уточнения..."></textarea>
       </div>
     </div>
     <div class="modal-foot">
       <button class="btn-cancel" onclick="closeCheckout()">Отмена</button>
-      <button class="btn-order" id="checkout-submit-btn" onclick="submitCheckout()">✓ Оформить</button>
+      <button class="btn-order" id="checkout-submit-btn" onclick="submitCheckout()">ОФОРМИТЬ</button>
     </div>
   </div>
 </div>
@@ -214,18 +228,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
 <!-- AUTH MODAL -->
 <div class="overlay hidden" id="m-auth">
   <div class="modal" style="max-width:420px">
-    <div class="modal-hdr" style="padding-bottom:0">
-      <h3 id="auth-modal-title">Вход в аккаунт</h3>
+    <div class="modal-hdr">
+      <h3 id="auth-modal-title">ВХОД В АККАУНТ</h3>
       <button onclick="closeAuthModal()">×</button>
     </div>
     <!-- Tabs -->
-    <div style="display:flex;gap:0;padding:16px 26px 0;border-bottom:1px solid #ebebeb;margin-top:14px">
-      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2.5px solid #0f0f0f;font-size:13.5px;font-weight:700;cursor:pointer;color:#0f0f0f;transition:.15s">Войти</button>
-      <button id="tab-reg" onclick="switchAuthTab('reg')" style="flex:1;padding:9px 0;background:none;border:none;border-bottom:2.5px solid transparent;font-size:13.5px;font-weight:600;cursor:pointer;color:#a3a3a3;transition:.15s">Регистрация</button>
+    <div style="display:flex;gap:0;padding:0 24px;border-bottom:1px solid var(--line)">
+      <button id="tab-login" onclick="switchAuthTab('login')" style="flex:1;padding:12px 0;background:none;border:none;border-bottom:2px solid var(--ink);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;color:var(--ink);transition:.2s;font-family:'DM Sans',sans-serif">Войти</button>
+      <button id="tab-reg" onclick="switchAuthTab('reg')" style="flex:1;padding:12px 0;background:none;border:none;border-bottom:2px solid transparent;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;color:var(--muted);transition:.2s;font-family:'DM Sans',sans-serif">Регистрация</button>
     </div>
     <!-- Login form -->
     <div id="auth-login-form" class="modal-body">
-      <div id="auth-error" style="display:none;background:#fff1f2;border:1.5px solid #fda4af;border-radius:10px;padding:10px 14px;font-size:13px;color:#be123c;font-weight:600;margin-bottom:14px"></div>
+      <div id="auth-error" style="display:none;background:#fbeaea;border:1px solid #f5a0a0;border-radius:3px;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--red);margin-bottom:14px"></div>
       <div class="fg">
         <label>Телефон</label>
         <input id="login-phone" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">
@@ -233,45 +247,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
       <div class="fg" style="margin-bottom:0">
         <label>Пароль</label>
         <div style="position:relative">
-          <input id="login-pass" type="password" placeholder="Введите пароль" autocomplete="current-password" style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .15s">
-          <button onclick="togglePassVis('login-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#a3a3a3;font-size:16px;padding:0;line-height:1">👁</button>
+          <input id="login-pass" type="password" placeholder="Введите пароль" autocomplete="current-password" style="width:100%;padding:10px 40px 10px 12px;border:1px solid var(--line);border-radius:3px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s">
+          <button onclick="togglePassVis('login-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:0;line-height:1">👁</button>
         </div>
       </div>
     </div>
     <div class="modal-foot" id="auth-login-foot">
       <button class="btn-cancel" onclick="closeAuthModal()">Отмена</button>
-      <button class="btn-order" onclick="submitLogin()">→ Войти</button>
+      <button class="btn-order" onclick="submitLogin()">ВОЙТИ →</button>
     </div>
     <!-- Register form -->
     <div id="auth-reg-form" class="modal-body" style="display:none">
-      <div id="reg-error" style="display:none;background:#fff1f2;border:1.5px solid #fda4af;border-radius:10px;padding:10px 14px;font-size:13px;color:#be123c;font-weight:600;margin-bottom:14px"></div>
+      <div id="reg-error" style="display:none;background:#fbeaea;border:1px solid #f5a0a0;border-radius:3px;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--red);margin-bottom:14px"></div>
       <div class="fg">
-        <label>ФИО <span style="color:#ef4444">*</span></label>
+        <label>ФИО <span style="color:var(--red)">*</span></label>
         <input id="reg-name" type="text" placeholder="Иванов Иван Иванович" autocomplete="name">
       </div>
       <div class="fg">
-        <label>Название сервисного центра <span style="color:#ef4444">*</span></label>
-        <input id="reg-company" type="text" placeholder="ООО «Мастер»" autocomplete="organization">
+        <label>Название сервисного центра <span style="color:var(--red)">*</span></label>
+        <input id="reg-company" type="text" placeholder="ООО Мастер" autocomplete="organization">
       </div>
       <div class="fg">
-        <label>Телефон <span style="color:#ef4444">*</span></label>
+        <label>Телефон <span style="color:var(--red)">*</span></label>
         <input id="reg-phone" type="tel" placeholder="+7 900 000-00-00" autocomplete="tel">
       </div>
       <div class="fg">
-        <label>Пароль <span style="color:#ef4444">*</span></label>
+        <label>Пароль <span style="color:var(--red)">*</span></label>
         <div style="position:relative">
-          <input id="reg-pass" type="password" placeholder="Минимум 4 символа" autocomplete="new-password" style="width:100%;padding:12px 44px 12px 14px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:14px;outline:none;font-family:inherit;transition:all .15s">
-          <button onclick="togglePassVis('reg-pass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#a3a3a3;font-size:16px;padding:0;line-height:1">👁</button>
+          <input id="reg-pass" type="password" placeholder="Минимум 4 символа" autocomplete="new-password" style="width:100%;padding:10px 40px 10px 12px;border:1px solid var(--line);border-radius:3px;font-size:13px;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s">
+          <button onclick="togglePassVis('reg-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:15px;padding:0;line-height:1">👁</button>
         </div>
       </div>
       <div class="fg" style="margin-bottom:0">
-        <label>Повторите пароль <span style="color:#ef4444">*</span></label>
+        <label>Повторите пароль <span style="color:var(--red)">*</span></label>
         <input id="reg-pass2" type="password" placeholder="Повторите пароль" autocomplete="new-password">
       </div>
     </div>
     <div class="modal-foot" id="auth-reg-foot" style="display:none">
       <button class="btn-cancel" onclick="closeAuthModal()">Отмена</button>
-      <button class="btn-order" onclick="submitRegister()">✓ Зарегистрироваться</button>
+      <button class="btn-order" onclick="submitRegister()">ЗАРЕГИСТРИРОВАТЬСЯ</button>
     </div>
   </div>
 </div>
@@ -279,16 +293,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,san
 <!-- CART PANEL -->
 <div class="cart-panel" id="cart-panel">
   <div class="cart-hdr">
-    <h3>🛒 Корзина</h3>
+    <h3>КОРЗИНА</h3>
     <button onclick="toggleCart()">×</button>
   </div>
   <div class="cart-items" id="cart-items-list"></div>
   <div class="cart-footer">
     <div class="cart-total">
-      <span>Итого:</span>
+      <span>ИТОГО</span>
       <span id="cart-total-val">0 ₽</span>
     </div>
-    <button class="cart-checkout" onclick="checkoutCart()">Оформить заказ</button>
+    <button class="cart-checkout" onclick="checkoutCart()">ОФОРМИТЬ ЗАКАЗ →</button>
   </div>
 </div>
 
