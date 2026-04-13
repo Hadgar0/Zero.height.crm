@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOS-LCD — Запчасти для iPhone | Тольятти</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #ffffff;
+    --off: #f7f6f4;
+    --black: #111010;
+    --ink: #1a1a1a;
+    --red: #d42b2b;
+    --red2: #b01e1e;
+    --muted: #888;
+    --line: #e4e4e4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 48px;
+    height: 64px;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 3px;
+    color: var(--black); text-decoration: none;
+    display: flex; align-items: center; gap: 2px;
+  }
+  .logo .dot { color: var(--red); }
+
+  nav ul { display: flex; gap: 32px; list-style: none; }
+  nav a {
+    color: var(--muted); text-decoration: none;
+    font-size: 13px; font-weight: 500; letter-spacing: 0.5px;
+    transition: color .2s;
+  }
+  nav a:hover { color: var(--black); }
+
+  .nav-price {
+    background: var(--red) !important;
+    color: #fff !important;
+    padding: 10px 22px;
+    border-radius: 3px;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    letter-spacing: 0.5px;
+    transition: background .2s !important;
+  }
+  .nav-price:hover { background: var(--red2) !important; color: #fff !important; }
+
+  .nav-auth { display: flex; align-items: center; gap: 8px; }
+  .btn-login {
+    background: transparent; border: 1px solid var(--line);
+    color: var(--ink); padding: 8px 18px; border-radius: 3px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .2s;
+    white-space: nowrap;
+  }
+  .btn-login:hover { border-color: var(--ink); }
+  .btn-register {
+    background: var(--black); color: #fff;
+    border: 1px solid var(--black);
+    padding: 8px 18px; border-radius: 3px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .2s;
+    white-space: nowrap;
+  }
+  .btn-register:hover { background: #333; border-color: #333; }
+
+  /* ── USER AVATAR (after login) ── */
+  .nav-user {
+    display: none; align-items: center; gap: 10px; cursor: pointer;
+    padding: 6px 10px 6px 6px; border-radius: 3px;
+    border: 1px solid var(--line); transition: background .2s;
+    position: relative;
+  }
+  .nav-user:hover { background: var(--off); }
+  .nav-user.active { display: flex; }
+  .user-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--red); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .user-name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .user-chevron { font-size: 10px; color: var(--muted); }
+
+  /* ── CABINET OVERLAY (full screen Windows-style) ── */
+  .cabinet-overlay {
+    display: none; position: fixed; inset: 0; z-index: 900;
+    background: rgba(10,10,10,0.55); backdrop-filter: blur(4px);
+  }
+  .cabinet-overlay.open { display: block; }
+
+  .cabinet-panel {
+    position: fixed; top: 64px; right: 0; bottom: 0;
+    width: min(520px, 100vw);
+    background: #f3f3f3;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    z-index: 950; overflow: hidden;
+  }
+  .cabinet-overlay.open .cabinet-panel { transform: translateX(0); }
+
+  /* Cabinet header */
+  .cab-header {
+    background: var(--black);
+    padding: 20px 24px 18px;
+    display: flex; align-items: center; gap: 16px;
+    border-bottom: 2px solid var(--red);
+    flex-shrink: 0;
+  }
+  .cab-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--red); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 700; flex-shrink: 0;
+  }
+  .cab-user-info { flex: 1; }
+  .cab-username { font-size: 16px; font-weight: 700; color: #fff; line-height: 1.2; }
+  .cab-email { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+  .cab-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(232,255,0,0.12); border: 1px solid rgba(232,255,0,0.3);
+    color: #e8ff00; font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 10px; margin-top: 6px;
+  }
+  .cab-status::before { content:''; width:5px; height:5px; border-radius:50%; background:#e8ff00; }
+  .cab-close-btn {
+    background: none; border: none; color: rgba(255,255,255,0.4);
+    font-size: 20px; cursor: pointer; padding: 4px 8px;
+    transition: color .2s; flex-shrink: 0;
+  }
+  .cab-close-btn:hover { color: #fff; }
+
+  /* Cabinet body scroll */
+  .cab-body { flex: 1; overflow-y: auto; padding: 20px; }
+
+  /* Section labels inside cabinet */
+  .cab-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 10px; margin-top: 4px;
+  }
+
+  /* Windows-style tile grid */
+  .win-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .win-tile {
+    background: var(--black);
+    border-radius: 2px;
+    padding: 14px 10px 12px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer; text-decoration: none;
+    transition: all .18s; aspect-ratio: 1;
+    position: relative; overflow: hidden;
+    border: 1px solid transparent;
+  }
+  .win-tile:hover {
+    transform: scale(1.04);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .win-tile.active-tile { border-color: var(--red) !important; }
+  .win-tile.red   { background: var(--red); }
+  .win-tile.blue  { background: #1e6fb0; }
+  .win-tile.green { background: #1a7a3c; }
+  .win-tile.orange{ background: #c45a00; }
+  .win-tile.purple{ background: #5a2d82; }
+  .win-tile.teal  { background: #007a7a; }
+  .win-tile.gray  { background: #3a3a3a; }
+  .win-tile.gold  { background: #8a6800; }
+  .win-tile-icon  { font-size: 26px; line-height: 1; }
+  .win-tile-label {
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.3px; color: rgba(255,255,255,0.9);
+    text-align: center; line-height: 1.2;
+  }
+  .win-tile-badge {
+    position: absolute; top: 6px; right: 6px;
+    background: #e8ff00; color: #000;
+    font-size: 9px; font-weight: 800;
+    width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Wide tile (2 cols) */
+  .win-tile-wide {
+    grid-column: span 2; aspect-ratio: auto;
+    flex-direction: row; justify-content: flex-start;
+    gap: 14px; padding: 16px 18px;
+  }
+  .win-tile-wide .win-tile-icon { font-size: 28px; }
+  .win-tile-wide .win-tile-label { font-size: 12px; text-align: left; }
+  .win-tile-wide .tile-wide-info { display: flex; flex-direction: column; gap: 2px; }
+  .win-tile-wide .tile-sub { font-size: 10px; color: rgba(255,255,255,0.5); }
+
+  /* Cabinet sub-panels */
+  .cab-subpanel { display: none; }
+  .cab-subpanel.active { display: block; }
+
+  /* Status card */
+  .status-card {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 3px; padding: 18px 20px; margin-bottom: 10px;
+  }
+  .status-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid var(--off);
+  }
+  .status-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .status-key { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .status-val { font-size: 13px; color: var(--ink); font-weight: 600; }
+  .status-val.green { color: #16a34a; }
+  .status-val.red   { color: var(--red); }
+  .status-val.gold  { color: #b45309; }
+
+  /* Order history */
+  .order-item {
+    background: var(--white); border: 1px solid var(--line);
+    border-radius: 3px; padding: 14px 16px;
+    margin-bottom: 8px; cursor: pointer; transition: background .15s;
+  }
+  .order-item:hover { background: #fef9f9; border-color: #fecaca; }
+  .order-top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 6px;
+  }
+  .order-num { font-size: 13px; font-weight: 700; color: var(--black); }
+  .order-date { font-size: 11px; color: var(--muted); }
+  .order-goods { font-size: 12px; color: var(--muted); margin-bottom: 8px; line-height: 1.5; }
+  .order-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .order-amount { font-size: 14px; font-weight: 700; color: var(--black); }
+  .order-status {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 10px;
+  }
+  .os-done    { background: #dcfce7; color: #16a34a; }
+  .os-process { background: #fef9c3; color: #a16207; }
+  .os-new     { background: #dbeafe; color: #1d4ed8; }
+  .os-cancel  { background: #fee2e2; color: #dc2626; }
+
+  /* Profile form */
+  .profile-form { background: var(--white); border: 1px solid var(--line); border-radius: 3px; padding: 18px 20px; }
+  .profile-field { margin-bottom: 12px; }
+  .profile-label { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px; }
+  .profile-input {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--line);
+    border-radius: 3px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--ink); outline: none; transition: border-color .2s;
+  }
+  .profile-input:focus { border-color: var(--red); }
+
+  /* Loyalty progress */
+  .loyalty-card {
+    background: var(--black); border-radius: 3px; padding: 20px;
+    margin-bottom: 10px; color: #fff;
+  }
+  .loyalty-level {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+    color: var(--red); letter-spacing: 1px; margin-bottom: 4px;
+  }
+  .loyalty-desc { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+  .loyalty-bar-wrap {
+    background: rgba(255,255,255,0.1); border-radius: 2px;
+    height: 6px; margin-bottom: 8px; overflow: hidden;
+  }
+  .loyalty-bar {
+    height: 100%; background: var(--red); border-radius: 2px;
+    transition: width 1s ease;
+  }
+  .loyalty-bar-info { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,0.4); }
+
+  /* Notifications */
+  .notif-item {
+    background: var(--white); border: 1px solid var(--line); border-radius: 3px;
+    padding: 12px 14px; margin-bottom: 6px; display: flex; gap: 12px;
+  }
+  .notif-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .notif-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .notif-time { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  /* Back button inside panel */
+  .cab-back-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    padding: 0 0 14px; transition: color .2s;
+  }
+  .cab-back-btn:hover { color: var(--ink); }
+
+  /* Logout */
+  .cab-logout {
+    background: none; border: 1px solid var(--line);
+    width: 100%; padding: 10px; border-radius: 3px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 600; color: var(--muted); cursor: pointer;
+    transition: all .2s; margin-top: 12px;
+  }
+  .cab-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(3px);
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white);
+    width: 100%; max-width: 420px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    animation: modalIn .22s ease;
+  }
+  @keyframes modalIn {
+    from { transform: translateY(-16px); opacity: 0; }
+    to   { transform: none; opacity: 1; }
+  }
+
+  .modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px 18px;
+    border-bottom: 1px solid var(--line);
+    background: var(--off);
+  }
+  .modal-title {
+    font-size: 18px; font-weight: 700; color: var(--black);
+  }
+  .modal-close {
+    background: none; border: none; cursor: pointer;
+    font-size: 18px; color: var(--muted); line-height: 1;
+    padding: 4px 8px; border-radius: 2px; transition: color .2s;
+  }
+  .modal-close:hover { color: var(--black); }
+
+  .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+
+  .modal-input {
+    width: 100%; padding: 12px 14px;
+    border: 1px solid var(--line); border-radius: 3px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink);
+    background: var(--white); outline: none; transition: border-color .2s;
+  }
+  .modal-input:focus { border-color: var(--red); }
+  .modal-input::placeholder { color: #bbb; }
+
+  .modal-radio-group { display: flex; flex-direction: column; gap: 6px; padding: 4px 0; }
+  .modal-radio-label {
+    font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 6px;
+  }
+  .radio-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 14px; color: var(--ink); cursor: pointer;
+  }
+  .radio-row input[type="radio"] {
+    accent-color: var(--red); width: 16px; height: 16px; cursor: pointer;
+  }
+
+  .checkbox-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--ink); line-height: 1.5;
+  }
+  .checkbox-row input[type="checkbox"] {
+    accent-color: var(--red); width: 16px; height: 16px;
+    margin-top: 2px; flex-shrink: 0; cursor: pointer;
+  }
+  .checkbox-row a { color: var(--red); font-weight: 600; text-decoration: none; }
+  .checkbox-row a:hover { text-decoration: underline; }
+
+  .btn-modal-submit {
+    width: 100%; padding: 14px;
+    background: var(--red); color: #fff;
+    border: none; border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    transition: background .2s; margin-top: 4px;
+  }
+  .btn-modal-submit:hover { background: var(--red2); }
+
+  .modal-footer-links {
+    display: flex; justify-content: space-between;
+    padding: 0 24px 22px; margin-top: -4px;
+  }
+  .modal-link {
+    font-size: 13px; color: var(--ink); text-decoration: underline;
+    cursor: pointer; background: none; border: none;
+    font-family: 'DM Sans', sans-serif; transition: color .2s;
+  }
+  .modal-link:hover { color: var(--red); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 64px;
+  }
+
+  .hero-left {
+    background: var(--black);
+    padding: 80px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+
+  .hero-left::before {
+    content: 'MOS';
+    position: absolute; right: -20px; bottom: -40px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 220px; letter-spacing: -8px;
+    color: rgba(255,255,255,0.03);
+    pointer-events: none; line-height: 1;
+  }
+
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 28px;
+  }
+  .hero-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--red);
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .hero-eyebrow span {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 8vw, 120px);
+    line-height: 0.92; letter-spacing: 1px;
+    color: #fff; margin-bottom: 28px;
+  }
+  h1 .red { color: var(--red); }
+
+  .hero-sub {
+    font-size: 15px; line-height: 1.7;
+    color: rgba(255,255,255,0.5);
+    max-width: 400px; margin-bottom: 44px;
+  }
+
+  .hero-btns { display: flex; gap: 12px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 13px; letter-spacing: 0.3px;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: all .22s; border-radius: 3px;
+  }
+  .btn-red { background: var(--red); color: #fff; }
+  .btn-red:hover { background: var(--red2); transform: translateY(-1px); }
+  .btn-outline-white {
+    background: transparent; color: rgba(255,255,255,0.7);
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+  .btn-outline-white:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+  .hero-right {
+    background: var(--off);
+    padding: 80px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+    border-left: 1px solid var(--line);
+  }
+
+  .hero-stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1px; background: var(--line);
+    border: 1px solid var(--line);
+    margin-bottom: 36px;
+  }
+
+  .hstat {
+    background: var(--white);
+    padding: 28px 24px;
+  }
+  .hstat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px; line-height: 1;
+    color: var(--black); letter-spacing: -1px;
+  }
+  .hstat-num span { color: var(--red); }
+  .hstat-label {
+    font-size: 12px; color: var(--muted);
+    font-weight: 500; margin-top: 4px; letter-spacing: 0.3px;
+  }
+
+  .grade-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 6px 14px; border-radius: 2px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    background: var(--white); color: var(--ink);
+    transition: all .2s; cursor: default;
+  }
+  .chip:hover { border-color: var(--red); color: var(--red); }
+  .chip.red { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* ── TICKER ── */
+  .ticker {
+    background: var(--black);
+    overflow: hidden; padding: 12px 0;
+    border-top: 2px solid var(--red);
+    border-bottom: 2px solid var(--red);
+  }
+  .ticker-inner {
+    display: flex; gap: 60px;
+    animation: tick 25s linear infinite;
+    width: max-content;
+  }
+  .ticker-item {
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(255,255,255,0.5); white-space: nowrap;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .ticker-item .sep { color: var(--red); font-size: 14px; }
+  @keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* ── SECTIONS ── */
+  section { padding: 96px 48px; }
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--red); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before {
+    content: ''; display: block;
+    width: 24px; height: 2px; background: var(--red);
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1; margin-bottom: 56px; color: var(--black);
+  }
+
+  /* ── GRADES ── */
+  .grades-section { background: var(--white); }
+
+  .grades-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--line);
+    border: 1px solid var(--line);
+  }
+
+  .grade-card {
+    background: var(--white);
+    padding: 36px 28px;
+    position: relative; overflow: hidden;
+    transition: background .25s;
+  }
+  .grade-card:hover { background: var(--off); }
+  .grade-card::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 3px;
+    background: var(--red); transform: scaleX(0);
+    transform-origin: left; transition: transform .3s;
+  }
+  .grade-card:hover::after { transform: scaleX(1); }
+
+  .gc-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px; letter-spacing: 3px;
+    color: var(--line); margin-bottom: 20px;
+  }
+  .gc-badge {
+    display: inline-block;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 2px;
+    margin-bottom: 16px;
+  }
+  .gc-name {
+    font-size: 15px; font-weight: 700;
+    color: var(--black); line-height: 1.3; margin-bottom: 8px;
+  }
+  .gc-warranty {
+    font-size: 12px; color: var(--muted);
+    margin-bottom: 10px; font-weight: 500;
+  }
+  .gc-desc { font-size: 13px; color: #999; line-height: 1.6; }
+
+  /* badge colors */
+  .b-orig  { background:#fef2f2; color:#c0392b; border:1px solid #fecaca; }
+  .b-snat  { background:#fff7ed; color:#d97706; border:1px solid #fed7aa; }
+  .b-serv  { background:#eff6ff; color:#2563eb; border:1px solid #bfdbfe; }
+  .b-fog   { background:#f5f3ff; color:#7c3aed; border:1px solid #ddd6fe; }
+  .b-rj    { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+  .b-copy  { background:#f9fafb; color:#374151; border:1px solid #e5e7eb; }
+  .b-amoled{ background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+  .b-dd    { background:#ecfdf5; color:#059669; border:1px solid #a7f3d0; }
+
+  /* ── WHY US ── */
+  .why-section { background: var(--black); }
+  .why-section .section-label { color: rgba(255,255,255,0.4); }
+  .why-section .section-label::before { background: var(--red); }
+  .why-section .section-title { color: #fff; }
+
+  .why-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1px; background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .why-card {
+    background: var(--black); padding: 44px 36px;
+    transition: background .25s;
+  }
+  .why-card:hover { background: #1a1a1a; }
+  .why-icon { font-size: 28px; margin-bottom: 20px; }
+  .why-title {
+    font-size: 17px; font-weight: 700; color: #fff;
+    margin-bottom: 10px; line-height: 1.3;
+  }
+  .why-desc { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.7; }
+
+  /* ── ORDER ── */
+  .order-section { background: var(--off); }
+
+  .order-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: var(--line);
+    border: 1px solid var(--line);
+    margin-bottom: 64px;
+  }
+
+  .order-card {
+    background: var(--white); padding: 40px 28px;
+    position: relative; transition: background .25s;
+  }
+  .order-card:hover { background: var(--off); }
+
+  .oc-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px; line-height: 1;
+    color: var(--line); margin-bottom: 20px;
+  }
+  .oc-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--black); }
+  .oc-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  .order-cta {
+    display: flex; gap: 14px; flex-wrap: wrap;
+  }
+
+  .btn-black { background: var(--black); color: #fff; }
+  .btn-black:hover { background: #333; transform: translateY(-1px); }
+  .btn-outline-black {
+    background: transparent; color: var(--black);
+    border: 1px solid var(--line);
+  }
+  .btn-outline-black:hover { border-color: var(--black); }
+
+  /* ── VIP BANNER ── */
+  .vip-banner {
+    background: var(--red);
+    padding: 64px 48px;
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 32px; flex-wrap: wrap;
+  }
+  .vip-text h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 52px);
+    color: #fff; line-height: 1; margin-bottom: 10px;
+  }
+  .vip-text p { color: rgba(255,255,255,0.75); font-size: 15px; max-width: 500px; }
+  .btn-white { background: #fff; color: var(--red); font-weight: 700; }
+  .btn-white:hover { background: #f5f5f5; transform: translateY(-1px); }
+
+  /* ── CONTACTS ── */
+  .contacts-section { background: var(--white); }
+  .contacts-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 1px; background: var(--line);
+    border: 1px solid var(--line);
+    max-width: 720px; margin-bottom: 48px;
+  }
+  .contact-card {
+    background: var(--white); padding: 28px 32px;
+    display: flex; align-items: center; gap: 18px;
+    text-decoration: none; color: var(--ink);
+    transition: background .2s;
+  }
+  .contact-card:hover { background: var(--off); }
+  .contact-icon { font-size: 24px; }
+  .contact-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .contact-val { font-size: 15px; font-weight: 600; color: var(--black); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black);
+    padding: 36px 48px;
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 16px;
+    border-top: 2px solid var(--red);
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 3px; color: #fff;
+    text-decoration: none;
+  }
+  .footer-logo .dot { color: var(--red); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .footer-date { font-size: 11px; color: var(--red); letter-spacing: 1px; font-weight: 600; }
+
+  /* ── SHOP LAYOUT ── */
+  .shop-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 600px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Sidebar */
+  .shop-sidebar {
+    border-right: 1px solid var(--line);
+    background: var(--white);
+  }
+
+  .sidebar-header {
+    background: var(--black);
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sidebar-header-icon {
+    display: flex; flex-direction: column; gap: 3px; cursor: pointer;
+  }
+  .sidebar-header-icon span {
+    display: block; width: 18px; height: 2px; background: #fff;
+  }
+  .sidebar-header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 3px; color: #fff;
+  }
+
+  /* Accordion items */
+  .acc-item { border-bottom: 1px solid var(--line); }
+  .acc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: var(--ink);
+    transition: background .15s;
+    user-select: none;
+  }
+  .acc-header:hover { background: var(--off); }
+  .acc-header.active { background: var(--off); color: var(--red); }
+  .acc-chevron {
+    font-size: 11px; color: var(--muted);
+    transition: transform .25s;
+  }
+  .acc-header.active .acc-chevron { transform: rotate(180deg); color: var(--red); }
+
+  .acc-body {
+    display: none;
+    background: var(--off);
+    border-top: 1px solid var(--line);
+  }
+  .acc-body.open { display: block; }
+  .acc-sub-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px 10px 36px;
+    font-size: 13px; color: #555;
+    cursor: pointer; transition: all .15s;
+    text-decoration: none;
+  }
+  .acc-sub-item:hover { background: #eedada; color: var(--red); padding-left: 42px; }
+  .acc-sub-item .sub-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--line); flex-shrink: 0;
+  }
+  .acc-sub-item:hover .sub-dot { background: var(--red); }
+
+  /* Sale item (no accordion) */
+  .acc-item-sale .acc-header { color: var(--red); font-weight: 700; }
+
+  /* Shop main content */
+  .shop-content { background: var(--white); }
+
+  /* Popular products grid */
+  .popular-header {
+    padding: 24px 28px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+  }
+  .popular-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 1px; color: var(--black);
+  }
+  .popular-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .popular-all-link {
+    font-size: 12px; font-weight: 700; color: var(--red);
+    text-decoration: none; letter-spacing: 0.5px;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    padding: 20px;
+  }
+
+  .product-card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 0;
+    cursor: pointer;
+    transition: box-shadow .2s, transform .2s;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+  .product-card:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+  }
+
+  /* Image / icon area */
+  .pc-image {
+    background: var(--off);
+    height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px;
+    flex-shrink: 0;
+  }
+
+  /* Body */
+  .pc-body {
+    padding: 14px 14px 0;
+    display: flex; flex-direction: column; gap: 5px;
+    flex: 1;
+  }
+  .pc-category {
+    font-size: 9px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .pc-name {
+    font-size: 14px; font-weight: 700; color: var(--black);
+    line-height: 1.35;
+  }
+  .pc-stock {
+    font-size: 12px; font-weight: 600; color: #16a34a;
+    display: flex; align-items: center; gap: 4px;
+    margin-top: 2px;
+  }
+  .pc-stock.out { color: var(--muted); }
+
+  /* Prices row */
+  .pc-prices {
+    display: flex; gap: 6px;
+    padding: 10px 14px;
+  }
+  .pc-price-box {
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 7px 6px;
+    text-align: center;
+  }
+  .pc-price-box.vip {
+    border-color: #fcd34d;
+    background: #fffbeb;
+  }
+  .pc-price-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--muted);
+    display: flex; align-items: center; justify-content: center; gap: 3px;
+    margin-bottom: 3px;
+  }
+  .pc-price-box.vip .pc-price-label { color: #b45309; }
+  .pc-price-val {
+    font-size: 13px; font-weight: 800; color: var(--black);
+  }
+  .pc-price-box.vip .pc-price-val { color: #b45309; }
+
+  /* Cart button */
+  .pc-btn {
+    margin: 0 14px 14px;
+    background: var(--black);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: background .18s;
+    width: calc(100% - 28px);
+  }
+  .pc-btn:hover { background: var(--red); }
+
+  /* Category view (when selected from sidebar) */
+  .cat-view-header {
+    padding: 20px 28px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .cat-view-back {
+    background: none; border: 1px solid var(--line);
+    border-radius: 2px; padding: 6px 12px;
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+  }
+  .cat-view-back:hover { border-color: var(--ink); color: var(--ink); }
+  .cat-view-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 1px; color: var(--black);
+  }
+
+  /* Login prompt overlay */
+  .login-prompt {
+    display: flex;
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(3px);
+    z-index: 10;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; text-align: center; padding: 40px;
+  }
+  .login-prompt.hidden { display: none; }
+  .lp-icon { font-size: 48px; }
+  .lp-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--black); }
+  .lp-desc { font-size: 14px; color: var(--muted); max-width: 300px; line-height: 1.6; }
+
+  @media (max-width: 900px) {
+    .shop-layout { grid-template-columns: 1fr; }
+    .shop-sidebar { border-right: none; border-bottom: 1px solid var(--line); }
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 14px; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-left, .hero-right { padding: 60px 32px; }
+    nav { padding: 0 24px; }
+    nav ul { display: none; }
+    section { padding: 64px 24px; }
+    .grades-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-grid { grid-template-columns: 1fr; }
+    .order-grid { grid-template-columns: repeat(2, 1fr); }
+    .contacts-grid { grid-template-columns: 1fr; }
+    footer, .vip-banner { padding: 40px 24px; }
+  }
+
+  /* ── ANIMATIONS ── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s, transform .6s; }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">MOS<span class="dot">·</span>LCD</a>
+  <ul>
+    <li><a href="#catalog">Каталог</a></li>
+    <li><a href="#grades">Дисплеи</a></li>
+    <li><a href="#order">Заказ</a></li>
+    <li><a href="#contacts">Контакты</a></li>
+    <li><a href="price.html" class="nav-price">📋 Прайс-лист</a></li>
+  </ul>
+  <div class="nav-auth" id="nav-auth-btns">
+    <button class="btn-login" onclick="openModal('login')">Войти</button>
+    <button class="btn-register" onclick="openModal('register')">Регистрация</button>
+  </div>
+  <div class="nav-user" id="nav-user-btn" onclick="openCabinet()">
+    <div class="user-avatar" id="nav-avatar-letter">А</div>
+    <span class="user-name" id="nav-user-name">Алексей К.</span>
+    <span class="user-chevron">&#9662;</span>
+  </div>
+</nav>
+
+<!-- ── CABINET OVERLAY ── -->
+<div class="cabinet-overlay" id="cabinet-overlay" onclick="closeCabinetOverlay(event)">
+  <div class="cabinet-panel" id="cabinet-panel">
+    <div class="cab-header">
+      <div class="cab-avatar" id="cab-avatar-letter">А</div>
+      <div class="cab-user-info">
+        <div class="cab-username" id="cab-username">Алексей Ковалёв</div>
+        <div class="cab-email" id="cab-useremail">user@example.com</div>
+        <div class="cab-status" id="cab-status-badge">Розница</div>
+      </div>
+      <button class="cab-close-btn" onclick="closeCabinet()">✕</button>
+    </div>
+    <div class="cab-body">
+
+      <!-- HOME -->
+      <div class="cab-subpanel active" id="subpanel-home">
+        <div class="cab-section-label">Личный кабинет</div>
+        <div class="win-tiles">
+          <div class="win-tile win-tile-wide red" onclick="showSubpanel('orders')">
+            <div class="win-tile-icon">&#128230;</div>
+            <div class="tile-wide-info">
+              <div class="win-tile-label">История заказов</div>
+              <div class="tile-sub">3 заказа</div>
+            </div>
+            <div class="win-tile-badge">3</div>
+          </div>
+          <div class="win-tile win-tile-wide blue" onclick="showSubpanel('status')">
+            <div class="win-tile-icon">&#11088;</div>
+            <div class="tile-wide-info">
+              <div class="win-tile-label">Мой статус</div>
+              <div class="tile-sub">Розница · 3 200 &#8381;</div>
+            </div>
+          </div>
+          <div class="win-tile green" onclick="showSubpanel('profile')">
+            <div class="win-tile-icon">&#128100;</div>
+            <div class="win-tile-label">Профиль</div>
+          </div>
+          <div class="win-tile orange" onclick="showSubpanel('notifications')">
+            <div class="win-tile-icon">&#128276;</div>
+            <div class="win-tile-label">Уведомления</div>
+            <div class="win-tile-badge">2</div>
+          </div>
+          <div class="win-tile purple" onclick="showSubpanel('wishlist')">
+            <div class="win-tile-icon">&#10084;&#65039;</div>
+            <div class="win-tile-label">Избранное</div>
+          </div>
+          <div class="win-tile teal" onclick="window.open('price.html')">
+            <div class="win-tile-icon">&#128203;</div>
+            <div class="win-tile-label">Прайс-лист</div>
+          </div>
+          <div class="win-tile gray" onclick="showSubpanel('support')">
+            <div class="win-tile-icon">&#128172;</div>
+            <div class="win-tile-label">Поддержка</div>
+          </div>
+          <div class="win-tile gold" onclick="showSubpanel('loyalty')">
+            <div class="win-tile-icon">&#127942;</div>
+            <div class="win-tile-label">VIP-программа</div>
+          </div>
+        </div>
+        <button class="cab-logout" onclick="doLogout()">Выйти из аккаунта</button>
+      </div>
+
+      <!-- ORDERS -->
+      <div class="cab-subpanel" id="subpanel-orders">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">История заказов</div>
+        <div class="order-item">
+          <div class="order-top"><div class="order-num">№ 2847</div><div class="order-date">15.03.2026</div></div>
+          <div class="order-goods">iPhone 15 Pro · 100% ORIG — 1 шт.<br>Проклейка iPhone 15 Pro — 1 шт.</div>
+          <div class="order-bottom"><div class="order-amount">19 150 &#8381;</div><div class="order-status os-done">Выполнен</div></div>
+        </div>
+        <div class="order-item">
+          <div class="order-top"><div class="order-num">№ 2831</div><div class="order-date">10.03.2026</div></div>
+          <div class="order-goods">iPhone 16 Pro · RJ TFT — 2 шт.<br>iPhone 14 · AMOLED — 1 шт.</div>
+          <div class="order-bottom"><div class="order-amount">18 600 &#8381;</div><div class="order-status os-process">В обработке</div></div>
+        </div>
+        <div class="order-item">
+          <div class="order-top"><div class="order-num">№ 2814</div><div class="order-date">03.03.2026</div></div>
+          <div class="order-goods">iPhone 13 Pro · 100% ORIG — 1 шт.</div>
+          <div class="order-bottom"><div class="order-amount">9 000 &#8381;</div><div class="order-status os-done">Выполнен</div></div>
+        </div>
+      </div>
+
+      <!-- STATUS -->
+      <div class="cab-subpanel" id="subpanel-status">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">Мой статус</div>
+        <div class="loyalty-card">
+          <div class="loyalty-level">РОЗНИЦА</div>
+          <div class="loyalty-desc">До статуса ОПТ осталось 46 800 &#8381;</div>
+          <div class="loyalty-bar-wrap"><div class="loyalty-bar" style="width:6%"></div></div>
+          <div class="loyalty-bar-info"><span>3 200 &#8381;</span><span>50 000 &#8381; → ОПТ</span></div>
+        </div>
+        <div class="status-card">
+          <div class="status-row"><div class="status-key">Текущий статус</div><div class="status-val">Розница</div></div>
+          <div class="status-row"><div class="status-key">Оборот за месяц</div><div class="status-val">3 200 &#8381;</div></div>
+          <div class="status-row"><div class="status-key">Скидка</div><div class="status-val">Стандартная</div></div>
+          <div class="status-row"><div class="status-key">Постоплата</div><div class="status-val red">Недоступна</div></div>
+          <div class="status-row"><div class="status-key">Всего заказов</div><div class="status-val">3</div></div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="cab-subpanel" id="subpanel-profile">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">Мой профиль</div>
+        <div class="profile-form">
+          <div class="profile-field"><div class="profile-label">Имя</div><input class="profile-input" value="Алексей"></div>
+          <div class="profile-field"><div class="profile-label">Фамилия</div><input class="profile-input" value="Ковалёв"></div>
+          <div class="profile-field"><div class="profile-label">Телефон</div><input class="profile-input" value="+7 900 000-00-00"></div>
+          <div class="profile-field"><div class="profile-label">E-mail</div><input class="profile-input" value="user@example.com"></div>
+          <div class="profile-field"><div class="profile-label">Компания</div><input class="profile-input" placeholder="Необязательно"></div>
+          <button class="btn-modal-submit" id="save-profile-btn">Сохранить изменения</button>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS -->
+      <div class="cab-subpanel" id="subpanel-notifications">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">Уведомления</div>
+        <div class="notif-item">
+          <div class="notif-icon">&#128230;</div>
+          <div><div class="notif-text">Заказ №2831 принят в обработку. Ожидайте подтверждения.</div><div class="notif-time">10.03.2026 · 14:22</div></div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon">&#127991;</div>
+          <div><div class="notif-text">Новый прайс-лист обновлён — актуальные цены на 07.03.2026.</div><div class="notif-time">07.03.2026 · 09:00</div></div>
+        </div>
+        <div class="notif-item" style="opacity:.5">
+          <div class="notif-icon">&#9989;</div>
+          <div><div class="notif-text">Заказ №2847 выполнен. Спасибо за покупку!</div><div class="notif-time">15.03.2026 · 18:05</div></div>
+        </div>
+      </div>
+
+      <!-- WISHLIST -->
+      <div class="cab-subpanel" id="subpanel-wishlist">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">Избранное</div>
+        <div class="order-item">
+          <div class="order-top"><div class="order-num">iPhone 16 Pro Max · 100% ORIG</div><div class="order-date">26 800 &#8381;</div></div>
+          <div class="order-goods">Гарантия 180 дней · Есть в наличии</div>
+          <div class="order-bottom"><a href="price.html" style="font-size:12px;color:var(--red);text-decoration:none;font-weight:600">Смотреть в прайсе →</a><div class="order-status os-done">В наличии</div></div>
+        </div>
+        <div class="order-item">
+          <div class="order-top"><div class="order-num">iPhone 15 Pro · Service/Clean</div><div class="order-date">28 600 &#8381;</div></div>
+          <div class="order-goods">Гарантия 180 дней · Есть в наличии</div>
+          <div class="order-bottom"><a href="price.html" style="font-size:12px;color:var(--red);text-decoration:none;font-weight:600">Смотреть в прайсе →</a><div class="order-status os-done">В наличии</div></div>
+        </div>
+      </div>
+
+      <!-- SUPPORT -->
+      <div class="cab-subpanel" id="subpanel-support">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">Поддержка</div>
+        <div class="status-card">
+          <div class="status-row"><div class="status-key">Telegram</div><div class="status-val" style="color:var(--red)">@mos_lcd</div></div>
+          <div class="status-row"><div class="status-key">WhatsApp</div><div class="status-val">Написать</div></div>
+          <div class="status-row"><div class="status-key">Режим работы</div><div class="status-val green">Пн–Пт 10:00–19:00</div></div>
+        </div>
+        <div class="profile-form" style="margin-top:10px">
+          <div class="profile-field"><div class="profile-label">Тема</div><input class="profile-input" placeholder="Укажите тему"></div>
+          <div class="profile-field"><div class="profile-label">Сообщение</div><textarea class="profile-input" rows="4" placeholder="Опишите вопрос..."></textarea></div>
+          <button class="btn-modal-submit" id="send-support-btn">Отправить</button>
+        </div>
+      </div>
+
+      <!-- LOYALTY -->
+      <div class="cab-subpanel" id="subpanel-loyalty">
+        <button class="cab-back-btn" onclick="showSubpanel('home')">&#8592; Назад</button>
+        <div class="cab-section-label">VIP-программа</div>
+        <div class="loyalty-card">
+          <div class="loyalty-level">VIP — ПОСТОПЛАТА</div>
+          <div class="loyalty-desc">Персональные условия и лучшие цены при обороте от 50 000 &#8381;/мес</div>
+        </div>
+        <div class="status-card">
+          <div class="status-row"><div class="status-key">Розница</div><div class="status-val">Стандартные цены</div></div>
+          <div class="status-row"><div class="status-key">ОПТ</div><div class="status-val gold">Скидка ~5%, оборот от 10к &#8381;</div></div>
+          <div class="status-row"><div class="status-key">VIP</div><div class="status-val green">Постоплата + лучшие цены, от 50к &#8381;</div></div>
+        </div>
+        <a href="#contacts" onclick="closeCabinet()" style="display:block;text-align:center;text-decoration:none;padding:14px;border-radius:3px;font-weight:700;background:var(--red);color:#fff;margin-top:12px;font-family:'DM Sans',sans-serif;font-size:15px;">Запросить VIP-статус</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: LOGIN -->
+<div class="modal-overlay" id="modal-login">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Авторизация</div>
+      <button class="modal-close" onclick="closeModal('login')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="modal-input" type="email" placeholder="Ваш e-mail">
+      <input class="modal-input" type="password" placeholder="Ваш пароль">
+      <button type="button" class="btn-modal-submit" onclick="submitLogin()">Авторизоваться</button>
+    </div>
+    <div class="modal-footer-links">
+      <button class="modal-link" onclick="switchModal('login','forgot')">Я забыл(а) пароль</button>
+      <button class="modal-link" onclick="switchModal('login','register')">Зарегистрироваться</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: REGISTER -->
+<div class="modal-overlay" id="modal-register">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Регистрация</div>
+      <button class="modal-close" onclick="closeModal('register')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input class="modal-input" type="text" placeholder="Ваше имя">
+      <input class="modal-input" type="text" placeholder="Ваша фамилия">
+      <input class="modal-input" type="tel" placeholder="Контактный номер телефона">
+      <input class="modal-input" type="email" placeholder="Ваш e-mail">
+      <input class="modal-input" type="password" placeholder="Придумайте пароль">
+      <input class="modal-input" type="password" placeholder="Подтвердите пароль">
+      <div class="modal-radio-group">
+        <div class="modal-radio-label">Получать новости на E-Mail</div>
+        <label class="radio-row"><input type="radio" name="newsletter" checked> Да</label>
+        <label class="radio-row"><input type="radio" name="newsletter"> Нет</label>
+      </div>
+      <label class="checkbox-row">
+        <input type="checkbox" id="policy-checkbox">
+        <span>Я прочитал и согласен с условиями <a href="#">Политика обработки и защиты персональных данных</a></span>
+      </label>
+      <button type="button" id="reg-submit-btn" class="btn-modal-submit" onclick="submitRegister()">Зарегистрироваться</button>
+    </div>
+    <div class="modal-footer-links">
+      <span></span>
+      <button class="modal-link" onclick="switchModal('register','login')">Уже зарегистрированы? Авторизуйтесь!</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FORGOT PASSWORD -->
+<div class="modal-overlay" id="modal-forgot">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Восстановление пароля</div>
+      <button class="modal-close" onclick="closeModal('forgot')">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;">Укажите e-mail, на который зарегистрирован аккаунт. Мы отправим ссылку для сброса пароля.</p>
+      <input class="modal-input" type="email" placeholder="Ваш e-mail">
+      <button type="button" class="btn-modal-submit" onclick="submitForgot()">Отправить ссылку</button>
+    </div>
+    <div class="modal-footer-links">
+      <button class="modal-link" onclick="switchModal('forgot','login')">← Вернуться к входу</button>
+      <span></span>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <div class="hero-dot"></div>
+      <span>Тольятти · Обновлено 07.03.2026</span>
+    </div>
+    <h1>ЗАПЧАСТИ<br>ДЛЯ<br><span class="red">iPHONE</span></h1>
+    <p class="hero-sub">Дисплеи, АКБ, корпуса, шлейфы, камеры, инструменты и многое другое. iPhone 5S — iPhone 17 Pro Max. Оптом и в розницу из Тольятти.</p>
+    <div class="hero-btns">
+      <a href="#catalog" class="btn btn-red">Весь каталог →</a>
+      <a href="price.html" class="btn btn-outline-white">Прайс-лист</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-stats-grid">
+      <div class="hstat">
+        <div class="hstat-num">14<span>+</span></div>
+        <div class="hstat-label">Категорий товаров</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num"><span>до</span> 180</div>
+        <div class="hstat-label">Дней гарантии</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num">40<span>+</span></div>
+        <div class="hstat-label">Моделей iPhone</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-num"><span>от</span> 50к</div>
+        <div class="hstat-label">VIP постоплата</div>
+      </div>
+    </div>
+    <div class="grade-chips">
+      <div class="chip red">📱 Дисплеи</div>
+      <div class="chip">🔋 АКБ</div>
+      <div class="chip">💎 Корпуса</div>
+      <div class="chip">🔌 Шлейфы</div>
+      <div class="chip">📸 Камеры</div>
+      <div class="chip">🔊 Динамики</div>
+      <div class="chip">⌚ Watch</div>
+      <div class="chip">💻 MacBook</div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item">📱 ДИСПЛЕИ iPhone <span class="sep">●</span></div>
+    <div class="ticker-item">🔋 АККУМУЛЯТОРЫ <span class="sep">●</span></div>
+    <div class="ticker-item">💎 КОРПУСА И КРЫШКИ <span class="sep">●</span></div>
+    <div class="ticker-item">🔌 ШЛЕЙФЫ <span class="sep">●</span></div>
+    <div class="ticker-item">📸 КАМЕРЫ <span class="sep">●</span></div>
+    <div class="ticker-item">🔊 ДИНАМИКИ И ВИБРО <span class="sep">●</span></div>
+    <div class="ticker-item">♻️ РАСХОДНЫЕ МАТЕРИАЛЫ <span class="sep">●</span></div>
+    <div class="ticker-item">🪛 ИНСТРУМЕНТЫ <span class="sep">●</span></div>
+    <div class="ticker-item">⌚ WATCH <span class="sep">●</span></div>
+    <div class="ticker-item">📺 iPAD <span class="sep">●</span></div>
+    <div class="ticker-item">💻 MacBook <span class="sep">●</span></div>
+    <div class="ticker-item">🇨🇳 JCID <span class="sep">●</span></div>
+    <div class="ticker-item">🔬 ПЛАТЫ <span class="sep">●</span></div>
+    <div class="ticker-item">⭐ VIP ПОСТОПЛАТА ОТ 50К ₽ <span class="sep">●</span></div>
+    <div class="ticker-item">📱 ДИСПЛЕИ iPhone <span class="sep">●</span></div>
+    <div class="ticker-item">🔋 АККУМУЛЯТОРЫ <span class="sep">●</span></div>
+    <div class="ticker-item">💎 КОРПУСА И КРЫШКИ <span class="sep">●</span></div>
+    <div class="ticker-item">🔌 ШЛЕЙФЫ <span class="sep">●</span></div>
+    <div class="ticker-item">📸 КАМЕРЫ <span class="sep">●</span></div>
+    <div class="ticker-item">🔊 ДИНАМИКИ И ВИБРО <span class="sep">●</span></div>
+    <div class="ticker-item">♻️ РАСХОДНЫЕ МАТЕРИАЛЫ <span class="sep">●</span></div>
+    <div class="ticker-item">🪛 ИНСТРУМЕНТЫ <span class="sep">●</span></div>
+    <div class="ticker-item">⌚ WATCH <span class="sep">●</span></div>
+    <div class="ticker-item">📺 iPAD <span class="sep">●</span></div>
+    <div class="ticker-item">💻 MacBook <span class="sep">●</span></div>
+    <div class="ticker-item">🇨🇳 JCID <span class="sep">●</span></div>
+    <div class="ticker-item">🔬 ПЛАТЫ <span class="sep">●</span></div>
+    <div class="ticker-item">⭐ VIP ПОСТОПЛАТА ОТ 50К ₽ <span class="sep">●</span></div>
+  </div>
+</div>
+
+<!-- SHOP SECTION -->
+<section id="catalog" style="padding:0; background:var(--white);">
+  <div style="padding:48px 48px 24px; border-bottom:1px solid var(--line);">
+    <div class="section-label">Ассортимент</div>
+    <div class="section-title" style="margin-bottom:8px">КАТАЛОГ ЗАПЧАСТЕЙ</div>
+    <p style="font-size:14px;color:var(--muted);max-width:560px">Запчасти для iPhone, iPad, Apple Watch, MacBook. Авторизуйтесь, чтобы видеть цены и наличие.</p>
+  </div>
+
+  <div class="shop-layout" id="shop-layout">
+
+    <!-- ── SIDEBAR ── -->
+    <div class="shop-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-header-icon">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="sidebar-header-title">КАТАЛОГ</div>
+      </div>
+
+      <!-- Аксессуары -->
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <span>🛍️ &nbsp;Аксессуары</span>
+          <span class="acc-chevron">&#8964;</span>
+        </div>
+        <div class="acc-body">
+          <a class="acc-sub-item" onclick="openCatView('Защитные стёкла','accessories')"><span class="sub-dot"></span>Защитные стёкла</a>
+          <a class="acc-sub-item" onclick="openCatView('Кабели и зарядки','accessories')"><span class="sub-dot"></span>Кабели и зарядки</a>
+          <a class="acc-sub-item" onclick="openCatView('Защитные плёнки','accessories')"><span class="sub-dot"></span>Защитные плёнки</a>
+          <a class="acc-sub-item" onclick="openCatView('Чехлы','accessories')"><span class="sub-dot"></span>Чехлы</a>
+        </div>
+      </div>
+
+      <!-- Запчасти для iPhone -->
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <span>📱 &nbsp;Запчасти для iPhone</span>
+          <span class="acc-chevron">&#8964;</span>
+        </div>
+        <div class="acc-body">
+          <a class="acc-sub-item" onclick="openCatView('Дисплеи iPhone','displays')"><span class="sub-dot"></span>📺 Дисплеи</a>
+          <a class="acc-sub-item" onclick="openCatView('АКБ iPhone','akb')"><span class="sub-dot"></span>🔋 АКБ (аккумуляторы)</a>
+          <a class="acc-sub-item" onclick="openCatView('Корпус / Крышка iPhone','corpus')"><span class="sub-dot"></span>💎 Корпус / Крышка</a>
+          <a class="acc-sub-item" onclick="openCatView('Шлейфы iPhone','shleyfy')"><span class="sub-dot"></span>🔌 Шлейфы</a>
+          <a class="acc-sub-item" onclick="openCatView('Камеры iPhone','cameras')"><span class="sub-dot"></span>📸 Камеры</a>
+          <a class="acc-sub-item" onclick="openCatView('Динамики / Вибро iPhone','dinamiki')"><span class="sub-dot"></span>🔊 Динамики / Вибро</a>
+          <a class="acc-sub-item" onclick="openCatView('Watch — запчасти','watch')"><span class="sub-dot"></span>⌚ Apple Watch</a>
+          <a class="acc-sub-item" onclick="openCatView('iPad — запчасти','ipad')"><span class="sub-dot"></span>📺 iPad</a>
+          <a class="acc-sub-item" onclick="openCatView('MacBook — запчасти','macbook')"><span class="sub-dot"></span>💻 MacBook</a>
+        </div>
+      </div>
+
+      <!-- Сложный ремонт -->
+      <div class="acc-item">
+        <div class="acc-header" onclick="toggleAcc(this)">
+          <span>🔬 &nbsp;Запчасти для сложного ремонта</span>
+          <span class="acc-chevron">&#8964;</span>
+        </div>
+        <div class="acc-body">
+          <a class="acc-sub-item" onclick="openCatView('Расходные материалы','rashodka')"><span class="sub-dot"></span>♻️ Расходные материалы</a>
+          <a class="acc-sub-item" onclick="openCatView('Инструменты','tools')"><span class="sub-dot"></span>🪛 Инструменты</a>
+          <a class="acc-sub-item" onclick="openCatView('JCID — программаторы','jcid')"><span class="sub-dot"></span>🇨🇳 JCID</a>
+          <a class="acc-sub-item" onclick="openCatView('Платы и компоненты','boards')"><span class="sub-dot"></span>🔬 Платы</a>
+        </div>
+      </div>
+
+      <!-- Распродажа -->
+      <div class="acc-item acc-item-sale">
+        <div class="acc-header" onclick="openCatView('Распродажа','sale')">
+          <span>🔥 &nbsp;Распродажа</span>
+          <span style="font-size:10px;background:var(--red);color:#fff;padding:2px 8px;border-radius:10px;font-weight:700">HOT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONTENT ── -->
+    <div class="shop-content" style="position:relative">
+
+      <!-- LOGIN PROMPT (виден пока не авторизован) -->
+      <div class="login-prompt" id="login-prompt">
+        <div class="lp-icon">🔐</div>
+        <div class="lp-title">ВОЙДИТЕ ДЛЯ ПРОСМОТРА ЦЕН</div>
+        <div class="lp-desc">Авторизуйтесь или зарегистрируйтесь, чтобы видеть актуальные цены, наличие и делать заказы.</div>
+        <button class="btn btn-red" onclick="openModal('login')">Войти в аккаунт</button>
+        <button class="btn btn-outline-black" style="margin-top:4px" onclick="openModal('register')">Зарегистрироваться</button>
+      </div>
+
+      <!-- POPULAR (показывается по умолчанию после логина) -->
+      <div id="view-popular">
+        <div class="popular-header">
+          <div>
+            <div class="popular-title">Популярные товары</div>
+            <div class="popular-subtitle">Наиболее востребованные позиции</div>
+          </div>
+          <a href="price.html" class="popular-all-link">Весь прайс →</a>
+        </div>
+        <div class="products-grid">
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">📱</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 16 Pro Max — Дисплей 100% ORIG</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">26 800 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">24 400 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">23 900 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 16 Pro Max — Дисплей 100% ORIG',26800)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">📱</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 15 Pro — Дисплей Service/Clean</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">28 600 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">25 500 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">25 000 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 15 Pro — Дисплей Service/Clean',28600)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">📱</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 13 Pro — Дисплей 100% ORIG</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">9 000 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">7 800 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">7 500 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 13 Pro — Дисплей 100% ORIG',9000)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">🔋</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 13 / 13 Pro — АКБ аналог</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">720 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">580 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">560 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 13 / 13 Pro — АКБ аналог',720)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">📱</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 16 Pro — Дисплей RJ TFT InCell</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">6 600 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">5 100 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">4 900 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 16 Pro — Дисплей RJ TFT InCell',6600)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">📱</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 14 Pro — Дисплей AMOLED GX-DD</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">9 900 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">7 600 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">7 400 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 14 Pro — Дисплей AMOLED GX-DD',9900)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">💎</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 15 Pro — Задняя крышка</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">1 200 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">960 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">940 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 15 Pro — Задняя крышка',1200)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">📱</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 12 Pro — Дисплей DD OLED 120Hz</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">6 800 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">6 200 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">3 500 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 12 Pro — Дисплей DD OLED 120Hz',6800)">+ В корзину</button>
+          </div>
+
+          <div class="product-card" onclick="window.location='price.html'">
+            <div class="pc-image">🔲</div>
+            <div class="pc-body">
+              <div class="pc-category">Запчасть</div>
+              <div class="pc-name">iPhone 6S – 8 Plus — Стекло для переклейки</div>
+              <div class="pc-stock">✓ В наличии</div>
+            </div>
+            <div class="pc-prices">
+              <div class="pc-price-box">
+                <div class="pc-price-label">🗂 Розница</div>
+                <div class="pc-price-val">180 ₽</div>
+              </div>
+              <div class="pc-price-box">
+                <div class="pc-price-label">● ОПТ</div>
+                <div class="pc-price-val">90 ₽</div>
+              </div>
+              <div class="pc-price-box vip">
+                <div class="pc-price-label">★ VIP</div>
+                <div class="pc-price-val">65 ₽</div>
+              </div>
+            </div>
+            <button class="pc-btn" onclick="event.stopPropagation();addToCart('iPhone 6S – 8 Plus — Стекло для переклейки',180)">+ В корзину</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- CATEGORY VIEW (показывается при выборе категории) -->
+      <div id="view-category" style="display:none">
+        <div class="cat-view-header">
+          <button class="cat-view-back" onclick="backToPopular()">← Назад</button>
+          <div class="cat-view-title" id="cat-view-title">Категория</div>
+        </div>
+        <div style="padding:32px;text-align:center;color:var(--muted)">
+          <div style="font-size:48px;margin-bottom:16px" id="cat-view-icon">📦</div>
+          <div style="font-size:14px;margin-bottom:24px;line-height:1.7">
+            Полный прайс-лист с актуальными ценами, наличием и всеми моделями доступен на странице прайса.
+          </div>
+          <a href="price.html" class="btn btn-red" id="cat-price-link" style="display:inline-flex;align-items:center;gap:8px">
+            📋 Открыть полный прайс
+          </a>
+          <div style="margin-top:16px">
+            <a href="https://t.me/mos_lcd" style="font-size:13px;color:var(--red);font-weight:600;text-decoration:none">✈️ Или напишите менеджеру в Telegram</a>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /shop-content -->
+  </div><!-- /shop-layout -->
+</section>
+
+<!-- DISPLAY GRADES -->
+<section class="grades-section" id="grades" style="padding-top:0">
+  <div class="section-label">Ассортимент дисплеев</div>
+  <div class="section-title">ТИПЫ ДИСПЛЕЕВ</div>
+  <div class="grades-grid">
+    <div class="grade-card reveal">
+      <div class="gc-num">01</div>
+      <div class="gc-badge b-orig">100% Original</div>
+      <div class="gc-name">100% ORIG (REF)</div>
+      <div class="gc-warranty">⏱ Гарантия 180 дней</div>
+      <div class="gc-desc">Восстановленные оригинальные дисплеи Apple. Полный контроль качества.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">02</div>
+      <div class="gc-badge b-snat">Снятый</div>
+      <div class="gc-name">СНЯТЫЙ ОРИГИНАЛ</div>
+      <div class="gc-warranty">⏱ Гарантия 180 дней</div>
+      <div class="gc-desc">Оригинальный дисплей с устройства. Сохраняет Touch ID / Face ID.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">03</div>
+      <div class="gc-badge b-serv">Service</div>
+      <div class="gc-name">SERVICE / CLEAN</div>
+      <div class="gc-warranty">⏱ Гарантия 180 дней</div>
+      <div class="gc-desc">Под привязку. Сервисный оригинал с полным функционалом.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">04</div>
+      <div class="gc-badge b-fog">FOG iC</div>
+      <div class="gc-name">FOG iC OLED</div>
+      <div class="gc-warranty">⏱ Гарантия 30 дней</div>
+      <div class="gc-desc">Оригинальная OLED-матрица с заменённым стеклом. Глубокий чёрный.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">05</div>
+      <div class="gc-badge b-rj">RJ TFT</div>
+      <div class="gc-name">RJ (TFT INCELL)</div>
+      <div class="gc-warranty">⏱ Гарантия 90 дней</div>
+      <div class="gc-desc">Качественный TFT In-Cell. Хорошая яркость по доступной цене.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">06</div>
+      <div class="gc-badge b-copy">Копия</div>
+      <div class="gc-name">КОПИЯ KU HD TFT</div>
+      <div class="gc-warranty">⏱ Гарантия 90 дней</div>
+      <div class="gc-desc">Новинка! HD-копия. Оптимальное соотношение цена/качество.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">07</div>
+      <div class="gc-badge b-amoled">AMOLED</div>
+      <div class="gc-name">AMOLED GX-DD OLED</div>
+      <div class="gc-warranty">⏱ Гарантия 30 дней</div>
+      <div class="gc-desc">AMOLED-матрица. Насыщенные цвета, высокий контраст.</div>
+    </div>
+    <div class="grade-card reveal">
+      <div class="gc-num">08</div>
+      <div class="gc-badge b-dd">DD OLED</div>
+      <div class="gc-name">DD SOFT OLED 120 HZ</div>
+      <div class="gc-warranty">⏱ Гарантия 90 дней</div>
+      <div class="gc-desc">Под привязку. 120 Гц, мягкий OLED, точная цветопередача.</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="why-section">
+  <div class="section-label">Преимущества</div>
+  <div class="section-title">ПОЧЕМУ МЫ</div>
+  <div class="why-grid">
+    <div class="why-card reveal">
+      <div class="why-icon">🛡️</div>
+      <div class="why-title">Гарантия до 180 дней</div>
+      <div class="why-desc">На оригинальные и снятые дисплеи — полгода гарантии. Заменим или вернём деньги.</div>
+    </div>
+    <div class="why-card reveal">
+      <div class="why-icon">⚡</div>
+      <div class="why-title">Быстрая отгрузка</div>
+      <div class="why-desc">Самовывоз в день заказа. Доставка по РФ — СДЭК, Почта России. Надёжная упаковка.</div>
+    </div>
+    <div class="why-card reveal">
+      <div class="why-icon">💎</div>
+      <div class="why-title">VIP-условия для бизнеса</div>
+      <div class="why-desc">Постоплата и персональные скидки для клиентов с оборотом от 50 000 ₽/мес.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ORDER -->
+<section class="order-section" id="order">
+  <div class="section-label">Оформление</div>
+  <div class="section-title">КАК ЗАКАЗАТЬ</div>
+  <div class="order-grid">
+    <div class="order-card reveal">
+      <div class="oc-num">01</div>
+      <div class="oc-title">Выберите дисплей</div>
+      <div class="oc-desc">Откройте прайс-лист, найдите модель и нужный тип дисплея, уточните наличие.</div>
+    </div>
+    <div class="order-card reveal">
+      <div class="oc-num">02</div>
+      <div class="oc-title">Напишите менеджеру</div>
+      <div class="oc-desc">Telegram или WhatsApp. Укажите модель, тип, количество. Ответим быстро.</div>
+    </div>
+    <div class="order-card reveal">
+      <div class="oc-num">03</div>
+      <div class="oc-title">Оплата и отгрузка</div>
+      <div class="oc-desc">Оплата наличными, переводом или постоплата для VIP. Самовывоз или доставка.</div>
+    </div>
+    <div class="order-card reveal">
+      <div class="oc-num">04</div>
+      <div class="oc-title">Оптовые заявки</div>
+      <div class="oc-desc">Заказ от 10 единиц — оптовые цены. Формируйте список и отправляйте менеджеру.</div>
+    </div>
+  </div>
+  <div class="order-cta">
+    <a href="price.html" class="btn btn-red">Открыть полный прайс →</a>
+    <a href="https://t.me/mos_lcd" target="_blank" class="btn btn-black">✈️ Написать в Telegram</a>
+    <a href="tel:+79000000000" class="btn btn-outline-black">📞 Позвонить</a>
+  </div>
+</section>
+
+<!-- VIP BANNER -->
+<div class="vip-banner">
+  <div class="vip-text">
+    <h2>VIP-СТАТУС<br>ДЛЯ БИЗНЕСА</h2>
+    <p>Постоплата и персональные условия — для клиентов с оборотом от <strong>50 000 ₽/мес</strong>. Приоритетная отгрузка и персональный менеджер.</p>
+  </div>
+  <a href="#contacts" class="btn btn-white">Получить VIP-статус →</a>
+</div>
+
+<!-- CONTACTS -->
+<section class="contacts-section" id="contacts">
+  <div class="section-label">Связь</div>
+  <div class="section-title">КОНТАКТЫ</div>
+  <div class="contacts-grid">
+    <a href="https://t.me/mos_lcd" target="_blank" class="contact-card">
+      <div class="contact-icon">✈️</div>
+      <div>
+        <div class="contact-label">Telegram</div>
+        <div class="contact-val">@mos_lcd</div>
+      </div>
+    </a>
+    <a href="https://wa.me/79000000000" target="_blank" class="contact-card">
+      <div class="contact-icon">💬</div>
+      <div>
+        <div class="contact-label">WhatsApp</div>
+        <div class="contact-val">Написать в WhatsApp</div>
+      </div>
+    </a>
+    <a href="tel:+79000000000" class="contact-card">
+      <div class="contact-icon">📞</div>
+      <div>
+        <div class="contact-label">Телефон</div>
+        <div class="contact-val">Уточнить у менеджера</div>
+      </div>
+    </a>
+    <a href="https://yandex.ru/maps/?text=Тольятти" target="_blank" class="contact-card">
+      <div class="contact-icon">📍</div>
+      <div>
+        <div class="contact-label">Адрес</div>
+        <div class="contact-val">Тольятти</div>
+      </div>
+    </a>
+  </div>
+  <a href="price.html" class="btn btn-red">📋 Перейти к прайс-листу →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="storefront.html" class="footer-logo">MOS<span class="dot">·</span>LCD</a>
+  <div class="footer-copy">© 2026 MOS-LCD. Тольятти. Все права защищены.</div>
+  <div class="footer-date">Прайс: 07.03.2026</div>
+</footer>
+
+<script>
+  // ── REVEAL ANIMATION ──
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── MODALS ──
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function switchModal(from, to) {
+    closeModal(from);
+    setTimeout(() => openModal(to), 80);
+  }
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+    });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(m => {
+        m.classList.remove('open'); document.body.style.overflow = '';
+      });
+    }
+  });
+
+  // ── CABINET ──
+  function openCabinet() {
+    document.getElementById('cabinet-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCabinet() {
+    document.getElementById('cabinet-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function closeCabinetOverlay(e) {
+    if (e.target === document.getElementById('cabinet-overlay')) closeCabinet();
+  }
+  function showSubpanel(id) {
+    document.querySelectorAll('.cab-subpanel').forEach(p => p.classList.remove('active'));
+    document.getElementById('subpanel-' + id).classList.add('active');
+    document.querySelector('.cab-body').scrollTop = 0;
+  }
+
+  // ── AUTH STATE ──
+  let isLoggedIn = false;
+
+  function doLogin(name, email) {
+    isLoggedIn = true;
+    const initials = name ? name.charAt(0).toUpperCase() : 'U';
+    document.getElementById('nav-auth-btns').style.display = 'none';
+    document.getElementById('nav-user-btn').classList.add('active');
+    document.getElementById('nav-avatar-letter').textContent = initials;
+    const parts = name.split(' ');
+    document.getElementById('nav-user-name').textContent = parts[0] + (parts[1] ? ' ' + parts[1].charAt(0) + '.' : '');
+    document.getElementById('cab-avatar-letter').textContent = initials;
+    document.getElementById('cab-username').textContent = name;
+    document.getElementById('cab-useremail').textContent = email;
+    updateShopVisibility();
+  }
+
+  function doLogout() {
+    isLoggedIn = false;
+    closeCabinet();
+    document.getElementById('nav-auth-btns').style.display = 'flex';
+    document.getElementById('nav-user-btn').classList.remove('active');
+    showSubpanel('home');
+    backToPopular();
+    updateShopVisibility();
+  }
+
+  // ── SHOP VISIBILITY ──
+  function updateShopVisibility() {
+    const prompt = document.getElementById('login-prompt');
+    if (!prompt) return;
+    if (isLoggedIn) { prompt.style.display = 'none'; prompt.classList.add('hidden'); }
+    else { prompt.style.display = 'flex'; prompt.classList.remove('hidden'); }
+  }
+
+  // ── SIDEBAR ACCORDION ──
+  function toggleAcc(header) {
+    const body = header.nextElementSibling;
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.acc-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.acc-header').forEach(h => h.classList.remove('active'));
+    if (!isOpen) {
+      body.classList.add('open');
+      header.classList.add('active');
+    }
+  }
+
+  // ── CATALOG VIEW ──
+  const catIcons = {
+    displays:'📱', akb:'🔋', corpus:'💎', shleyfy:'🔌',
+    cameras:'📸', dinamiki:'🔊', accessories:'🛍️', rashodka:'♻️',
+    tools:'🪛', watch:'⌚', ipad:'📺', macbook:'💻',
+    jcid:'🇨🇳', boards:'🔬', sale:'🔥'
+  };
+
+  function openCatView(name, key) {
+    if (!isLoggedIn) { openModal('login'); return; }
+    document.getElementById('view-popular').style.display = 'none';
+    document.getElementById('view-category').style.display = 'block';
+    document.getElementById('cat-view-title').textContent = name;
+    document.getElementById('cat-view-icon').textContent = catIcons[key] || '📦';
+    document.getElementById('cat-price-link').href = 'price.html#' + key;
+  }
+
+  function backToPopular() {
+    document.getElementById('view-popular').style.display = 'block';
+    document.getElementById('view-category').style.display = 'none';
+  }
+
+  // ── CART ──
+  var cart = [];
+  function addToCart(name, price) {
+    if (!isLoggedIn) { openModal('login'); return; }
+    cart.push({ name: name, price: price });
+    var btn = event.target;
+    var orig = btn.textContent;
+    btn.textContent = '✓ Добавлено!';
+    btn.style.background = '#16a34a';
+    setTimeout(function() { btn.textContent = orig; btn.style.background = ''; }, 1800);
+  }
+
+  // ── LOGIN ──
+  function submitLogin() {
+    var em = document.querySelector('#modal-login input[type=email]');
+    var pw = document.querySelector('#modal-login input[type=password]');
+    if (!em || !em.value.trim()) { if(em){ em.style.borderColor='var(--red)'; em.focus(); } return; }
+    if (!pw || !pw.value) { if(pw){ pw.style.borderColor='var(--red)'; pw.focus(); } return; }
+    em.style.borderColor = ''; pw.style.borderColor = '';
+    var n = em.value.split('@')[0];
+    var name = n.charAt(0).toUpperCase() + n.slice(1);
+    closeModal('login');
+    setTimeout(function() { doLogin(name, em.value.trim()); openCabinet(); }, 180);
+  }
+
+  // ── REGISTER ──
+  function submitRegister() {
+    var chk = document.getElementById('policy-checkbox');
+    if (chk && !chk.checked) { alert('Примите условия политики конфиденциальности'); return; }
+    var txts = document.querySelectorAll('#modal-register input[type=text]');
+    var em = document.querySelector('#modal-register input[type=email]');
+    var fn = txts[0] ? txts[0].value.trim() : '';
+    var ln = txts[1] ? txts[1].value.trim() : '';
+    if (!fn) { if(txts[0]){ txts[0].style.borderColor='var(--red)'; txts[0].focus(); } return; }
+    if (!em || !em.value.trim()) { if(em){ em.style.borderColor='var(--red)'; em.focus(); } return; }
+    closeModal('register');
+    setTimeout(function() { doLogin(fn + (ln ? ' ' + ln : ''), em.value.trim()); openCabinet(); }, 180);
+  }
+
+  // ── FORGOT ──
+  function submitForgot() {
+    var em = document.querySelector('#modal-forgot input[type=email]');
+    if (!em || !em.value.trim()) { if(em){ em.style.borderColor='var(--red)'; em.focus(); } return; }
+    var btn = document.querySelector('#modal-forgot .btn-modal-submit');
+    var orig = btn.textContent;
+    btn.textContent = '✓ Ссылка отправлена!'; btn.style.background = '#16a34a';
+    setTimeout(function() { btn.textContent = orig; btn.style.background = ''; closeModal('forgot'); }, 2500);
+  }
+
+  // ── PROFILE SAVE ──
+  document.addEventListener('DOMContentLoaded', function() {
+    updateShopVisibility();
+
+    var saveBtn = document.getElementById('save-profile-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function() {
+        var orig = saveBtn.textContent;
+        saveBtn.textContent = '✓ Сохранено!'; saveBtn.style.background = '#16a34a';
+        setTimeout(function() { saveBtn.textContent = orig; saveBtn.style.background = ''; }, 2500);
+      });
+    }
+
+    var suppBtn = document.getElementById('send-support-btn');
+    if (suppBtn) {
+      suppBtn.addEventListener('click', function() {
+        var ta = document.querySelector('#subpanel-support textarea');
+        if (ta && !ta.value.trim()) { ta.style.borderColor = 'var(--red)'; ta.focus(); return; }
+        var orig = suppBtn.textContent;
+        suppBtn.textContent = '✓ Отправлено!'; suppBtn.style.background = '#16a34a';
+        if (ta) { ta.value = ''; ta.style.borderColor = ''; }
+        setTimeout(function() { suppBtn.textContent = orig; suppBtn.style.background = ''; }, 3000);
+      });
+    }
+  });
+</script>
+</body>
+</html>
