@@ -343,8 +343,107 @@ body::before{
 .cart-empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
 .cart-empty-icon{font-size:36px;margin-bottom:12px;opacity:.25;display:block}
 
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:100px 32px 80px;
+  position:relative;overflow:hidden;
+}
+.hero-blobs{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.hero-blob{
+  position:absolute;border-radius:50%;filter:blur(80px);opacity:.18;
+  animation:blobFloat 8s ease-in-out infinite;
+}
+.hero-blob-1{width:600px;height:600px;background:radial-gradient(circle,#e02020,transparent);top:-20%;left:-10%;animation-delay:0s}
+.hero-blob-2{width:500px;height:500px;background:radial-gradient(circle,#c01818,transparent);bottom:-10%;right:-5%;animation-delay:3s}
+@keyframes blobFloat{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(20px,-30px) scale(1.05)}}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid rgba(224,32,32,.4);border-radius:20px;
+  padding:6px 16px;font-size:10px;font-weight:700;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--red);
+  background:rgba(224,32,32,.08);margin-bottom:32px;
+}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--red);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(224,32,32,.5)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(224,32,32,0)}}
+
+.hero h1{
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(72px,12vw,160px);
+  line-height:.88;letter-spacing:2px;color:var(--white);
+  margin-bottom:24px;
+}
+.hero h1 .red{color:var(--red);text-shadow:0 0 60px rgba(224,32,32,.4)}
+.hero-sub{
+  font-size:16px;line-height:1.7;color:var(--muted2);
+  max-width:520px;margin:0 auto 48px;
+}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:72px}
+.hero-btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;background:var(--red);color:#fff;
+  border:none;border-radius:8px;font-size:13px;font-weight:700;
+  letter-spacing:.5px;cursor:pointer;transition:all .22s;
+  box-shadow:0 0 28px rgba(224,32,32,.35);font-family:'DM Sans',sans-serif;
+}
+.hero-btn-primary:hover{background:var(--red2);transform:translateY(-2px);box-shadow:0 4px 32px rgba(224,32,32,.45)}
+.hero-btn-secondary{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;background:transparent;color:var(--muted2);
+  border:1px solid var(--border2);border-radius:8px;font-size:13px;font-weight:700;
+  letter-spacing:.5px;cursor:pointer;transition:all .22s;font-family:'DM Sans',sans-serif;
+}
+.hero-btn-secondary:hover{border-color:rgba(255,255,255,.3);color:var(--white);transform:translateY(-2px)}
+
+.hero-stats{
+  display:flex;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  background:rgba(255,255,255,.03);backdrop-filter:blur(10px);
+}
+.hero-stat{
+  padding:20px 32px;text-align:center;position:relative;
+}
+.hero-stat+.hero-stat{border-left:1px solid var(--border)}
+.hero-stat-num{
+  font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;
+  color:var(--white);letter-spacing:-1px;
+}
+.hero-stat-num span{color:var(--red)}
+.hero-stat-label{font-size:10px;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+
+/* scroll indicator */
+.hero-scroll{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  color:var(--muted);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  animation:scrollBounce 2s ease-in-out infinite;cursor:pointer;border:none;background:none;
+}
+@keyframes scrollBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
+.hero-scroll svg{opacity:.4}
+
+/* catalog section */
+.catalog-section{padding:0 0 64px}
+.catalog-header{
+  display:flex;align-items:center;gap:12px;
+  padding:32px 32px 20px;border-bottom:1px solid var(--border);
+  margin-bottom:0;
+}
+.catalog-tag{
+  font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--red);display:flex;align-items:center;gap:8px;
+}
+.catalog-tag::before{content:'';display:block;width:20px;height:2px;background:var(--red)}
+.catalog-title{
+  font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--white);
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:640px){
+  .hero h1{font-size:clamp(56px,16vw,80px)}
+  .hero-stats{flex-wrap:wrap}
+  .hero-stat{flex:1;min-width:120px}
+  .hero-stat+.hero-stat{border-left:none;border-top:1px solid var(--border)}
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
   .cart-panel{width:100%}
   .hdr-inner,.main,.status-bar{padding-left:16px;padding-right:16px}
@@ -387,6 +486,51 @@ body::before{
   </div>
 </div>
 
+<!-- HERO -->
+<section class="hero" id="hero-section">
+  <div class="hero-blobs">
+    <div class="hero-blob hero-blob-1"></div>
+    <div class="hero-blob hero-blob-2"></div>
+  </div>
+  <div class="hero-badge"><div class="hero-badge-dot"></div>Тольятти · Запчасти iPhone</div>
+  <h1 id="hero-title">ЗАПЧАСТИ<br>ДЛЯ <span class="red">iPHONE</span></h1>
+  <p class="hero-sub">Дисплеи, АКБ, корпуса, шлейфы, камеры. Оптом и в розницу. Три ценовых тира — Розница, Опт, VIP.</p>
+  <div class="hero-btns">
+    <button class="hero-btn-primary" onclick="document.getElementById('catalog-section').scrollIntoView({behavior:'smooth'})">Перейти в каталог →</button>
+    <button class="hero-btn-secondary" onclick="openAuthModal()">👤 Войти в аккаунт</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">40<span>+</span></div>
+      <div class="hero-stat-label">Моделей iPhone</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num"><span>до</span> 180</div>
+      <div class="hero-stat-label">Дней гарантии</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">3</div>
+      <div class="hero-stat-label">Ценовых тира</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num"><span>от</span> 50к</div>
+      <div class="hero-stat-label">VIP постоплата</div>
+    </div>
+  </div>
+  <button class="hero-scroll" onclick="document.getElementById('catalog-section').scrollIntoView({behavior:'smooth'})">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    КАТАЛОГ
+  </button>
+</section>
+
+<!-- CATALOG -->
+<section class="catalog-section" id="catalog-section">
+  <div class="catalog-header">
+    <div>
+      <div class="catalog-tag">Ассортимент</div>
+      <div class="catalog-title">КАТАЛОГ ТОВАРОВ</div>
+    </div>
+  </div>
 <!-- MAIN -->
 <div class="main">
   <div class="toolbar">
@@ -400,6 +544,7 @@ body::before{
   </div>
   <div class="grid" id="shop-grid"></div>
 </div>
+</section>
 
 <!-- CHECKOUT MODAL -->
 <div class="overlay hidden" id="m-checkout">
