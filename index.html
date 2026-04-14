@@ -3673,6 +3673,40 @@ function delTask(id){
   S.set('tasks',S.get('tasks').filter(t=>t.id!==id));renderTasks()
 }
 
+// ── PHONE NORMALIZE ───────────────────────────────────────────────────────────
+function normPhone(p){
+  if(!p) return ''
+  let d=(p+'').replace(/\D/g,'')
+  if(d.length===11&&d[0]==='8') d='7'+d.slice(1)
+  if(d.length===10) d='7'+d
+  return d
+}
+
+// ── DEDUPE CLIENTS BY PHONE ───────────────────────────────────────────────────
+function dedupeClients(){
+  const clients=S.get('clients')
+  const seen={}
+  const deduped=[]
+  clients.forEach(c=>{
+    const key=normPhone(c.phone)||('name:'+c.name)
+    if(!seen[key]){
+      seen[key]=true
+      deduped.push(c)
+    } else {
+      // Мерджим взаимодействия в первый найденный
+      const existing=deduped.find(d=>(normPhone(d.phone)||('name:'+d.name))===key)
+      if(existing&&c.interactions&&c.interactions.length){
+        if(!existing.interactions) existing.interactions=[]
+        c.interactions.forEach(i=>{
+          if(!existing.interactions.find(ei=>ei.text===i.text))
+            existing.interactions.push(i)
+        })
+      }
+    }
+  })
+  if(deduped.length!==clients.length) S.set('clients',deduped)
+}
+
 // ── SHOP ORDERS → CLIENTS (sync all) ─────────────────────────────────────────
 function syncShopClients(){
   const shopOrders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
@@ -3681,9 +3715,9 @@ function syncShopClients(){
   let changed=false
   shopOrders.forEach(o=>{
     if(!o.client&&!o.phone) return
-    const phone=(o.phone||'').replace(/[\s\-\(\)]/g,'')
-    let cl=phone?clients.find(c=>(c.phone||'').replace(/[\s\-\(\)]/g,'')===phone):null
-    if(!cl&&o.client) cl=clients.find(c=>c.name===o.client&&!phone)
+    const phone=normPhone(o.phone)
+    let cl=phone?clients.find(c=>normPhone(c.phone)===phone):null
+    if(!cl&&o.client) cl=clients.find(c=>c.name===o.client&&!o.phone)
     const orderNote=`🛒 Заказ с витрины: ${o.item_name||'Корзина'} — ${Number(o.total||0).toLocaleString('ru')} ₽ (${new Date(o.created_at||Date.now()).toLocaleDateString('ru')})`
     if(!cl){
       clients.push({
@@ -3725,8 +3759,8 @@ function checkShopOrders(){
     const clients=S.get('clients')
     newOrders.forEach(o=>{
       // ── Создаём/обновляем клиента ───────────────────────────────────────────
-      const phone=(o.phone||'').replace(/\s/g,'')
-      let cl=phone?clients.find(c=>(c.phone||'').replace(/\s/g,'')===phone):null
+      const phone=normPhone(o.phone)
+      let cl=phone?clients.find(c=>normPhone(c.phone)===phone):null
       const orderNote=`Заказ с витрины: ${o.item_name||'Корзина'} — ${Number(o.total||0).toLocaleString('ru')} ₽ (${new Date(o.created_at).toLocaleDateString('ru')})`
       if(!cl){
         cl={
@@ -6565,6 +6599,7 @@ function renderDailyAnalytics(){
   syncBranchSelects()
   renderTopbar()
   applyRoleAccess(getCurEmp())
+  dedupeClients()
   syncShopClients()
   checkShopOrders()
   renderDash()
