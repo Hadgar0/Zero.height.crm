@@ -6046,7 +6046,7 @@ function getSalesAnalytics(){
         wh_item_id:item.wh_item_id||null,
         name:item.name||'',
         src:item.src||'local',
-        cost:0, sale:0, qty:0, revenue:0
+        cost:0, sale:0, qty:0, revenue:0, buyers:[]
       }
       const whIt=item.wh_item_id?whItems.find(i=>i.id===item.wh_item_id):whItems.find(i=>i.name===item.name)
       const cost=whIt?+(whIt.price||0):0
@@ -6057,6 +6057,8 @@ function getSalesAnalytics(){
       map[key].qty+=qty
       map[key].revenue+=salePrice*qty
       if(!map[key].src&&whIt) map[key].src=whIt.src||'local'
+      if(!map[key].buyers) map[key].buyers=[]
+      map[key].buyers.push({client:w.client||w.company||'—',date:w.created_at||w.date||'',qty,price:salePrice,type:'опт'})
     })
   })
 
@@ -6071,7 +6073,7 @@ function getSalesAnalytics(){
           wh_item_id:whIt?whIt.id:null,
           name:w.part,
           src:whIt?whIt.src||'local':'local',
-          cost:0, sale:0, qty:0, revenue:0
+          cost:0, sale:0, qty:0, revenue:0, buyers:[]
         }
         const cost=whIt?+(whIt.price||0):0
         const salePrice=+(w.pp||0)
@@ -6080,14 +6082,18 @@ function getSalesAnalytics(){
         map[key].qty+=1
         map[key].revenue+=salePrice
         if(whIt&&!map[key].src) map[key].src=whIt.src||'local'
+        if(!map[key].buyers) map[key].buyers=[]
+        map[key].buyers.push({client:o.client||o.device||'Розница',date:o.created_at||o.date||'',qty:1,price:salePrice,type:'розница'})
       }
       // Works (работы): w.n = name, w.p = price (услуга без себестоимости)
       if(w.n&&+w.p>0){
         const key='work:'+w.n
-        if(!map[key]) map[key]={wh_item_id:null,name:w.n+' (услуга)',src:'local',cost:0,sale:0,qty:0,revenue:0}
+        if(!map[key]) map[key]={wh_item_id:null,name:w.n+' (услуга)',src:'local',cost:0,sale:0,qty:0,revenue:0,buyers:[]}
         map[key].sale=+(w.p||0)
         map[key].qty+=1
         map[key].revenue+=+(w.p||0)
+        if(!map[key].buyers) map[key].buyers=[]
+        map[key].buyers.push({client:o.client||o.device||'Розница',date:o.created_at||o.date||'',qty:1,price:+(w.p||0),type:'услуга'})
       }
     })
   })
@@ -6100,7 +6106,7 @@ function getSalesAnalytics(){
         wh_item_id:item.wh_item_id||null,
         name:item.name||'',
         src:item.src||'local',
-        cost:0, sale:0, qty:0, revenue:0
+        cost:0, sale:0, qty:0, revenue:0, buyers:[]
       }
       const whIt=item.wh_item_id?whItems.find(i=>i.id===item.wh_item_id):whItems.find(i=>i.name===item.name)
       const cost=whIt?+(whIt.price||0):0
@@ -6111,6 +6117,8 @@ function getSalesAnalytics(){
       map[key].qty+=qty
       map[key].revenue+=salePrice*qty
       if(!map[key].src&&whIt) map[key].src=whIt.src||'local'
+      if(!map[key].buyers) map[key].buyers=[]
+      map[key].buyers.push({client:o.client||o.device||'Розница',date:o.created_at||o.date||'',qty,price:salePrice,type:'розница'})
     })
   })
 
@@ -6119,7 +6127,7 @@ function getSalesAnalytics(){
     const cat=whIt?whIt.cat||'':'';
     const profit=r.revenue-(r.cost*r.qty)
     const margin=r.sale>0?((r.sale-r.cost)/r.sale*100):0
-    return {...r, cat, profit, margin}
+    return {...r, cat, profit, margin, buyers:r.buyers||[]}
   }).sort((a,b)=>b.revenue-a.revenue)
 }
 
@@ -6155,7 +6163,7 @@ function renderAnalytics(){
     tbody.innerHTML='<tr><td colspan="9" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о продажах. Оформите и отгрузите заказы.</td></tr>'
     return
   }
-  tbody.innerHTML=rows.map(r=>{
+  tbody.innerHTML=rows.map((r,i)=>{
     const thr=_getThreshold(r)
     const low=r.margin<thr
     const rowStyle=low?'background:#fff5f5':''
@@ -6165,8 +6173,34 @@ function renderAnalytics(){
       :'<span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Свой</span>'
     const catBadge=r.cat?`<span style="background:#f3f4f6;color:#6b7280;border-radius:4px;padding:2px 7px;font-size:11px;margin-left:4px">${r.cat}</span>`:''
     const thrBadge=`<span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 6px;font-size:10px;margin-left:4px">${thr}%</span>`
-    return `<tr style="${rowStyle}">
-      <td>${r.name}${catBadge}${low?'<span style="margin-left:6px;font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:4px;padding:1px 6px">⚠ низкая маржа</span>':''}</td>
+    const hasBuyers=r.buyers&&r.buyers.length>0
+    const buyersHtml=hasBuyers?r.buyers.map(b=>{
+      const d=b.date?new Date(b.date):null
+      const dateStr=d&&!isNaN(d)?d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—'
+      const typeBadge=b.type==='опт'
+        ?'<span style="background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:600">Опт</span>'
+        :b.type==='услуга'
+        ?'<span style="background:#f3f4f6;color:#6b7280;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:600">Услуга</span>'
+        :'<span style="background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:600">Розница</span>'
+      return `<tr style="background:#f8faff;border-top:1px solid #e8f0fe">
+        <td colspan="2" style="padding:7px 16px 7px 36px;font-size:12px">
+          <span style="font-weight:600;color:var(--text)">${b.client}</span>
+          <span style="margin-left:8px">${typeBadge}</span>
+        </td>
+        <td style="text-align:right;font-size:12px;color:var(--text2)">${dateStr}</td>
+        <td style="text-align:right;font-size:12px;color:var(--text2)">× ${b.qty}</td>
+        <td colspan="4" style="text-align:right;font-size:12px;font-weight:700;color:var(--text)">${fmt(b.price*b.qty)}</td>
+      </tr>`
+    }).join('')+`<tr style="background:#f0f4ff;border-top:1px solid #dbeafe">
+      <td colspan="8" style="padding:0"></td>
+    </tr>`:''
+    return `<tr style="${rowStyle};cursor:pointer" onclick="toggleBuyers(this,'buyers-${i}')">
+      <td>
+        <span style="display:inline-flex;align-items:center;gap:6px">
+          ${hasBuyers?`<span style="font-size:10px;color:var(--text3);transition:transform .2s" class="buyers-chevron-${i}">▶</span>`:''}
+          ${r.name}${catBadge}${low?'<span style="margin-left:6px;font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:4px;padding:1px 6px">⚠ низкая маржа</span>':''}
+        </span>
+      </td>
       <td>${srcBadge}</td>
       <td style="text-align:right">${fmt(r.cost)}</td>
       <td style="text-align:right">${fmt(r.sale)}</td>
@@ -6174,8 +6208,18 @@ function renderAnalytics(){
       <td style="text-align:right">${r.qty}</td>
       <td style="text-align:right">${fmt(r.revenue)}</td>
       <td style="text-align:right;${r.profit>=0?'color:var(--green)':'color:var(--red)'}">${fmt(r.profit)}</td>
-    </tr>`
+    </tr>
+    ${hasBuyers?`<tr id="buyers-${i}" style="display:none">${buyersHtml?`<td colspan="8" style="padding:0"><table style="width:100%;border-collapse:collapse">${buyersHtml}</table></td>`:''}</tr>`:''}`
   }).join('')
+}
+
+function toggleBuyers(row, id){
+  const tr=document.getElementById(id)
+  if(!tr) return
+  const open=tr.style.display!=='none'
+  tr.style.display=open?'none':''
+  const chevron=row.querySelector('[class^="buyers-chevron"]')
+  if(chevron) chevron.style.transform=open?'':'rotate(90deg)'
 }
 
 function checkProfitabilityTasks(){
