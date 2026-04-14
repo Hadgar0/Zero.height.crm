@@ -6214,35 +6214,9 @@ function renderAnalytics(){
       :'<span style="background:#d1fae5;color:#065f46;border-radius:4px;padding:2px 7px;font-size:11px;font-weight:600">Свой</span>'
     const catBadge=r.cat?`<span style="background:#f3f4f6;color:#6b7280;border-radius:4px;padding:2px 7px;font-size:11px;margin-left:4px">${r.cat}</span>`:''
     const thrBadge=`<span style="background:#fee2e2;color:#991b1b;border-radius:4px;padding:2px 6px;font-size:10px;margin-left:4px">${thr}%</span>`
-    const hasBuyers=r.buyers&&r.buyers.length>0
-    const buyersHtml=hasBuyers?(`<tr style="background:#f0f4ff;border-bottom:1px solid #dbeafe">
-      <td style="padding:5px 16px 5px 36px;font-size:10.5px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">ФИО</td>
-      <td style="padding:5px 12px;font-size:10.5px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px">Что купил</td>
-      <td style="padding:5px 12px;font-size:10.5px;font-weight:700;color:#6b7280;text-align:right;text-transform:uppercase;letter-spacing:.5px">Цена</td>
-      <td style="padding:5px 12px;font-size:10.5px;font-weight:700;color:#6b7280;text-align:right;text-transform:uppercase;letter-spacing:.5px">Маржинальность</td>
-      <td style="padding:5px 12px;font-size:10.5px;font-weight:700;color:#6b7280;text-align:right;text-transform:uppercase;letter-spacing:.5px">Маржа %</td>
-      <td colspan="3" style="padding:5px 12px;font-size:10.5px;font-weight:700;color:#6b7280;text-align:right;text-transform:uppercase;letter-spacing:.5px">Дата</td>
-    </tr>`+r.buyers.map(b=>{
-      const d=b.date?new Date(b.date):null
-      const dateStr=d&&!isNaN(d)?d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—'
-      const profit=(b.price-r.cost)*b.qty
-      const margin=b.price>0?((b.price-r.cost)/b.price*100):0
-      const marginColor=margin>=50?'#059669':margin>=20?'#d97706':'#e11d48'
-      return `<tr style="background:#f8faff;border-top:1px solid #e8f0fe" onmouseover="this.style.background='#eef4ff'" onmouseout="this.style.background='#f8faff'">
-        <td style="padding:8px 16px 8px 36px;font-size:12.5px;font-weight:600;color:var(--text)">${b.client}</td>
-        <td style="padding:8px 12px;font-size:12px;color:var(--text2)">${r.name}${b.qty>1?` <span style="color:var(--text3)">× ${b.qty}</span>`:''}</td>
-        <td style="padding:8px 12px;font-size:12.5px;font-weight:700;color:var(--text);text-align:right">${fmt(b.price*b.qty)}</td>
-        <td style="padding:8px 12px;font-size:12.5px;font-weight:700;text-align:right;color:${profit>=0?'#059669':'#e11d48'}">${fmt(profit)}</td>
-        <td style="padding:8px 12px;font-size:12.5px;font-weight:700;text-align:right;color:${marginColor}">${margin.toFixed(1)}%</td>
-        <td colspan="3" style="padding:8px 12px;font-size:12px;color:var(--text3);text-align:right">${dateStr}</td>
-      </tr>`
-    }).join('')+`<tr style="background:#f0f4ff;border-top:1px solid #dbeafe"><td colspan="8" style="padding:2px"></td></tr>`):''
-    return `<tr style="${rowStyle};cursor:pointer" onclick="toggleBuyers(this,'buyers-${i}')">
+    return `<tr style="${rowStyle}">
       <td>
-        <span style="display:inline-flex;align-items:center;gap:6px">
-          ${hasBuyers?`<span style="font-size:10px;color:var(--text3);transition:transform .2s" class="buyers-chevron-${i}">▶</span>`:''}
-          ${r.name}${catBadge}${low?'<span style="margin-left:6px;font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:4px;padding:1px 6px">⚠ низкая маржа</span>':''}
-        </span>
+        ${r.name}${catBadge}${low?'<span style="margin-left:6px;font-size:10px;background:#fee2e2;color:#b91c1c;border-radius:4px;padding:1px 6px">⚠ низкая маржа</span>':''}
       </td>
       <td>${srcBadge}</td>
       <td style="text-align:right">${fmt(r.cost)}</td>
@@ -6251,8 +6225,7 @@ function renderAnalytics(){
       <td style="text-align:right">${r.qty}</td>
       <td style="text-align:right">${fmt(r.revenue)}</td>
       <td style="text-align:right;${r.profit>=0?'color:var(--green)':'color:var(--red)'}">${fmt(r.profit)}</td>
-    </tr>
-    ${hasBuyers?`<tr id="buyers-${i}" style="display:none">${buyersHtml?`<td colspan="8" style="padding:0"><table style="width:100%;border-collapse:collapse">${buyersHtml}</table></td>`:''}</tr>`:''}`
+    </tr>`
   }).join('')
 }
 
