@@ -6300,7 +6300,8 @@ function getTransactionsAnalytics(){
         costTotal: cost*qty,
         profit: (salePrice-cost)*qty,
         margin: salePrice>0?((salePrice-cost)/salePrice*100):0,
-        payment: w.payment||'',
+        payment: w.payment_method||w.payment||'',
+        paid: !!(w.paid||w.status==='paid'||w.status==='closed'||w.payment_method),
         type: 'опт',
         src: item.src||whIt?.src||'local'
       })
@@ -6323,7 +6324,8 @@ function getTransactionsAnalytics(){
           costTotal: cost,
           profit: salePrice-cost,
           margin: salePrice>0?((salePrice-cost)/salePrice*100):0,
-          payment: o.payment||'',
+          payment: o.payment_method||o.payment||'',
+          paid: !!(o.paid||o.payment_method),
           type: 'розница',
           src: whIt?.src||'local'
         })
@@ -6339,7 +6341,8 @@ function getTransactionsAnalytics(){
           costTotal: 0,
           profit: salePrice,
           margin: 100,
-          payment: o.payment||'',
+          payment: o.payment_method||o.payment||'',
+          paid: !!(o.paid||o.payment_method),
           type: 'услуга',
           src: 'local'
         })
@@ -6363,7 +6366,8 @@ function getTransactionsAnalytics(){
         costTotal: cost*qty,
         profit: (salePrice-cost)*qty,
         margin: salePrice>0?((salePrice-cost)/salePrice*100):0,
-        payment: o.payment||'',
+        payment: o.payment_method||o.payment||'',
+        paid: !!(o.paid||o.payment_method),
         type: 'розница',
         src: item.src||whIt?.src||'local'
       })
@@ -6433,9 +6437,10 @@ function renderDailyAnalytics(){
     // ── Строки транзакций
     rows.forEach((t,ti)=>{
       const mColor=t.margin>=50?'#059669':t.margin>=20?'#d97706':'#e11d48'
-      const payBg=t.payment==='cash'?'#dcfce7':t.payment==='card'?'#dbeafe':'#fee2e2'
-      const payTx=t.payment==='cash'?'#166534':t.payment==='card'?'#1e40af':'#991b1b'
-      const payLabel=t.payment==='cash'?'Нал':t.payment==='card'?'Карта':t.payment||'Ожидаем оплату'
+      const isPaid=t.paid||!!t.payment
+      const payBg=t.payment==='cash'?'#dcfce7':t.payment==='card'?'#dbeafe':t.payment==='transfer'?'#ede9fe':isPaid?'#d1fae5':'#fee2e2'
+      const payTx=t.payment==='cash'?'#166534':t.payment==='card'?'#1e40af':t.payment==='transfer'?'#5b21b6':isPaid?'#065f46':'#991b1b'
+      const payLabel=t.payment==='cash'?'💵 Наличные':t.payment==='card'?'💳 Карта':t.payment==='transfer'?'📲 Перевод':isPaid?'✓ Оплачено':'⏳ Ожидаем оплату'
       const payment=`<span style="background:${payBg};color:${payTx};border-radius:4px;padding:3px 10px;font-size:11.5px;font-weight:600;white-space:nowrap">${payLabel}</span>`
 
       html+=`<tr style="border-bottom:1px solid #f1f5f9;background:#fff" onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='#fff'">
