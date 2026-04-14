@@ -2735,9 +2735,10 @@ function renderClients(){
       const txt=diff===0?'Сегодня':diff===1?'Вчера':diff+' дн. назад'
       return `<span style="color:${color};font-weight:600;font-size:12px">${txt}</span>`
     })():'<span style="color:#94a3b8;font-size:12px">—</span>'
+    const shopBadge=c.source==='shop'?'<span style="background:#f0fdf4;color:#166534;border-radius:4px;padding:1px 7px;font-size:10.5px;font-weight:700;margin-left:5px;vertical-align:middle">🛒 Витрина</span>':''
     return `<tr class="cr" onclick="toggleC(${c.id})" style="${rowStyle}">
       <td>
-        <strong>${c.name}</strong>${inactiveDot}
+        <strong>${c.name}</strong>${inactiveDot}${shopBadge}
         ${c.company?`<div style="font-size:11px;color:var(--text3);margin-top:1px">${c.company}</div>`:''}
       </td>
       <td style="font-size:12px">${c.phone||'—'}</td>
@@ -3679,18 +3680,48 @@ function checkShopOrders(){
   const newOrders=shopOrders.filter(o=>!processed.includes(o.id))
   const tasks=S.get('tasks')
   if(newOrders.length){
+    const clients=S.get('clients')
     newOrders.forEach(o=>{
+      // ── Создаём/обновляем клиента ───────────────────────────────────────────
+      const phone=(o.phone||'').replace(/\s/g,'')
+      let cl=phone?clients.find(c=>(c.phone||'').replace(/\s/g,'')===phone):null
+      const orderNote=`Заказ с витрины: ${o.item_name||'Корзина'} — ${Number(o.total||0).toLocaleString('ru')} ₽ (${new Date(o.created_at).toLocaleDateString('ru')})`
+      if(!cl){
+        cl={
+          id: S.nid('clients'),
+          name: o.client||'Клиент с витрины',
+          phone: o.phone||'',
+          email: '',
+          company: o.company||'',
+          status: 'active',
+          source: 'shop',
+          notes: o.comment||'',
+          created_at: o.created_at||new Date().toISOString(),
+          interactions: [{
+            date: o.created_at||new Date().toISOString(),
+            text: orderNote
+          }]
+        }
+        clients.push(cl)
+      } else {
+        if(!cl.interactions) cl.interactions=[]
+        cl.interactions.unshift({date:o.created_at||new Date().toISOString(),text:orderNote})
+        if(!cl.company&&o.company) cl.company=o.company
+        if(cl.status!=='active') cl.status='active'
+      }
+      // ── Создаём задачу ──────────────────────────────────────────────────────
       const title=`Заказ с сайта: ${o.item_name||'Корзина'} — ${o.client} (${o.phone})`
       const desc=`Клиент: ${o.client}\nТелефон: ${o.phone}\nТовар: ${o.item_name||'Корзина'}\nКол-во: ${o.qty}\nСумма: ${Number(o.total||0).toLocaleString('ru')} ₽${o.comment?'\nКомментарий: '+o.comment:''}`
-      tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'pending',due:null,client_id:null,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
+      tasks.push({id:S.nid('tasks'),title,desc,priority:'high',status:'pending',due:null,client_id:cl.id,deal_id:null,shop_order_id:o.id,shop_order:o,created_at:new Date().toISOString()})
       processed.push(o.id)
     })
+    S.set('clients',clients)
     S.set('tasks',tasks)
     localStorage.setItem('shop_orders_processed',JSON.stringify(processed))
     showShopNotification(newOrders.length)
+    if(document.getElementById('page-clients')&&document.getElementById('page-clients').classList.contains('active')) renderClients()
   }
   updateTasksBadge()
-  // Перерисовываем только если сейчас открыта страница задач
   if(document.getElementById('page-tasks')&&document.getElementById('page-tasks').classList.contains('active')) renderTasks()
 }
 
