@@ -2628,7 +2628,7 @@ function nav(id,el){
   document.getElementById('tb-page-title').textContent=m.title
   document.getElementById('tb-page-sub').textContent=m.sub
   if(id==='dashboard') renderDash()
-  if(id==='clients')   renderClients()
+  if(id==='clients'){  syncShopClients(); renderClients() }
   if(id==='deals')     renderDeals()
   if(id==='tasks'){    checkShopOrders(); renderTasks() }
   if(id==='warehouse') renderWarehouse()
@@ -3671,6 +3671,48 @@ function saveTask(){
 function delTask(id){
   if(!confirm('Удалить задачу?'))return
   S.set('tasks',S.get('tasks').filter(t=>t.id!==id));renderTasks()
+}
+
+// ── SHOP ORDERS → CLIENTS (sync all) ─────────────────────────────────────────
+function syncShopClients(){
+  const shopOrders=JSON.parse(localStorage.getItem('shop_orders')||'[]')
+  if(!shopOrders.length) return
+  const clients=S.get('clients')
+  let changed=false
+  shopOrders.forEach(o=>{
+    if(!o.client&&!o.phone) return
+    const phone=(o.phone||'').replace(/[\s\-\(\)]/g,'')
+    let cl=phone?clients.find(c=>(c.phone||'').replace(/[\s\-\(\)]/g,'')===phone):null
+    if(!cl&&o.client) cl=clients.find(c=>c.name===o.client&&!phone)
+    const orderNote=`🛒 Заказ с витрины: ${o.item_name||'Корзина'} — ${Number(o.total||0).toLocaleString('ru')} ₽ (${new Date(o.created_at||Date.now()).toLocaleDateString('ru')})`
+    if(!cl){
+      clients.push({
+        id: S.nid('clients'),
+        name: o.client||'Клиент с витрины',
+        phone: o.phone||'',
+        email: '',
+        company: o.company||'',
+        status: 'active',
+        source: 'shop',
+        notes: o.comment||'',
+        created_at: o.created_at||new Date().toISOString(),
+        interactions:[{date:o.created_at||new Date().toISOString(),text:orderNote}]
+      })
+      changed=true
+    } else {
+      if(cl.source!=='shop'||!cl.interactions){
+        // Уже существующий клиент — проверяем есть ли такое взаимодействие
+        if(!cl.interactions) cl.interactions=[]
+        const already=cl.interactions.find(i=>i.text===orderNote)
+        if(!already){
+          cl.interactions.unshift({date:o.created_at||new Date().toISOString(),text:orderNote})
+          changed=true
+        }
+        if(!cl.source) { cl.source='shop'; changed=true }
+      }
+    }
+  })
+  if(changed) S.set('clients',clients)
 }
 
 // ── SHOP ORDERS → TASKS ───────────────────────────────────────────────────────
@@ -6523,6 +6565,7 @@ function renderDailyAnalytics(){
   syncBranchSelects()
   renderTopbar()
   applyRoleAccess(getCurEmp())
+  syncShopClients()
   checkShopOrders()
   renderDash()
 })()
