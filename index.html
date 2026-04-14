@@ -1082,47 +1082,21 @@ tr:hover td{background:#fcfcfc}
         <span style="font-size:12px;color:var(--text3)">Каждая транзакция · сгруппировано по датам</span>
       </div>
       <div style="overflow-x:auto">
-        <table id="an-daily-table" style="font-size:12px;border-collapse:collapse;width:100%">
-          <thead id="an-daily-thead">
-            <tr style="background:#fef9c3;border-bottom:2px solid #fde047">
-              <th style="padding:9px 8px;text-align:left;white-space:nowrap;min-width:30px;font-weight:600;color:#713f12">#</th>
-              <th style="padding:9px 8px;text-align:left;min-width:220px;white-space:nowrap;font-weight:700;color:#713f12">Наименование товара</th>
-              <th style="padding:9px 8px;text-align:left;min-width:150px;white-space:nowrap;font-weight:700;color:#713f12">Кто купил</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">Сумма продажи</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">Цена закупа</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">Итог маржи</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">Итог дня</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">Маржа в %</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">Сред. % маржи</th>
-              <th style="padding:9px 8px;text-align:center;white-space:nowrap;font-weight:700;color:#713f12">Оплата</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12;border-left:2px solid #fde047" id="an-daily-th-total">—</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12" id="an-daily-th-profit">—</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12">0 ₽</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12" id="an-daily-th-margin">—</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12" id="an-daily-th-avgmargin">—</th>
-              <th style="padding:9px 8px;text-align:right;white-space:nowrap;font-weight:700;color:#713f12" id="an-daily-th-norm">—</th>
-            </tr>
-            <tr style="background:#fef08a;border-bottom:2px solid #eab308">
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600"></th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:left">Наименование товара</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:left">Кто купил</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Сумма продажи</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Цена закупа</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Итог маржи</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Итог дня</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Маржа в %</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Сред. % маржи</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:center">Оплата</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right;border-left:2px solid #eab308">Общая сумма</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Прибыль</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Доставка</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Маржа</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Сред.маржа</th>
-              <th style="padding:5px 8px;font-size:10px;color:#92400e;font-weight:600;text-align:right">Норма</th>
+        <table id="an-daily-table" style="font-size:13px;border-collapse:collapse;width:100%">
+          <thead>
+            <tr style="background:#f9fafb;border-bottom:2px solid var(--border)">
+              <th style="padding:10px 8px;text-align:center;width:36px;color:var(--text3);font-weight:600">#</th>
+              <th style="padding:10px 12px;text-align:left;min-width:240px">Наименование товара</th>
+              <th style="padding:10px 12px;text-align:left;min-width:160px">Кто купил</th>
+              <th style="padding:10px 12px;text-align:right;white-space:nowrap">Сумма продажи</th>
+              <th style="padding:10px 12px;text-align:right;white-space:nowrap">Цена закупа</th>
+              <th style="padding:10px 12px;text-align:right;white-space:nowrap">Итог маржи</th>
+              <th style="padding:10px 12px;text-align:right;white-space:nowrap">Маржа в %</th>
+              <th style="padding:10px 12px;text-align:center;white-space:nowrap">Оплата</th>
             </tr>
           </thead>
           <tbody id="an-daily-tbody">
-            <tr><td colspan="16" style="padding:30px;text-align:center;color:var(--text3)">Нет данных</td></tr>
+            <tr><td colspan="8" style="padding:30px;text-align:center;color:var(--text3)">Нет данных</td></tr>
           </tbody>
         </table>
       </div>
@@ -6410,7 +6384,7 @@ function renderDailyAnalytics(){
 
   const tbody=document.getElementById('an-daily-tbody')
   if(!txns.length){
-    tbody.innerHTML='<tr><td colspan="16" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о транзакциях. Оформите и закройте заказы.</td></tr>'
+    tbody.innerHTML='<tr><td colspan="8" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о транзакциях. Оформите и закройте заказы.</td></tr>'
     return
   }
 
@@ -6424,20 +6398,8 @@ function renderDailyAnalytics(){
     byDay[dayKey].rows.push(t)
   })
 
-  // Обновляем жёлтую шапку — итоги по всем дням
-  const grandRev=txns.reduce((s,t)=>s+t.revenue,0)
-  const grandProfit=txns.reduce((s,t)=>s+t.profit,0)
-  const grandAvgMargin=txns.length?txns.reduce((s,t)=>s+t.margin,0)/txns.length:0
-  const el=id=>document.getElementById(id)
-  if(el('an-daily-th-total'))    el('an-daily-th-total').textContent=fmt(grandRev)
-  if(el('an-daily-th-profit'))   el('an-daily-th-profit').textContent=fmt(grandProfit)
-  if(el('an-daily-th-margin'))   el('an-daily-th-margin').textContent=fmt(grandProfit)
-  if(el('an-daily-th-avgmargin'))el('an-daily-th-avgmargin').textContent=grandAvgMargin.toFixed(2)+'%'
-  if(el('an-daily-th-norm'))     el('an-daily-th-norm').textContent=globalThreshold+'%'
-
-  const P='padding:8px 10px'
-  const PR='padding:8px 10px;text-align:right'
-  const BL='border-left:2px solid #334155'
+  const P='padding:10px 12px'
+  const PR='padding:10px 12px;text-align:right'
 
   let html=''
   Object.keys(byDay).forEach(dayKey=>{
@@ -6446,54 +6408,45 @@ function renderDailyAnalytics(){
     const dayProfit=rows.reduce((s,r)=>s+r.profit,0)
     const dayAvgMargin=rows.length?rows.reduce((s,r)=>s+r.margin,0)/rows.length:0
     const pC=dayProfit>=0?'#4ade80':'#f87171'
-    const mC2=dayAvgMargin>=globalThreshold?'#4ade80':'#fbbf24'
+    const mC=dayAvgMargin>=globalThreshold?'#4ade80':'#fbbf24'
 
-    // ── Тёмная строка даты (содержит подзаголовки + итоги дня справа)
+    // ── Тёмная строка-заголовок дня
     html+=`<tr style="background:#1e293b;border-top:3px solid #0f172a">
-      <td style="${P};font-weight:700;color:#fbbf24;font-size:12px;white-space:nowrap">${label}</td>
-      <td style="${P};font-size:11px;color:#94a3b8;font-weight:600">Наименование товара</td>
-      <td style="${P};font-size:11px;color:#94a3b8;font-weight:600">Кто купил</td>
-      <td style="${PR};font-size:11px;color:#94a3b8;font-weight:600">Сумма продажи</td>
-      <td style="${PR};font-size:11px;color:#94a3b8;font-weight:600">Цена закупа</td>
-      <td style="${PR};font-size:11px;color:#94a3b8;font-weight:600">Итог маржи</td>
-      <td style="${PR};font-weight:700;color:#fbbf24;font-size:12.5px">${fmt(dayRevenue)}</td>
-      <td style="${PR};font-size:11px;color:#94a3b8;font-weight:600">Маржа в %</td>
-      <td style="${PR};font-weight:700;color:${mC2};font-size:12px">${dayAvgMargin.toFixed(2)}%</td>
-      <td style="${P};font-size:11px;color:#94a3b8;font-weight:600;text-align:center">Оплата</td>
-      <td style="${PR};font-weight:700;color:#fbbf24;font-size:12.5px;${BL}">${fmt(dayRevenue)}</td>
-      <td style="${PR};font-weight:700;color:${pC};font-size:12.5px">${fmt(dayProfit)}</td>
-      <td style="${PR};color:#64748b;font-size:11px">0 ₽</td>
-      <td style="${PR};font-weight:700;color:${pC};font-size:12.5px">${fmt(dayProfit)}</td>
-      <td style="${PR};font-weight:700;color:${mC2};font-size:12px">${dayAvgMargin.toFixed(2)}%</td>
-      <td style="${PR};color:#64748b;font-size:11px">${globalThreshold}%</td>
+      <td style="${P};font-weight:700;color:#fbbf24;font-size:13px;white-space:nowrap">${label}</td>
+      <td colspan="2" style="${P};font-size:11px;color:#64748b">
+        <span style="display:inline-flex;gap:16px;flex-wrap:wrap">
+          <span style="color:#94a3b8">Выручка: <b style="color:#fbbf24">${fmt(dayRevenue)}</b></span>
+          <span style="color:#94a3b8">Прибыль: <b style="color:${pC}">${fmt(dayProfit)}</b></span>
+          <span style="color:#94a3b8">Доставка: <b style="color:#64748b">0 ₽</b></span>
+          <span style="color:#94a3b8">Маржа: <b style="color:${pC}">${fmt(dayProfit)}</b></span>
+          <span style="color:#94a3b8">Сред.маржа: <b style="color:${mC}">${dayAvgMargin.toFixed(1)}%</b></span>
+          <span style="color:#94a3b8">Норма: <b style="color:#64748b">${globalThreshold}%</b></span>
+        </span>
+      </td>
+      <td style="${PR};font-weight:700;color:#fbbf24;font-size:13px">${fmt(dayRevenue)}</td>
+      <td style="${PR};font-size:11px;color:#475569">—</td>
+      <td style="${PR};font-weight:700;color:${pC};font-size:13px">${fmt(dayProfit)}</td>
+      <td style="${PR};font-weight:700;color:${mC};font-size:13px">${dayAvgMargin.toFixed(1)}%</td>
+      <td style="${P}"></td>
     </tr>`
 
     // ── Строки транзакций
     rows.forEach((t,ti)=>{
       const mColor=t.margin>=50?'#059669':t.margin>=20?'#d97706':'#e11d48'
-      const noPay=!t.payment||t.payment===''
       const payBg=t.payment==='cash'?'#dcfce7':t.payment==='card'?'#dbeafe':'#fee2e2'
       const payTx=t.payment==='cash'?'#166534':t.payment==='card'?'#1e40af':'#991b1b'
       const payLabel=t.payment==='cash'?'Нал':t.payment==='card'?'Карта':t.payment||'Ожидаем оплату'
-      const payment=`<span style="background:${payBg};color:${payTx};border-radius:4px;padding:2px 9px;font-size:11px;font-weight:600;white-space:nowrap">${payLabel}</span>`
+      const payment=`<span style="background:${payBg};color:${payTx};border-radius:4px;padding:3px 10px;font-size:11.5px;font-weight:600;white-space:nowrap">${payLabel}</span>`
 
       html+=`<tr style="border-bottom:1px solid #f1f5f9;background:#fff" onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background='#fff'">
-        <td style="${P};color:#9ca3af;font-size:11.5px;text-align:center;font-weight:600">${ti+1}</td>
-        <td style="${P};font-size:12.5px;font-weight:600;color:var(--text)">${t.name}</td>
-        <td style="${P};font-size:12px;color:var(--text2)">${t.client}</td>
-        <td style="${PR};font-size:13px;font-weight:700;color:var(--text)">${fmt(t.revenue)}</td>
-        <td style="${PR};font-size:12px;color:var(--text2)">${t.cost>0?fmt(t.costTotal):'—'}</td>
-        <td style="${PR};font-size:13px;font-weight:700;color:${t.profit>=0?'#059669':'#e11d48'}">${fmt(t.profit)}</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
-        <td style="${PR};font-size:13px;font-weight:700;color:${mColor}">${t.margin.toFixed(2)}%</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
+        <td style="${P};color:#9ca3af;font-size:12px;text-align:center;font-weight:600">${ti+1}</td>
+        <td style="${P};font-size:13px;font-weight:600;color:var(--text)">${t.name}</td>
+        <td style="${P};font-size:12.5px;color:var(--text2)">${t.client}</td>
+        <td style="${PR};font-size:13.5px;font-weight:700;color:var(--text)">${fmt(t.revenue)}</td>
+        <td style="${PR};font-size:12.5px;color:var(--text2)">${t.cost>0?fmt(t.costTotal):'—'}</td>
+        <td style="${PR};font-size:13.5px;font-weight:700;color:${t.profit>=0?'#059669':'#e11d48'}">${fmt(t.profit)}</td>
+        <td style="${PR};font-size:13.5px;font-weight:700;color:${mColor}">${t.margin.toFixed(1)}%</td>
         <td style="${P};text-align:center">${payment}</td>
-        <td style="${PR};color:#d1d5db;font-size:11px;border-left:1px solid #f3f4f6">—</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
-        <td style="${PR};color:#d1d5db;font-size:11px">—</td>
       </tr>`
     })
   })
