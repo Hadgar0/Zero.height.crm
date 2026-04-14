@@ -1025,7 +1025,13 @@ tr:hover td{background:#fcfcfc}
 
   <!-- АНАЛИТИКА -->
   <div id="page-analytics" class="page page-pad">
-    <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:20px;gap:8px">
+    <!-- Toolbar -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:8px;flex-wrap:wrap">
+      <!-- Tabs -->
+      <div style="display:flex;gap:4px;background:var(--border-light);border-radius:10px;padding:4px">
+        <button id="an-tab-products" class="an-tab active" onclick="switchAnTab('products')" style="padding:6px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm);transition:all .15s">По товарам</button>
+        <button id="an-tab-daily" class="an-tab" onclick="switchAnTab('daily')" style="padding:6px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s">По дням</button>
+      </div>
       <div style="display:flex;gap:8px;align-items:center">
         <select id="an-filter-src" class="ofbtn" style="padding:6px 12px" onchange="renderAnalytics()">
           <option value="">Все источники</option>
@@ -1042,8 +1048,8 @@ tr:hover td{background:#fcfcfc}
     <!-- Stat summary -->
     <div class="stat-grid" id="an-stat-grid" style="grid-template-columns:repeat(4,1fr)"></div>
 
-    <!-- Table -->
-    <div class="card">
+    <!-- ── По товарам ── -->
+    <div class="card" id="an-view-products">
       <div class="card-hd" style="justify-content:space-between">
         <h2>Рентабельность по товарам</h2>
         <span id="an-threshold-label" style="font-size:12px;color:var(--text3)"></span>
@@ -1064,6 +1070,36 @@ tr:hover td{background:#fcfcfc}
           </thead>
           <tbody id="an-tbody">
             <tr><td colspan="8" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о продажах</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── По дням ── -->
+    <div class="card" id="an-view-daily" style="display:none">
+      <div class="card-hd" style="justify-content:space-between">
+        <h2>Продажи по дням</h2>
+        <span style="font-size:12px;color:var(--text3)">Каждая транзакция · сгруппировано по датам</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="an-daily-table" style="font-size:12.5px">
+          <thead>
+            <tr style="background:var(--border-light)">
+              <th style="min-width:220px">Наименование товара</th>
+              <th style="min-width:160px">Кто купил</th>
+              <th style="text-align:right;white-space:nowrap">Сумма продажи</th>
+              <th style="text-align:right;white-space:nowrap">Цена закупа</th>
+              <th style="text-align:right;white-space:nowrap">Итог маржи</th>
+              <th style="text-align:right;white-space:nowrap">Итог дня</th>
+              <th style="text-align:right;white-space:nowrap">Маржа %</th>
+              <th style="text-align:right;white-space:nowrap">Сред. %</th>
+              <th style="text-align:center;white-space:nowrap">Оплата</th>
+              <th style="text-align:right;white-space:nowrap">Прибыль</th>
+              <th style="text-align:right;white-space:nowrap">Выручка</th>
+            </tr>
+          </thead>
+          <tbody id="an-daily-tbody">
+            <tr><td colspan="11" style="padding:30px;text-align:center;color:var(--text3)">Нет данных</td></tr>
           </tbody>
         </table>
       </div>
@@ -6250,6 +6286,215 @@ function checkProfitabilityTasks(){
   S.set('tasks',tasks)
   renderAnalytics()
   alert(`✅ Создано задач: ${created}\nУже существовало: ${below.length-created}\n\nПерейдите в раздел Задачи для просмотра.`)
+}
+
+// ── ПЕРЕКЛЮЧЕНИЕ ТАБОВ АНАЛИТИКИ ──────────────────────────────────────────────
+function switchAnTab(tab){
+  const isProducts=tab==='products'
+  document.getElementById('an-view-products').style.display=isProducts?'':'none'
+  document.getElementById('an-view-daily').style.display=isProducts?'none':''
+  const btnP=document.getElementById('an-tab-products')
+  const btnD=document.getElementById('an-tab-daily')
+  if(isProducts){
+    btnP.style.cssText='padding:6px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm);transition:all .15s'
+    btnD.style.cssText='padding:6px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s'
+  } else {
+    btnD.style.cssText='padding:6px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm);transition:all .15s'
+    btnP.style.cssText='padding:6px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:transparent;color:var(--text2);transition:all .15s'
+    renderDailyAnalytics()
+  }
+}
+
+// ── ТРАНЗАКЦИИ ДЛЯ "ПО ДНЯМ" ─────────────────────────────────────────────────
+function getTransactionsAnalytics(){
+  const wholesale=S.get('wholesale')||[]
+  const orders=S.get('orders')||[]
+  const whItems=S.get('wh_items')||[]
+  const txns=[]
+
+  // Оптовые отгрузки
+  wholesale.filter(w=>w.shipped&&w.items&&w.items.length).forEach(w=>{
+    w.items.forEach(item=>{
+      const whIt=item.wh_item_id?whItems.find(i=>i.id===item.wh_item_id):whItems.find(i=>i.name===item.name)
+      const cost=whIt?+(whIt.price||0):0
+      const salePrice=+(item.price||0)
+      const qty=+(item.qty||1)
+      txns.push({
+        date: w.created_at||w.date||'',
+        name: item.name||'—',
+        client: w.client||w.company||'—',
+        salePrice, cost, qty,
+        revenue: salePrice*qty,
+        costTotal: cost*qty,
+        profit: (salePrice-cost)*qty,
+        margin: salePrice>0?((salePrice-cost)/salePrice*100):0,
+        payment: w.payment||'',
+        type: 'опт',
+        src: item.src||whIt?.src||'local'
+      })
+    })
+  })
+
+  // Розничные заказы — работы и запчасти
+  orders.filter(o=>o.status==='closed'&&o.works&&o.works.length).forEach(o=>{
+    o.works.forEach(w=>{
+      if(w.part&&+w.pp>0){
+        const whIt=w.sku?whItems.find(i=>i.sku===w.sku):whItems.find(i=>i.name===w.part)
+        const cost=whIt?+(whIt.price||0):0
+        const salePrice=+(w.pp||0)
+        txns.push({
+          date: o.created_at||o.date||'',
+          name: w.part||'—',
+          client: o.client||o.device||'Розница',
+          salePrice, cost, qty:1,
+          revenue: salePrice,
+          costTotal: cost,
+          profit: salePrice-cost,
+          margin: salePrice>0?((salePrice-cost)/salePrice*100):0,
+          payment: o.payment||'',
+          type: 'розница',
+          src: whIt?.src||'local'
+        })
+      }
+      if(w.n&&+w.p>0){
+        const salePrice=+(w.p||0)
+        txns.push({
+          date: o.created_at||o.date||'',
+          name: w.n+' (услуга)',
+          client: o.client||o.device||'Розница',
+          salePrice, cost:0, qty:1,
+          revenue: salePrice,
+          costTotal: 0,
+          profit: salePrice,
+          margin: 100,
+          payment: o.payment||'',
+          type: 'услуга',
+          src: 'local'
+        })
+      }
+    })
+  })
+
+  // Розничные заказы с items[]
+  orders.filter(o=>o.status==='closed'&&o.items&&o.items.length).forEach(o=>{
+    o.items.forEach(item=>{
+      const whIt=item.wh_item_id?whItems.find(i=>i.id===item.wh_item_id):whItems.find(i=>i.name===item.name)
+      const cost=whIt?+(whIt.price||0):0
+      const salePrice=+(item.price||0)
+      const qty=+(item.qty||1)
+      txns.push({
+        date: o.created_at||o.date||'',
+        name: item.name||'—',
+        client: o.client||o.device||'Розница',
+        salePrice, cost, qty,
+        revenue: salePrice*qty,
+        costTotal: cost*qty,
+        profit: (salePrice-cost)*qty,
+        margin: salePrice>0?((salePrice-cost)/salePrice*100):0,
+        payment: o.payment||'',
+        type: 'розница',
+        src: item.src||whIt?.src||'local'
+      })
+    })
+  })
+
+  // Сортируем по дате убывания
+  txns.sort((a,b)=>new Date(b.date)-new Date(a.date))
+  return txns
+}
+
+// ── РЕНДЕР "ПО ДНЯМ" ─────────────────────────────────────────────────────────
+function renderDailyAnalytics(){
+  const srcFilter=document.getElementById('an-filter-src').value
+  let txns=getTransactionsAnalytics()
+  if(srcFilter) txns=txns.filter(t=>t.src===srcFilter)
+
+  const tbody=document.getElementById('an-daily-tbody')
+  if(!txns.length){
+    tbody.innerHTML='<tr><td colspan="11" style="padding:30px;text-align:center;color:var(--text3)">Нет данных о транзакциях. Оформите и закройте заказы.</td></tr>'
+    return
+  }
+
+  // Группируем по дате (день)
+  const byDay={}
+  txns.forEach(t=>{
+    const d=t.date?new Date(t.date):null
+    const dayKey=d&&!isNaN(d)?d.toLocaleDateString('ru',{day:'2-digit',month:'2-digit',year:'numeric'}):'Без даты'
+    if(!byDay[dayKey]) byDay[dayKey]=[]
+    byDay[dayKey].push(t)
+  })
+
+  let html=''
+  const days=Object.keys(byDay)
+
+  days.forEach(day=>{
+    const rows=byDay[day]
+    const dayRevenue=rows.reduce((s,r)=>s+r.revenue,0)
+    const dayProfit=rows.reduce((s,r)=>s+r.profit,0)
+    const dayMarginTotal=rows.reduce((s,r)=>s+r.profit,0)
+    const dayAvgMargin=rows.length?rows.reduce((s,r)=>s+r.margin,0)/rows.length:0
+
+    // Заголовок дня
+    html+=`<tr style="background:linear-gradient(90deg,#f0f4ff,#f8faff);border-top:2px solid #c7d7fd">
+      <td colspan="5" style="padding:10px 16px;font-weight:700;font-size:13px;color:#1e3a8a">
+        📅 ${day} <span style="font-size:11px;font-weight:500;color:#6b7280;margin-left:8px">${rows.length} операц.</span>
+      </td>
+      <td style="text-align:right;padding:10px 12px;font-weight:700;color:#1e3a8a">${fmt(dayRevenue)}</td>
+      <td colspan="2" style="text-align:right;padding:10px 12px;font-size:12px;color:#6b7280">${dayAvgMargin.toFixed(1)}%</td>
+      <td style="padding:10px 12px"></td>
+      <td style="text-align:right;padding:10px 12px;font-weight:700;color:${dayProfit>=0?'#059669':'#e11d48'}">${fmt(dayProfit)}</td>
+      <td style="text-align:right;padding:10px 12px;font-weight:700;color:#1e3a8a">${fmt(dayRevenue)}</td>
+    </tr>`
+
+    // Строки транзакций
+    rows.forEach((t,ti)=>{
+      const marginColor=t.margin>=50?'#059669':t.margin>=20?'#d97706':'#e11d48'
+      const typeBadge=t.type==='опт'
+        ?'<span style="background:#dbeafe;color:#1d4ed8;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:600">Опт</span>'
+        :t.type==='услуга'
+        ?'<span style="background:#f3f4f6;color:#6b7280;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:600">Услуга</span>'
+        :'<span style="background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 6px;font-size:10px;font-weight:600">Розница</span>'
+      const d=t.date?new Date(t.date):null
+      const timeStr=d&&!isNaN(d)?d.toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'}):''
+
+      const paymentDisplay=t.payment
+        ?`<span style="background:${t.payment==='cash'?'#dcfce7':t.payment==='card'?'#dbeafe':'#f3f4f6'};color:${t.payment==='cash'?'#166534':t.payment==='card'?'#1e40af':'#6b7280'};border-radius:4px;padding:2px 8px;font-size:11px;font-weight:600">${t.payment==='cash'?'Нал':t.payment==='card'?'Карта':t.payment}</span>`
+        :'<span style="color:var(--text3);font-size:11px">—</span>'
+
+      html+=`<tr style="border-bottom:1px solid #f1f5f9;transition:background .15s" onmouseover="this.style.background='#f8faff'" onmouseout="this.style.background=''">
+        <td style="padding:9px 16px;font-size:12.5px">
+          <div style="font-weight:600;color:var(--text)">${t.name}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${typeBadge}${timeStr?` · <span style="color:var(--text3)">${timeStr}</span>`:''}</div>
+        </td>
+        <td style="padding:9px 12px;font-size:12.5px;color:var(--text2)">${t.client}</td>
+        <td style="text-align:right;padding:9px 12px;font-size:12.5px;font-weight:600">${fmt(t.revenue)}</td>
+        <td style="text-align:right;padding:9px 12px;font-size:12.5px;color:var(--text2)">${t.cost>0?fmt(t.costTotal):'—'}</td>
+        <td style="text-align:right;padding:9px 12px;font-size:12.5px;font-weight:700;color:${t.profit>=0?'#059669':'#e11d48'}">${fmt(t.profit)}</td>
+        <td style="text-align:right;padding:9px 12px;color:var(--text3);font-size:11px">—</td>
+        <td style="text-align:right;padding:9px 12px;font-size:12.5px;font-weight:600;color:${marginColor}">${t.margin.toFixed(1)}%</td>
+        <td style="text-align:right;padding:9px 12px;color:var(--text3);font-size:11px">—</td>
+        <td style="text-align:center;padding:9px 12px">${paymentDisplay}</td>
+        <td style="text-align:right;padding:9px 12px;font-size:12.5px;font-weight:700;color:${t.profit>=0?'#059669':'#e11d48'}">${fmt(t.profit)}</td>
+        <td style="text-align:right;padding:9px 12px;font-size:12.5px;font-weight:600">${fmt(t.revenue)}</td>
+      </tr>`
+    })
+
+    // Итоговая строка дня
+    html+=`<tr style="background:#fffbeb;border-top:1px solid #fde68a;border-bottom:2px solid #fcd34d">
+      <td colspan="2" style="padding:8px 16px;font-weight:700;font-size:12px;color:#92400e">ИТОГ ДНЯ: ${day}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12.5px;color:#92400e">${fmt(dayRevenue)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12px;color:#92400e">${fmt(rows.reduce((s,r)=>s+r.costTotal,0))}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12.5px;color:${dayMarginTotal>=0?'#065f46':'#991b1b'}">${fmt(dayMarginTotal)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12.5px;color:#92400e">${fmt(dayRevenue)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12px;color:${dayAvgMargin>=20?'#065f46':'#991b1b'}">${dayAvgMargin.toFixed(1)}%</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12px;color:#92400e">${dayAvgMargin.toFixed(1)}%</td>
+      <td style="padding:8px 12px"></td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12.5px;color:${dayProfit>=0?'#065f46':'#991b1b'}">${fmt(dayProfit)}</td>
+      <td style="text-align:right;padding:8px 12px;font-weight:700;font-size:12.5px;color:#92400e">${fmt(dayRevenue)}</td>
+    </tr>`
+  })
+
+  tbody.innerHTML=html
 }
 
 ;(function(){
