@@ -1401,6 +1401,11 @@ tr:hover td{background:#fcfcfc}
               <label>Подзаголовок</label>
               <input id="shop-set-subtitle" class="fc" placeholder="Напр: Каталог запчастей и аксессуаров" maxlength="60">
             </div>
+            <div class="fg">
+              <label>Город</label>
+              <input id="shop-set-city" class="fc" placeholder="Напр: Ульяновск" maxlength="40">
+              <p style="font-size:11px;color:var(--text3);margin-top:4px">Отображается в шапке витрины рядом с названием</p>
+            </div>
             <div class="fg" style="margin-bottom:0">
               <label>Объявление / баннер (показывается под шапкой)</label>
               <input id="shop-set-banner" class="fc" placeholder="Напр: 🚚 Доставка по всему городу от 2 часов">
@@ -3719,9 +3724,11 @@ function saveSettings(){
 function saveShopSettings(){
   const name=document.getElementById('shop-set-name').value.trim()
   const subtitle=document.getElementById('shop-set-subtitle').value.trim()
+  const city=document.getElementById('shop-set-city').value.trim()
   const banner=document.getElementById('shop-set-banner').value.trim()
   if(name) localStorage.setItem('shop_name', name)
   localStorage.setItem('shop_subtitle', subtitle)
+  localStorage.setItem('shop_city', city)
   localStorage.setItem('shop_banner', banner)
   const btn=document.querySelector('[onclick="saveShopSettings()"]')
   if(btn){const t=btn.textContent;btn.textContent='✓ Сохранено';btn.style.background='var(--green)';setTimeout(()=>{btn.textContent=t;btn.style.background=''},1500)}
@@ -3808,6 +3815,7 @@ function renderSettings(){
   // Shop storefront settings
   document.getElementById('shop-set-name').value=localStorage.getItem('shop_name')||''
   document.getElementById('shop-set-subtitle').value=localStorage.getItem('shop_subtitle')||''
+  document.getElementById('shop-set-city').value=localStorage.getItem('shop_city')||''
   document.getElementById('shop-set-banner').value=localStorage.getItem('shop_banner')||''
   document.getElementById('set-margin').value=localStorage.getItem('min_margin')||'20'
   const orders=S.get('orders'),org=getOrg()

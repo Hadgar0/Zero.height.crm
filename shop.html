@@ -492,7 +492,7 @@ body::before{
     <div class="hero-blob hero-blob-1"></div>
     <div class="hero-blob hero-blob-2"></div>
   </div>
-  <div class="hero-badge"><div class="hero-badge-dot"></div>Тольятти · Запчасти iPhone</div>
+  <div class="hero-badge"><div class="hero-badge-dot"></div><span id="hero-city-badge">Запчасти iPhone</span></div>
   <h1 id="hero-title">ЗАПЧАСТИ<br>ДЛЯ <span class="red">iPHONE</span></h1>
   <p class="hero-sub">Дисплеи, АКБ, корпуса, шлейфы, камеры. Оптом и в розницу. Три ценовых тира — Розница, Опт, VIP.</p>
   <div class="hero-btns">
@@ -1026,8 +1026,13 @@ function checkoutCart(){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 ;(function init(){
   const shopName=localStorage.getItem('shop_name')||localStorage.getItem('org_code')||'Zero.height'
+  const shopCity=localStorage.getItem('shop_city')||''
   document.getElementById('shop-name').textContent=shopName
   document.title=shopName+' — Витрина'
+  const cityBadge=document.getElementById('hero-city-badge')
+  if(cityBadge) cityBadge.textContent=(shopCity?shopCity+' · ':'')+'Запчасти iPhone'
+  const heroTitle=document.getElementById('hero-title')
+  if(heroTitle&&shopCity) heroTitle.innerHTML='ЗАПЧАСТИ<br>ДЛЯ <span class="red">iPHONE</span>'
   buildCats()
   renderShop()
   renderCart()
