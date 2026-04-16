@@ -61,13 +61,15 @@ function startProxy() {
 let win
 
 function createWindow() {
+  const iconPath = path.join(__dirname, 'assets', 'icon.ico')
+  const fs = require('fs')
   win = new BrowserWindow({
     width: 1440,
     height: 900,
     minWidth: 900,
     minHeight: 600,
     title: 'zero.height.crm',
-    icon: path.join(__dirname, 'icon.ico'),
+    ...(fs.existsSync(iconPath) ? { icon: iconPath } : {}),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
