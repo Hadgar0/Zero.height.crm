@@ -2049,6 +2049,19 @@ tr:hover td{background:#fcfcfc}
         <div class="fg"><label>Логин</label><input id="1c-login" class="fc" placeholder="Администратор"></div>
         <div class="fg"><label>Пароль</label><input id="1c-pass" class="fc" type="password"></div>
       </div>
+      <div class="fg" style="margin-top:4px">
+        <label>Склад в 1С</label>
+        <div style="display:flex;gap:8px">
+          <select id="1c-warehouse" class="fc" style="flex:1">
+            <option value="">— Не выбран —</option>
+          </select>
+          <button class="btn btn-g" onclick="load1cWarehouses()" style="white-space:nowrap;flex-shrink:0" title="Загрузить список складов из 1С">
+            <svg style="width:14px;height:14px;margin-right:4px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3"/></svg>
+            Загрузить
+          </button>
+        </div>
+        <p style="font-size:11px;color:var(--text3);margin-top:4px">Нажмите «Загрузить» после сохранения URL и логина — получим список складов из 1С</p>
+      </div>
       <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:4px">
         <p style="font-size:12px;color:#64748b;margin:0 0 8px 0;font-weight:600">Что синхронизируется с 1С:</p>
         <ul style="font-size:12px;color:#64748b;margin:0;padding-left:16px;line-height:1.8">
@@ -3682,28 +3695,40 @@ function normPhone(p){
   return d
 }
 
-// ── DEDUPE CLIENTS BY PHONE ───────────────────────────────────────────────────
+// ── DEDUPE CLIENTS BY PHONE + NAME ───────────────────────────────────────────
 function dedupeClients(){
   const clients=S.get('clients')
-  const seen={}
   const deduped=[]
+
+  function mergeInto(existing, c){
+    if(!existing.interactions) existing.interactions=[]
+    ;(c.interactions||[]).forEach(i=>{
+      if(!existing.interactions.find(ei=>ei.text===i.text))
+        existing.interactions.push(i)
+    })
+    if(!existing.company&&c.company) existing.company=c.company
+    if(!existing.phone&&c.phone) existing.phone=c.phone
+    if(!existing.email&&c.email) existing.email=c.email
+  }
+
   clients.forEach(c=>{
-    const key=normPhone(c.phone)||('name:'+c.name)
-    if(!seen[key]){
-      seen[key]=true
+    const ph=normPhone(c.phone)
+    const nm=(c.name||'').trim().toLowerCase()
+    // Ищем дубликат по телефону (если есть) или по имени
+    const dup=deduped.find(d=>{
+      const dph=normPhone(d.phone)
+      const dnm=(d.name||'').trim().toLowerCase()
+      if(ph&&dph&&ph===dph) return true
+      if(nm&&dnm&&nm===dnm) return true
+      return false
+    })
+    if(!dup){
       deduped.push(c)
     } else {
-      // Мерджим взаимодействия в первый найденный
-      const existing=deduped.find(d=>(normPhone(d.phone)||('name:'+d.name))===key)
-      if(existing&&c.interactions&&c.interactions.length){
-        if(!existing.interactions) existing.interactions=[]
-        c.interactions.forEach(i=>{
-          if(!existing.interactions.find(ei=>ei.text===i.text))
-            existing.interactions.push(i)
-        })
-      }
+      mergeInto(dup, c)
     }
   })
+
   if(deduped.length!==clients.length) S.set('clients',deduped)
 }
 
@@ -5535,11 +5560,85 @@ function open1cModal(){
   document.getElementById('1c-login').value=cfg.login||''
   document.getElementById('1c-pass').value=cfg.pass||''
   document.getElementById('1c-status').style.display='none'
+  // Восстанавливаем список складов и выбранный
+  const sel=document.getElementById('1c-warehouse')
+  sel.innerHTML='<option value="">— Не выбран —</option>'
+  if(cfg.warehouses&&cfg.warehouses.length){
+    cfg.warehouses.forEach(w=>{
+      const o=document.createElement('option')
+      o.value=w.id||w.name
+      o.textContent=w.name||(w.id||w)
+      if((w.id||w.name||w)===cfg.warehouse_id) o.selected=true
+      sel.appendChild(o)
+    })
+  } else if(cfg.warehouse_id){
+    const o=document.createElement('option')
+    o.value=cfg.warehouse_id
+    o.textContent=cfg.warehouse_name||cfg.warehouse_id
+    o.selected=true
+    sel.appendChild(o)
+  }
   om('m-1c')
 }
 function save1cSettings(){
-  S.set('cfg_1c',{url:document.getElementById('1c-url').value.trim(),login:document.getElementById('1c-login').value,pass:document.getElementById('1c-pass').value})
+  const sel=document.getElementById('1c-warehouse')
+  const wid=sel.value
+  const wname=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].textContent:''
+  const cfg=S.get('cfg_1c')||{}
+  S.set('cfg_1c',{
+    url:document.getElementById('1c-url').value.trim(),
+    login:document.getElementById('1c-login').value,
+    pass:document.getElementById('1c-pass').value,
+    warehouse_id:wid,
+    warehouse_name:wname,
+    warehouses:cfg.warehouses||[]
+  })
   cm('m-1c');alert('Настройки 1С сохранены')
+}
+async function load1cWarehouses(){
+  const url=document.getElementById('1c-url').value.trim()
+  const login=document.getElementById('1c-login').value
+  const pass=document.getElementById('1c-pass').value
+  if(!url){alert('Сначала укажите URL сервера 1С');return}
+  const st=document.getElementById('1c-status')
+  st.style.display='block'
+  st.style.color='#d97706'
+  st.textContent='⏳ Загружаю список складов...'
+  try{
+    const base64=btoa(unescape(encodeURIComponent(login+':'+pass)))
+    const res=await fetch(url.replace(/\/$/,'')+'/'+'warehouses',{
+      method:'GET',
+      headers:{Authorization:'Basic '+base64,'Content-Type':'application/json'},
+      signal:AbortSignal.timeout(8000)
+    })
+    if(!res.ok) throw new Error('HTTP '+res.status)
+    const data=await res.json()
+    // data может быть [{id,name}] или [{Ref_Key, Description}]
+    const list=(Array.isArray(data)?data:[]).map(w=>({
+      id: w.id||w.Ref_Key||w.guid||'',
+      name: w.name||w.Description||w.Наименование||w.id||''
+    })).filter(w=>w.name)
+    if(!list.length) throw new Error('Пустой список складов')
+    const sel=document.getElementById('1c-warehouse')
+    const cur=sel.value
+    sel.innerHTML='<option value="">— Не выбран —</option>'
+    list.forEach(w=>{
+      const o=document.createElement('option')
+      o.value=w.id
+      o.textContent=w.name
+      if(w.id===cur) o.selected=true
+      sel.appendChild(o)
+    })
+    // Сохраняем список в cfg
+    const cfg=S.get('cfg_1c')||{}
+    cfg.warehouses=list
+    S.set('cfg_1c',cfg)
+    st.style.color='#059669'
+    st.textContent='✅ Загружено складов: '+list.length
+  }catch(e){
+    st.style.color='#e11d48'
+    st.textContent='❌ Ошибка: '+e.message+'. Проверьте URL и права доступа.'
+  }
 }
 async function test1c(){
   const cfg=S.get('cfg_1c')||{}
