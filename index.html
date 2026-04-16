@@ -5680,16 +5680,36 @@ async function import1cItems(){
       '/odata/standard.odata/Catalog_Номенклатура?$format=json&$top=1000',
     ]
 
+    // Проверяем прокси на localhost:3001
+    let useProxy=false
+    try{
+      const ping=await fetch('http://localhost:3001/config',{signal:AbortSignal.timeout(1500)})
+      if(ping.ok) useProxy=true
+    }catch(e){}
+
     let data=null
     let usedEndpoint=''
     for(const ep of endpoints){
       try{
-        const r=await fetch(baseUrl+ep,{
-          headers:{Authorization:'Basic '+base64,'Accept':'application/json'},
-          signal:AbortSignal.timeout(6000)
-        })
-        if(r.ok){data=await r.json();usedEndpoint=ep;break}
+        let r
+        if(useProxy){
+          // Через локальный прокси — нет CORS
+          r=await fetch(`http://localhost:3001/1c${ep}?url=${encodeURIComponent(cfg.url)}&login=${encodeURIComponent(cfg.login||'')}&pass=${encodeURIComponent(cfg.pass||'')}`,{
+            signal:AbortSignal.timeout(8000)
+          })
+        } else {
+          // Напрямую (работает если 1С на том же домене или настроен CORS)
+          r=await fetch(baseUrl+ep,{
+            headers:{Authorization:'Basic '+base64,'Accept':'application/json'},
+            signal:AbortSignal.timeout(6000)
+          })
+        }
+        if(r.ok){data=await r.json();usedEndpoint=(useProxy?'[прокси]':'')+ep;break}
       }catch(e){/* пробуем следующий */}
+    }
+
+    if(!data&&!useProxy){
+      throw new Error('Не удалось подключиться. Запусти «Запустить прокси 1С.bat» для обхода CORS.')
     }
 
     if(!data) throw new Error('Ни один эндпоинт не ответил. Проверьте настройки HTTP-сервиса в 1С.')
