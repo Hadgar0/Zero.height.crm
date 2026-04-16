@@ -1,0 +1,49 @@
+{
+  "name": "zero-height-crm",
+  "version": "1.0.0",
+  "description": "zero.height.crm — CRM для сервисного центра",
+  "main": "main.js",
+  "author": "zero.height",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dev":   "electron . --dev",
+    "build": "electron-builder --win --x64",
+    "build:portable": "electron-builder --win portable --x64"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "ru.zero.height.crm",
+    "productName": "zero.height.crm",
+    "directories": {
+      "buildResources": "assets",
+      "output": "../dist"
+    },
+    "files": [
+      "main.js",
+      "../index.html",
+      "../shop.html",
+      "../storefront.html"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerLanguages": ["ru_RU"],
+      "language": "1049",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "zero.height.crm"
+    }
+  }
+}
