@@ -506,6 +506,10 @@ tr:hover td{background:#fcfcfc}
           <svg style="width:13px;height:13px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Интеграция 1С
         </button>
+        <button class="btn btn-g" style="font-size:12px;color:#1d4ed8;border-color:#bfdbfe" onclick="import1cItems()">
+          <svg style="width:13px;height:13px;margin-right:3px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="8 17 12 21 16 17"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/></svg>
+          Загрузить из 1С
+        </button>
         <button id="wh-site-prices-btn" class="btn btn-g" style="font-size:12px" onclick="toggleWhSitePrices()">
           💰 Цены для сайта
         </button>
@@ -5650,6 +5654,105 @@ async function load1cWarehouses(){
       :'❌ Ошибка: '+e.message
   }
 }
+async function import1cItems(){
+  const cfg=S.get('cfg_1c')||{}
+  if(!cfg.url){alert('Сначала настройте интеграцию 1С (кнопка «Интеграция 1С»)');return}
+
+  // Показываем статус прямо на складе
+  let toast=document.getElementById('1c-import-toast')
+  if(!toast){
+    toast=document.createElement('div')
+    toast.id='1c-import-toast'
+    toast.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9999;background:#1e293b;color:#fff;border-radius:12px;padding:14px 20px;font-size:13px;font-weight:600;box-shadow:0 8px 32px rgba(0,0,0,.25);min-width:280px;transition:all .3s'
+    document.body.appendChild(toast)
+  }
+  toast.style.opacity='1'
+  toast.textContent='⏳ Загружаю товары из 1С...'
+
+  try{
+    const base64=btoa(unescape(encodeURIComponent((cfg.login||'')+':'+(cfg.pass||''))))
+    const baseUrl=cfg.url.replace(/\/$/,'')
+
+    // Пробуем несколько типовых эндпоинтов 1С УНФ/УТ
+    const endpoints=[
+      '/items','/goods','/products','/Nomenclature',
+      '/hs/warehouse/items','/hs/warehouse/goods',
+      '/odata/standard.odata/Catalog_Номенклатура?$format=json&$top=1000',
+    ]
+
+    let data=null
+    let usedEndpoint=''
+    for(const ep of endpoints){
+      try{
+        const r=await fetch(baseUrl+ep,{
+          headers:{Authorization:'Basic '+base64,'Accept':'application/json'},
+          signal:AbortSignal.timeout(6000)
+        })
+        if(r.ok){data=await r.json();usedEndpoint=ep;break}
+      }catch(e){/* пробуем следующий */}
+    }
+
+    if(!data) throw new Error('Ни один эндпоинт не ответил. Проверьте настройки HTTP-сервиса в 1С.')
+
+    // Нормализуем разные форматы ответа
+    const raw=Array.isArray(data)?data:(data.value||data.items||data.goods||data.result||[])
+    if(!raw.length) throw new Error('1С вернула пустой список товаров')
+
+    const items=S.get('wh_items')||[]
+    let added=0, updated=0
+
+    raw.forEach(r=>{
+      const name=(r.name||r.Description||r.Наименование||r.Name||'').trim()
+      const sku=(r.sku||r.Article||r.Артикул||r.Code||r.code||'').trim()
+      const price=+(r.price||r.Price||r.Цена||r.cost||0)
+      const qty=+(r.qty||r.Quantity||r.Остаток||r.stock||0)
+      const cat=(r.cat||r.Category||r.Категория||r.group||'').trim()
+      const extId=(r.id||r.Ref_Key||r.guid||r.ID||'').toString()
+
+      if(!name) return
+
+      // Ищем существующий по внешнему ID или SKU или имени
+      const exist=items.find(i=>
+        (extId&&i.ext_id===extId)||
+        (sku&&i.sku===sku)||
+        i.name===name
+      )
+      if(exist){
+        // Обновляем остаток и цену
+        if(qty>0) exist.qty=qty
+        if(price>0) exist.price=price
+        if(cat&&!exist.cat) exist.cat=cat
+        if(sku&&!exist.sku) exist.sku=sku
+        exist.ext_id=extId
+        exist.src='1c'
+        updated++
+      } else {
+        items.push({
+          id:S.nid('wh_items'),
+          name, sku, price, qty:qty||0,
+          cat, src:'1c', ext_id:extId,
+          created_at:new Date().toISOString()
+        })
+        added++
+      }
+    })
+
+    S.set('wh_items',items)
+    renderWarehouse()
+    toast.style.background='#065f46'
+    toast.textContent=`✅ Загружено из 1С: +${added} новых, обновлено ${updated} (эндпоинт: ${usedEndpoint})`
+    setTimeout(()=>{toast.style.opacity='0';setTimeout(()=>toast.remove(),300)},6000)
+
+  }catch(e){
+    toast.style.background='#991b1b'
+    const isCors=e.message==='Failed to fetch'||e.message.includes('fetch')
+    toast.textContent=isCors
+      ?'❌ CORS-блокировка. CRM открыт по HTTPS, а 1С по HTTP. Используйте импорт Excel как альтернативу.'
+      :'❌ '+e.message
+    setTimeout(()=>{toast.style.opacity='0';setTimeout(()=>toast.remove(),300)},8000)
+  }
+}
+
 async function test1c(){
   const url=document.getElementById('1c-url').value.trim()
   const login=document.getElementById('1c-login').value
