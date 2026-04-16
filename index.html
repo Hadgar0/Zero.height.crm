@@ -2060,7 +2060,11 @@ tr:hover td{background:#fcfcfc}
             Загрузить
           </button>
         </div>
-        <p style="font-size:11px;color:var(--text3);margin-top:4px">Нажмите «Загрузить» после сохранения URL и логина — получим список складов из 1С</p>
+        <p style="font-size:11px;color:var(--text3);margin-top:4px">Нажмите «Загрузить» для автозаполнения. Или введите вручную ниже.</p>
+      </div>
+      <div class="fg">
+        <label>Название склада (вручную)</label>
+        <input id="1c-warehouse-manual" class="fc" placeholder="Например: Основной склад">
       </div>
       <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-top:4px">
         <p style="font-size:12px;color:#64748b;margin:0 0 8px 0;font-weight:600">Что синхронизируется с 1С:</p>
@@ -5578,12 +5582,14 @@ function open1cModal(){
     o.selected=true
     sel.appendChild(o)
   }
+  document.getElementById('1c-warehouse-manual').value=cfg.warehouse_manual||''
   om('m-1c')
 }
 function save1cSettings(){
   const sel=document.getElementById('1c-warehouse')
-  const wid=sel.value
-  const wname=sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].textContent:''
+  const manual=document.getElementById('1c-warehouse-manual').value.trim()
+  const wid=sel.value||manual
+  const wname=manual||(sel.options[sel.selectedIndex]?sel.options[sel.selectedIndex].textContent:'')
   const cfg=S.get('cfg_1c')||{}
   S.set('cfg_1c',{
     url:document.getElementById('1c-url').value.trim(),
@@ -5591,9 +5597,10 @@ function save1cSettings(){
     pass:document.getElementById('1c-pass').value,
     warehouse_id:wid,
     warehouse_name:wname,
+    warehouse_manual:manual,
     warehouses:cfg.warehouses||[]
   })
-  cm('m-1c');alert('Настройки 1С сохранены')
+  cm('m-1c');alert('Настройки 1С сохранены'+(wname?'\nСклад: '+wname:''))
 }
 async function load1cWarehouses(){
   const url=document.getElementById('1c-url').value.trim()
@@ -5637,7 +5644,10 @@ async function load1cWarehouses(){
     st.textContent='✅ Загружено складов: '+list.length
   }catch(e){
     st.style.color='#e11d48'
-    st.textContent='❌ Ошибка: '+e.message+'. Проверьте URL и права доступа.'
+    const isCors=e.message==='Failed to fetch'||e.message.includes('fetch')
+    st.innerHTML=isCors
+      ?'❌ Браузер заблокировал запрос (CORS/HTTP). Введите название склада вручную в поле ниже.'
+      :'❌ Ошибка: '+e.message
   }
 }
 async function test1c(){
